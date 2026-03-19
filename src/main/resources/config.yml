@@ -1,14 +1,17 @@
 SimpleCTF:
   Game:
-    MaxPlayersPerTeam: 4
-    MinPlayersPerTeam: 1
-    MatchTime: 600
+    Queue:
+      MaxPlayersPerTeam: 4
+      MinPlayersPerTeam: 1
+      QueueCountdown: 10
+    Match:
+      MatchTime: 600
   Strings:
     Prefix: "<#eb6434>SimpleCTF » <#e8cd33>"
+    NoPermission: "<red>You don't have the permission to execute that command!"
     Match:
       TeamJoin: "You joined the %color% team!"
       TeamLeave: "You left the team."
       PlayerJoinedTeam: "%player% joined the team!"
       PlayerLeftTeam: "%player% left the team."
       MatchWin: "The %color% team won the match!"
-
