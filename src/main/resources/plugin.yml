@@ -1,4 +1,10 @@
 name: SimpleCTF
-version: '0.0.1'
+version: '${version}'
 main: me.kugelbltz.simpleCTF.SimpleCTF
 api-version: '1.21'
+commands:
+  capturetheflag:
+    description: Capture the flag main command
+    aliases:
+      - ctf
+      - simplectf
