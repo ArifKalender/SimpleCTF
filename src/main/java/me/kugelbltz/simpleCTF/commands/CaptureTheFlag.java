@@ -1,5 +1,6 @@
 package me.kugelbltz.simpleCTF.commands;
 
+import me.kugelbltz.simpleCTF.commands.admin.CTFReload;
 import me.kugelbltz.simpleCTF.commands.admin.CTFSetFlag;
 import me.kugelbltz.simpleCTF.commands.admin.CTFStart;
 import me.kugelbltz.simpleCTF.commands.admin.CTFStop;
@@ -45,6 +46,7 @@ public class CaptureTheFlag implements CommandExecutor {
             case "START" -> new CTFStart(player, args);
             case "STOP" -> new CTFStop(player, args);
             case "SETFLAG" -> new CTFSetFlag(player, args);
+            case "RELOAD" -> new CTFReload(player, args);
             default -> sendHelpMessage(sender);
         }
         return true;
