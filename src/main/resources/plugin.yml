@@ -1,0 +1,4 @@
+name: SimpleCTF
+version: '0.0.1'
+main: me.kugelbltz.simpleCTF.SimpleCTF
+api-version: '1.21'
