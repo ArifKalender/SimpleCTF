@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CTFJoin {
-    // TODO: Implement
     private static Set<UUID> redPlayersQueue = new HashSet<>();
     private static Set<UUID> bluePlayersQueue = new HashSet<>();
 
@@ -64,6 +63,7 @@ public class CTFJoin {
         bluePlayersQueue.forEach(queuePlayer -> {
             Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", arg)));
         });
+        player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_JOIN.replaceAll("%color%", arg)));
     }
 
     private void sendHelpMessage(Player player) {

@@ -19,6 +19,7 @@ SimpleCTF:
       PlayerLeftTeam: "%player% left the team."
       AlreadyInQueue: "You are already in a queue! Use /ctf leave"
       TeamAlreadyFull: "Sorry, but that team is full!"
+      NotInTeam: "You are not in a team."
     Match:
       MatchWin: "The %color% team won the match!"
       MatchTimeOut: "The match ran out of time!"
