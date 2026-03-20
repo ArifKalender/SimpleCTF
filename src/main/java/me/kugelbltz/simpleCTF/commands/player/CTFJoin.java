@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,11 +71,23 @@ public class CTFJoin {
         player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
     }
 
-    public static Set<UUID> getRedPlayersQueue() {
+    public static Set<UUID> getRedPlayersUUIDQueue() {
         return redPlayersQueue;
     }
 
-    public static Set<UUID> getBluePlayersQueue() {
+    public static Set<UUID> getBluePlayersUUIDQueue() {
         return bluePlayersQueue;
+    }
+
+    public static Set<Player> getRedPlayersQueue() {
+        Set<Player> toReturn = new HashSet<>();
+        getRedPlayersUUIDQueue().forEach(uuid -> toReturn.add(Bukkit.getPlayer(uuid)));
+        return toReturn;
+    }
+
+    public static Set<Player> getBluePlayersQueue() {
+        Set<Player> toReturn = new HashSet<>();
+        getBluePlayersUUIDQueue().forEach(uuid -> toReturn.add(Bukkit.getPlayer(uuid)));
+        return toReturn;
     }
 }

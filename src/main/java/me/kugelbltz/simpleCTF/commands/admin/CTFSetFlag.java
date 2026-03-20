@@ -25,10 +25,12 @@ public class CTFSetFlag {
         switch (color) {
             case "RED" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);
+                SimpleCTF.getInstance().saveConfig();
                 player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PREFIX + "Make sure to /ctf reload for the changes to take effect!"));
             }
             case "BLUE" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.BlueFlag", location);
+                SimpleCTF.getInstance().saveConfig();
                 player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PREFIX + "Make sure to /ctf reload for the changes to take effect!"));
             }
             default -> player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));

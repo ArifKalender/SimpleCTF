@@ -41,6 +41,7 @@ public final class SimpleCTF extends JavaPlugin {
     }
 
     private void loadConfigs() {
+        saveDefaultConfig();
         configManager = new ConfigManager();
     }
 

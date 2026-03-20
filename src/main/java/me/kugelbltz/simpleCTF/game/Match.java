@@ -51,6 +51,7 @@ public class Match {
         this.blueScore = 0;
         this.matchRunning = true;
         SimpleCTF.getInstance().setCurrentMatch(this);
+        loadBlocks(true);
         initPlayers();
     }
 
@@ -125,7 +126,18 @@ public class Match {
         this.matchRunning = false;
         this.bossBar.removeAll();
         this.bossBar = null;
+        loadBlocks(false);
         SimpleCTF.getInstance().setCurrentMatch(null);
+    }
+
+    private void loadBlocks(boolean place) {
+        if (place) {
+            this.redFlagLocation.getBlock().setType(Material.RED_BANNER);
+            this.blueFlagLocation.getBlock().setType(Material.BLUE_BANNER);
+        } else {
+            this.redFlagLocation.getBlock().setType(Material.AIR);
+            this.blueFlagLocation.getBlock().setType(Material.AIR);
+        }
     }
 
     // TODO: Implement opposite color interactions
