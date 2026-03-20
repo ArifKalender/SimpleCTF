@@ -23,7 +23,7 @@ public class ConfigManager {
         init();
     }
 
-    public void init() {
+    public static void init() {
         // As task, just in case init is triggered before complete startup.
         Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> {
             // --- Init: Strings ---

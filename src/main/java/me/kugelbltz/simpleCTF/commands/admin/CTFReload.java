@@ -13,8 +13,7 @@ public class CTFReload {
         }
         sendConfigMsg(player, "config.yml");
         SimpleCTF.getInstance().reloadConfig();
-        sendConfigMsg(player, "MatchMaps.yml");
-        SimpleCTF.getInstance().getMatchMapConfig().reloadConfig();
+        ConfigManager.init();
     }
     private void sendConfigMsg(Player player, String cfgName) {
         player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PREFIX + "<green>Reloading " + cfgName + "..."));

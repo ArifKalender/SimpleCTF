@@ -6,8 +6,14 @@ import java.util.List;
 
 public class Match {
 
-    public Match(List<Player> redTeam, List<Player> blueTeam, String worldFileName) {
-        MatchMap.getMatchMap(worldFileName).loadWorldForPlayers(blueTeam, redTeam);
+    public Match(List<Player> redTeam, List<Player> blueTeam) {
         // TODO: Implement
+        redTeam.forEach(player -> {
+            player.teleportAsync(MatchMap.getRedLocation());
+        });
+        blueTeam.forEach(player -> {
+            player.teleportAsync(MatchMap.getBlueLocation());
+        });
+
     }
 }
