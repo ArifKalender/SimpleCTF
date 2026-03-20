@@ -32,7 +32,6 @@ public class Match {
     private BossBar bossBar;
     private BukkitTask task;
 
-    // TODO: Capture logic
     public Match(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         initMatch(redPlayers, bluePlayers);
         this.task = gameLoop();
@@ -41,6 +40,11 @@ public class Match {
     private void initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         this.redFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag");
         this.blueFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
+        if (redFlagLocation == null || blueFlagLocation == null) {
+            SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
+            broadcastMessage(MiniMessage.miniMessage().deserialize("<red> Match environment was not set properly, therefore your match couldn't start."));
+            return;
+        }
         this.redPlayers.addAll(redPlayers);
         this.bluePlayers.addAll(bluePlayers);
         this.redScore = 0;

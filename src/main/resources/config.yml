@@ -1,7 +1,7 @@
 SimpleCTF:
   Game:
     Queue:
-      MaxPlayersPerTeam: 4
+      MaxPlayersPerTeam: 8
       MinPlayersPerTeam: 1
       QueueCountdown: 10
     Match:
@@ -15,11 +15,14 @@ SimpleCTF:
     Queue:
       TeamJoin: "You joined the %color% team!"
       TeamLeave: "You left the team."
-      PlayerJoinedTeam: "%player% joined the team!"
+      PlayerJoinedTeam: "%player% joined the %color% team!"
       PlayerLeftTeam: "%player% left the team."
+      AlreadyInQueue: "You are already in a queue! Use /ctf leave"
+      TeamAlreadyFull: "Sorry, but that team is full!"
     Match:
       MatchWin: "The %color% team won the match!"
       MatchTimeOut: "The match ran out of time!"
       MatchStart: "The match just started!"
       PlayerCaughtFlag: "%player% CAUGHT THE %color% FLAG!"
       PlayerPlaceFlag: "%player% placed back their flag!"
+      MatchOccupied: "There already is a match going on in this server, sorry!"
