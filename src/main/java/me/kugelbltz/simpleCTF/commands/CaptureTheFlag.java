@@ -6,6 +6,7 @@ import me.kugelbltz.simpleCTF.commands.admin.CTFStart;
 import me.kugelbltz.simpleCTF.commands.admin.CTFStop;
 import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
 import me.kugelbltz.simpleCTF.commands.player.CTFLeave;
+import me.kugelbltz.simpleCTF.commands.player.CTFScore;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -43,6 +44,7 @@ public class CaptureTheFlag implements CommandExecutor {
         switch (arg) {
             case "JOIN" -> new CTFJoin(player, args);
             case "LEAVE" -> new CTFLeave(player, args);
+            case "SCORE" -> new CTFScore(player, args);
             case "START" -> new CTFStart(player, args);
             case "STOP" -> new CTFStop(player, args);
             case "SETFLAG" -> new CTFSetFlag(player, args);

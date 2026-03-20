@@ -128,6 +128,8 @@ public class Match {
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
+    // TODO: Implement opposite color interactions
+    //       Capture: carrier enters their own base while holding enemy flag → +1 score
     private void handleFlagHolders() {
         for (LivingEntity redNear : redFlagLocation.getNearbyLivingEntities(3)) {
             if (!(redNear instanceof Player player)) return;
@@ -135,7 +137,6 @@ public class Match {
             if (item == SimpleCTF.BANNER_ITEMS.redFlag && redPlayers.contains(player)) {
                 player.getInventory().remove(item);
                 redFlagLocation.getBlock().setType(Material.RED_BANNER);
-
                 setRedFlagCarrier(null);
             }
         }
@@ -176,5 +177,13 @@ public class Match {
 
     public boolean isPlayerInMatch(Player player) {
         return redPlayers.contains(player) || bluePlayers.contains(player);
+    }
+
+    public int getBlueScore() {
+        return blueScore;
+    }
+
+    public int getRedScore() {
+        return redScore;
     }
 }

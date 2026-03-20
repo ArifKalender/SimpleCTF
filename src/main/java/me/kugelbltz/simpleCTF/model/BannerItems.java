@@ -14,5 +14,13 @@ public class BannerItems {
         redMeta.setDisplayName("§cRed Flag");
         redMeta.lore().add(MiniMessage.miniMessage().deserialize(""));
         redMeta.lore().add(MiniMessage.miniMessage().deserialize("<grey> Flag of the <red>red team"));
+
+        ItemMeta blueMeta = blueFlag.getItemMeta();
+        blueMeta.setDisplayName("§9Blue Flag");
+        redMeta.lore().add(MiniMessage.miniMessage().deserialize(""));
+        redMeta.lore().add(MiniMessage.miniMessage().deserialize("<grey> Flag of the <blue>blue team"));
+
+        redFlag.setItemMeta(redMeta);
+        blueFlag.setItemMeta(blueMeta);
     }
 }

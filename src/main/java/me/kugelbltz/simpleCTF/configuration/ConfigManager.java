@@ -17,12 +17,14 @@ public class ConfigManager {
     public static String ALREADY_IN_QUEUE;
     public static String TEAM_ALREADY_FULL;
     public static String NOT_IN_TEAM;
+
     public static String MATCH_WIN;
     public static String MATCH_TIME_OUT;
     public static String MATCH_START;
     public static String PLAYER_CAUGHT_FLAG;
     public static String PLAYER_PLACE_FLAG;
     public static String MATCH_OCCUPIED;
+    public static String CURRENT_SCORE;
 
     // --- Match variables ---
     public static int MAX_PLAYERS_PER_TEAM;
@@ -46,16 +48,17 @@ public class ConfigManager {
             TEAM_LEAVE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamLeave", PREFIX + "You left the team.");
             PLAYER_JOINED_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.PlayerJoinedTeam", PREFIX + "%player% joined the team!");
             PLAYER_LEFT_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.PlayerLeftTeam", PREFIX + "%player% left the team.");
-            ALREADY_IN_QUEUE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.AlreadyInQueue", "You are already in a queue! Use /ctf leave");
-            TEAM_ALREADY_FULL = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamAlreadyFull", "Sorry, but that team is full!");
-            NOT_IN_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.NotInTeam", "You are not in a team.");
+            ALREADY_IN_QUEUE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.AlreadyInQueue", PREFIX + "You are already in a queue! Use /ctf leave");
+            TEAM_ALREADY_FULL = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamAlreadyFull", PREFIX + "Sorry, but that team is full!");
+            NOT_IN_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.NotInTeam", PREFIX + "You are not in a team.");
 
-            MATCH_WIN = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchWin", "The %color% team won the match!");
+            MATCH_WIN = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchWin", PREFIX + "The %color% team won the match!");
             MATCH_TIME_OUT = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchTimeOut", PREFIX + "The match ran out of time!");
             MATCH_START = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchStart", PREFIX + "The match just started!");
             PLAYER_CAUGHT_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerCaughtFlag", PREFIX + "%player% CAUGHT THE %color% FLAG!");
             PLAYER_PLACE_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerPlaceFlag", PREFIX + "%player% placed back their flag!");
             MATCH_OCCUPIED = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchOccupied", PREFIX + "There already is a match going on in this server, sorry!");
+            CURRENT_SCORE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.CurrentScore", PREFIX + "Current score: %score%");
 
             // --- Init: Match variables ---
             MAX_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MaxPlayersPerTeam", 4);
