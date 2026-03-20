@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,7 +11,9 @@ import org.bukkit.Particle;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +46,7 @@ public class Match {
         this.redScore = 0;
         this.blueScore = 0;
         this.matchRunning = true;
+        SimpleCTF.getInstance().setCurrentMatch(this);
         initPlayers();
     }
 
@@ -105,12 +109,11 @@ public class Match {
     public void unloadMatch(@Nullable String reason) {
         this.redPlayers.forEach(player -> {
             player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation()); // Assuming that this is the position we want to teleport the player to.
-            if (reason != null) player.sendMessage(MiniMessage.miniMessage().deserialize(reason));
         });
         this.bluePlayers.forEach(player -> {
             player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation()); // Assuming that this is the position we want to teleport the player to.
-            if (reason != null) player.sendMessage(MiniMessage.miniMessage().deserialize(reason));
         });
+        broadcastMessage(MiniMessage.miniMessage().deserialize(reason));
         this.redPlayers.clear();
         this.bluePlayers.clear();
         this.redScore = 0;
@@ -118,6 +121,20 @@ public class Match {
         this.matchRunning = false;
         this.bossBar.removeAll();
         this.bossBar = null;
+        SimpleCTF.getInstance().setCurrentMatch(null);
+    }
+
+    private void handleFlagHolders() {
+        for (LivingEntity redNear : redFlagLocation.getNearbyLivingEntities(3)) {
+            if (!(redNear instanceof Player player)) return;
+            ItemStack item = player.getInventory().getItemInMainHand();
+            if (item == SimpleCTF.BANNER_ITEMS.redFlag && redPlayers.contains(player)) {
+                player.getInventory().remove(item);
+                redFlagLocation.getBlock().setType(Material.RED_BANNER);
+
+                setRedFlagCarrier(null);
+            }
+        }
     }
 
     public Player getRedFlagCarrier() {
@@ -134,5 +151,26 @@ public class Match {
 
     public void setBlueFlagCarrier(@Nullable Player blueFlagCarrier) {
         this.blueFlagCarrier = blueFlagCarrier;
+    }
+
+    public Set<Player> getRedPlayers() {
+        return redPlayers;
+    }
+
+    public Set<Player> getBluePlayers() {
+        return bluePlayers;
+    }
+
+    public void broadcastMessage(Component component) {
+        redPlayers.forEach(player -> {
+            player.sendMessage(component);
+        });
+        bluePlayers.forEach(player -> {
+            player.sendMessage(component);
+        });
+    }
+
+    public boolean isPlayerInMatch(Player player) {
+        return redPlayers.contains(player) || bluePlayers.contains(player);
     }
 }

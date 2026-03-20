@@ -1,5 +1,4 @@
 SimpleCTF:
-
   Game:
     Queue:
       MaxPlayersPerTeam: 4
@@ -9,7 +8,10 @@ SimpleCTF:
       MatchTime: 600
   Strings:
     Prefix: "<#eb6434>SimpleCTF » <#e8cd33>"
-    NoPermission: "<red>You don't have the permission to execute that command!"
+    Warnings:
+      NoPermission: "<red>You don't have the permission to execute that command!"
+      NoFriendlyFire: "You can not attack your teammates!"
+      WrongBannerTeam: "You cannot break your own flag!"
     Queue:
       TeamJoin: "You joined the %color% team!"
       TeamLeave: "You left the team."
@@ -19,3 +21,5 @@ SimpleCTF:
       MatchWin: "The %color% team won the match!"
       MatchTimeOut: "The match ran out of time!"
       MatchStart: "The match just started!"
+      PlayerCaughtFlag: "%player% CAUGHT THE %color% FLAG!"
+      PlayerPlaceFlag: "%player% placed back their flag!"

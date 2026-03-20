@@ -5,26 +5,76 @@ import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.util.UtilizationMethods;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
 
 public class MatchListener implements Listener {
 
-    // TODO: Implement match consequences
+    Set<UUID> quitDuringMatch = new HashSet<>();
+    // Implement match consequences
     @EventHandler
     private void onLeave(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match.isPlayerInMatch(player)) quitDuringMatch.add(player.getUniqueId());
+        match.getRedPlayers().remove(player);
+        match.getBluePlayers().remove(player);
+        for (ItemStack itemStack : player.getInventory()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) continue;
+            player.getWorld().dropItem(player.getLocation(), itemStack);
+        }
+        match.broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
+        player.getInventory().clear();
+    }
+    @EventHandler
+    private void onJoin(PlayerJoinEvent event){
+        Player player = event.getPlayer();
+        if(quitDuringMatch.contains(player.getUniqueId())) {
+            player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
+            player.getInventory().clear();
+            quitDuringMatch.remove(player.getUniqueId());
+        }
     }
 
-    // TODO: Handle drop cases etc.
+    // Handle item drop
+    @EventHandler
+    private void onDrop(PlayerDropItemEvent event) {
+        boolean isRedFlag = event.getItemDrop().getItemStack() == BANNER_ITEMS.redFlag;
+        boolean isBlueFlag = event.getItemDrop().getItemStack() == BANNER_ITEMS.blueFlag;
+        if (!isRedFlag && !isBlueFlag) return;
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (isRedFlag) match.setRedFlagCarrier(null);
+        if (isBlueFlag) match.setBlueFlagCarrier(null);
+    }
+
+    // Handle item pickup
+    @EventHandler
+    private void onPickup(PlayerAttemptPickupItemEvent event) {
+        boolean isRedFlag = event.getItem().getItemStack() == BANNER_ITEMS.redFlag;
+        boolean isBlueFlag = event.getItem().getItemStack() == BANNER_ITEMS.blueFlag;
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Player player = event.getPlayer();
+        if (!isRedFlag && !isBlueFlag) return;
+        if (!match.isPlayerInMatch(player)) {
+            event.setCancelled(true);
+            return;
+        }
+        if (isBlueFlag) match.setBlueFlagCarrier(player);
+    }
+
     // Implement flag interactions
     @EventHandler
     private void onInteract(PlayerInteractEvent event) {
@@ -62,7 +112,7 @@ public class MatchListener implements Listener {
             message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "RED");
             match.setRedFlagCarrier(player);
         } else message="";
-        match.getBluePlayers().forEach(gamePlayers -> gamePlayers.sendMessage(MiniMessage.miniMessage().deserialize(message)));
+        match.broadcastMessage(MiniMessage.miniMessage().deserialize(message));
     }
 
     // Prevent friendly fire
