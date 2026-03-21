@@ -10,6 +10,8 @@ public class ConfigManager {
     public static String NO_PERMISSION;
     public static String NO_FRIENDLY_FIRE;
     public static String WRONG_BANNER_TEAM;
+    public static String INCORRECT_SYNTAX;
+
     public static String TEAM_JOIN;
     public static String TEAM_LEAVE;
     public static String PLAYER_JOINED_TEAM;
@@ -41,8 +43,9 @@ public class ConfigManager {
         Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> {
             // --- Init: Strings ---
             PREFIX = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Prefix", "<#eb6434>SimpleCTF » <#e8cd33>");
-            NO_PERMISSION = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoPermission", "<red>You don't have the permission to execute that command!");
-            NO_FRIENDLY_FIRE = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoFriendlyFire", PREFIX + "You can not attack your teammates!");
+            NO_PERMISSION = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoPermission", PREFIX + "<red>You don't have the permission to execute that command!");
+            NO_FRIENDLY_FIRE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoFriendlyFire", PREFIX + "You can not attack your teammates!");
+            INCORRECT_SYNTAX = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.IncorrectSyntax", PREFIX +"That's an invalid command, are you sure you typed that correctly?");
 
             WRONG_BANNER_TEAM = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.WrongBannerTeam", PREFIX + "You cannot break that flag!");
             TEAM_JOIN = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamJoin", PREFIX + "You joined the %color% team!");

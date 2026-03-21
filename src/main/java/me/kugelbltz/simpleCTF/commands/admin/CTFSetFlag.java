@@ -14,6 +14,10 @@ public class CTFSetFlag {
             player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_PERMISSION));
             return;
         }
+        if (args.length != 2) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.INCORRECT_SYNTAX));
+            return;
+        }
         String color = args[1].toUpperCase(Locale.ENGLISH);
         Location location = player.getLocation();
         location.setPitch(0);

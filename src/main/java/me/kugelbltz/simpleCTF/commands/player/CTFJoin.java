@@ -3,12 +3,13 @@ package me.kugelbltz.simpleCTF.commands.player;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashSet;
-import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -21,10 +22,20 @@ public class CTFJoin {
             sendHelpMessage(player);
             return;
         }
-        if (!args[1].equalsIgnoreCase("RED") && !args[1].equalsIgnoreCase("BLUE")) {
-            sendHelpMessage(player);
+
+        Team team = null;
+        try {
+            team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
+            if (team.equals(Team.NONE)) {
+                player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.INCORRECT_SYNTAX));
+                return;
+            }
+        } catch (IllegalArgumentException ignored) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.INCORRECT_SYNTAX));
             return;
         }
+        ;
+
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         boolean matchOccupied = match != null;
         boolean isAlreadyInQueue = redPlayersQueue.contains(player.getUniqueId()) || bluePlayersQueue.contains(player.getUniqueId());
@@ -38,18 +49,18 @@ public class CTFJoin {
             return;
         }
 
-        prepareTeams(player, args[1].toUpperCase());
+        prepareTeams(player, team);
     }
 
-    private void prepareTeams(Player player, String arg) {
-        if (arg.equalsIgnoreCase("RED")) {
+    private void prepareTeams(Player player, Team team) {
+        if (team.equals(Team.RED)) {
             if (redPlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
                 redPlayersQueue.add(player.getUniqueId());
             } else {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_ALREADY_FULL));
                 return;
             }
-        } else if (arg.equalsIgnoreCase("BLUE")) {
+        } else if (team.equals(Team.BLUE)) {
             if (bluePlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
                 bluePlayersQueue.add(player.getUniqueId());
             } else {
@@ -59,12 +70,12 @@ public class CTFJoin {
         } else return;
 
         redPlayersQueue.forEach(queuePlayer -> {
-            Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", arg)));
+            Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
         });
         bluePlayersQueue.forEach(queuePlayer -> {
-            Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", arg)));
+            Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
         });
-        player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_JOIN.replaceAll("%color%", arg)));
+        player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_JOIN.replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
     }
 
     private void sendHelpMessage(Player player) {

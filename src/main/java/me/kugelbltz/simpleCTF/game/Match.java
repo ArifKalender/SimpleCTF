@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -14,20 +15,20 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
+import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 // TODO: Handle leave/death situations properly
-
+// TODO: Cleanup code xx
+//       Team enum instead of string handling
+// TODO: 3 score = win
 public class Match {
     private Location redFlagLocation, blueFlagLocation;
     private Player redFlagCarrier, blueFlagCarrier;
@@ -39,17 +40,17 @@ public class Match {
     private BukkitTask task;
 
     public Match(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
-        initMatch(redPlayers, bluePlayers);
-        this.task = gameLoop();
+        boolean canStart = initMatch(redPlayers, bluePlayers);
+        if (canStart) this.task = gameLoop();
     }
 
-    private void initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
+    private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         this.redFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag");
         this.blueFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
         if (redFlagLocation == null || blueFlagLocation == null) {
             SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
             broadcastMessage(MiniMessage.miniMessage().deserialize("<red> Match environment was not set properly, therefore your match couldn't start."));
-            return;
+            return false;
         }
         this.redPlayers.addAll(redPlayers);
         this.bluePlayers.addAll(bluePlayers);
@@ -59,6 +60,7 @@ public class Match {
         this.loadBlocks(true);
         SimpleCTF.getInstance().setCurrentMatch(this);
         initPlayers(true);
+        return true;
     }
 
     private void initPlayers(boolean resetState) {
@@ -172,7 +174,7 @@ public class Match {
             if (blueFlagCarrier != null && isBlue && blueFlagCarrier.equals(player)) {
                 // Saving own flag
                 blueFlagLocation.getBlock().setType(Material.BLUE_BANNER);
-                removeFlag(player, "BLUE");
+                removeFlag(player, Team.BLUE);
                 broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replaceAll("%player%", player.getName())));
                 continue;
             }
@@ -181,7 +183,7 @@ public class Match {
                 this.blueScore++;
                 initPlayers(false);
                 loadBlocks(true);
-                removeFlag(player, "RED");
+                removeFlag(player, Team.RED);
                 Component broadcast = MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_RETURN_FLAG.replaceAll("%player%", player.getName()).replaceAll("%opposite_color%", "RED"));
                 broadcastMessage(broadcast);
                 return;
@@ -198,7 +200,7 @@ public class Match {
             if (redFlagCarrier != null && isRed && redFlagCarrier.equals(player)) {
                 // Saving own flag
                 redFlagLocation.getBlock().setType(Material.RED_BANNER);
-                removeFlag(player, "RED");
+                removeFlag(player, Team.RED);
                 broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replaceAll("%player%", player.getName())));
                 continue;
             }
@@ -207,7 +209,7 @@ public class Match {
                 this.redScore++;
                 initPlayers(false);
                 loadBlocks(true);
-                removeFlag(player, "BLUE");
+                removeFlag(player, Team.BLUE);
                 Component broadcast = MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_RETURN_FLAG.replaceAll("%player%", player.getName()).replaceAll("%opposite_color%", "BLUE"));
                 broadcastMessage(broadcast);
                 return;
@@ -215,20 +217,6 @@ public class Match {
         }
     }
 
-    public void removeFlag(Player player, String type) {
-        type = type.toUpperCase(Locale.ENGLISH);
-        ItemStack target = null;
-        for (ItemStack item : player.getInventory()) {
-            if (item == null || item.getType() == Material.AIR) continue;
-            else if (type.equalsIgnoreCase("RED") && BANNER_ITEMS.isRedFlag(item)) target = item;
-            else if (type.equalsIgnoreCase("BLUE") && BANNER_ITEMS.isBlueFlag(item)) target = item;
-            else continue;
-        }
-        if (target == null) return;
-        player.getInventory().removeItem(target);
-        if (type.equalsIgnoreCase("RED")) setRedFlagCarrier(null);
-        else setBlueFlagCarrier(null);
-    }
 
     public Player getRedFlagCarrier() {
         return this.redFlagCarrier;
@@ -285,5 +273,13 @@ public class Match {
         this.bossBar.removePlayer(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
         resetPlayerState(player);
+    }
+
+    public Location getRedFlagLocation() {
+        return redFlagLocation.clone();
+    }
+
+    public Location getBlueFlagLocation() {
+        return blueFlagLocation.clone();
     }
 }

@@ -3,6 +3,7 @@ package me.kugelbltz.simpleCTF.game.listeners;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Team;
 import me.kugelbltz.simpleCTF.util.UtilizationMethods;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,7 +27,7 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
 public class MatchListener implements Listener {
 
     Set<UUID> quitDuringMatch = new HashSet<>();
-    // Implement match consequences
+    // TODO: Implement match consequences
     @EventHandler
     private void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -42,14 +44,6 @@ public class MatchListener implements Listener {
     }
 
     @EventHandler
-    private void onPlace(PlayerInteractEvent event){
-        ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
-        if (interactItem.getItemMeta() == null) return;
-        boolean isFlag = BANNER_ITEMS.isBlueFlag(interactItem) || BANNER_ITEMS.isRedFlag(interactItem);
-        if (isFlag && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) event.setCancelled(true);
-    }
-
-    @EventHandler
     private void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         if(quitDuringMatch.contains(player.getUniqueId())) {
@@ -58,6 +52,46 @@ public class MatchListener implements Listener {
             quitDuringMatch.remove(player.getUniqueId());
         }
     }
+
+    @EventHandler
+    private void onDeath(PlayerDeathEvent event) {
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match == null) return;
+        Player player = event.getPlayer();
+        if (!match.isPlayerInMatch(player)) return;
+
+        if (match.getRedFlagCarrier().equals(player)) {
+            match.setRedFlagCarrier(null);
+            UtilizationMethods.removeFlag(player, Team.RED);
+            player.getWorld().dropItem(player.getLocation(), BANNER_ITEMS.redFlag);
+        }
+        if (match.getBlueFlagCarrier().equals(player)) {
+            match.setBlueFlagCarrier(null);
+            UtilizationMethods.removeFlag(player, Team.BLUE);
+            player.getWorld().dropItem(player.getLocation(), BANNER_ITEMS.blueFlag);
+        }
+
+        Team team = match.getBluePlayers().contains(player) ? Team.BLUE : Team.RED;
+        if (team.equals(Team.RED)) {
+            player.setRespawnLocation(match.getRedFlagLocation());
+            Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> player.spigot().respawn());
+            player.teleport(match.getRedFlagLocation());
+        }
+        else {
+            player.setRespawnLocation(match.getBlueFlagLocation());
+            Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> player.spigot().respawn());
+            player.teleport(match.getRedFlagLocation());
+        }
+    }
+
+    @EventHandler
+    private void onPlace(PlayerInteractEvent event){
+        ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
+        if (interactItem.getItemMeta() == null) return;
+        boolean isFlag = BANNER_ITEMS.isBlueFlag(interactItem) || BANNER_ITEMS.isRedFlag(interactItem);
+        if (isFlag && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) event.setCancelled(true);
+    }
+
 
     @EventHandler
     private void onDrop(PlayerDropItemEvent event) {
@@ -91,48 +125,14 @@ public class MatchListener implements Listener {
         if (clickedBlock == null) return;
         switch (clickedBlock.getType()) {
             case Material.BLUE_BANNER -> {
-                handleFlag(event, "BLUE");
+                handleFlag(event, Team.BLUE);
                 return;
             }
             case Material.RED_BANNER -> {
-                handleFlag(event, "RED");
+                handleFlag(event, Team.RED);
                 return;
             }
         }
-    }
-
-    private void handleFlag(PlayerInteractEvent event, String flagColor) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
-        Player player = event.getPlayer();
-        String playerColor;
-        if (match.getBluePlayers().contains(player)) playerColor = "BLUE";
-        else if (match.getRedPlayers().contains(player)) playerColor = "RED";
-        else playerColor = "NONE";
-        flagColor = flagColor.toUpperCase();
-        String opponent;
-
-        switch (playerColor) {
-            case "RED" -> opponent = "BLUE";
-            case "BLUE" -> opponent = "RED";
-            default -> opponent = "UNREACHABLE";
-        }
-
-        if (!flagColor.equalsIgnoreCase(opponent)) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.WRONG_BANNER_TEAM));
-            return;
-        }
-        event.getClickedBlock().setType(Material.AIR);
-        String message;
-        if (flagColor.equalsIgnoreCase("BLUE")) {
-            UtilizationMethods.addItem(player, BANNER_ITEMS.blueFlag);
-            message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "BLUE");
-            match.setBlueFlagCarrier(player);
-        } else if (flagColor.equalsIgnoreCase("RED")) {
-            UtilizationMethods.addItem(player, BANNER_ITEMS.redFlag);
-            message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "RED");
-            match.setRedFlagCarrier(player);
-        } else message="";
-        match.broadcastMessage(MiniMessage.miniMessage().deserialize(message));
     }
 
     // Prevent friendly fire
@@ -147,5 +147,31 @@ public class MatchListener implements Listener {
             event.setCancelled(true);
             attacker.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_FRIENDLY_FIRE));
         }
+    }
+
+
+    private void handleFlag(PlayerInteractEvent event, Team flagColor) {
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match == null) return;
+        Player player = event.getPlayer();
+        Team playerColor = Team.getTeam(player);
+        Team opponent = Team.getOpposite(playerColor);
+
+        if (!flagColor.equals(opponent)) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.WRONG_BANNER_TEAM));
+            return;
+        }
+        event.getClickedBlock().setType(Material.AIR);
+        String message;
+        if (flagColor.equals(Team.BLUE)) {
+            UtilizationMethods.addItem(player, BANNER_ITEMS.blueFlag);
+            message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "BLUE");
+            match.setBlueFlagCarrier(player);
+        } else if (flagColor.equals(Team.RED)) {
+            UtilizationMethods.addItem(player, BANNER_ITEMS.redFlag);
+            message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "RED");
+            match.setRedFlagCarrier(player);
+        } else message="";
+        match.broadcastMessage(MiniMessage.miniMessage().deserialize(message));
     }
 }

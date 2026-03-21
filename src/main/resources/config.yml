@@ -12,6 +12,7 @@ SimpleCTF:
       NoPermission: "<red>You don't have the permission to execute that command!"
       NoFriendlyFire: "You can not attack your teammates!"
       WrongBannerTeam: "You cannot break that flag!"
+      IncorrectSyntax: "That's an invalid command, are you sure you typed that correctly?"
     Queue:
       TeamJoin: "You joined the %color% team!"
       TeamLeave: "You left the team."
@@ -27,5 +28,6 @@ SimpleCTF:
       PlayerCaughtFlag: "%player% CAUGHT THE %color% FLAG!"
       PlayerReturnFlag: "SCORE! %player% returned with %opposite_color% team's flag to their base!"
       PlayerPlaceFlag: "%player% placed back their flag!"
+      FlagDroppedAt: "%player% dropped %color% flag at %coordinate%!"
       MatchOccupied: "There already is a match going on in this server, sorry!"
       CurrentScore: "Blue score: %blue_score% | Red score: %red_score%"
