@@ -21,10 +21,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
-// TODO: Reset player state like hunger, inventory, health
-//       Handle leave/death situations properly
+import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
+
+// TODO: Handle leave/death situations properly
 
 public class Match {
     private Location redFlagLocation, blueFlagLocation;
@@ -56,17 +58,17 @@ public class Match {
         this.matchRunning = true;
         this.loadBlocks(true);
         SimpleCTF.getInstance().setCurrentMatch(this);
-        initPlayers();
+        initPlayers(true);
     }
 
-    private void initPlayers() {
+    private void initPlayers(boolean resetState) {
         redPlayers.forEach(player -> {
             player.teleport(redFlagLocation);
-            resetPlayerState(player);
+            if (resetState) resetPlayerState(player);
         });
         bluePlayers.forEach(player -> {
             player.teleport(blueFlagLocation);
-            resetPlayerState(player);
+            if (resetState) resetPlayerState(player);
         });
     }
 
@@ -91,6 +93,8 @@ public class Match {
                     unloadMatch(ConfigManager.MATCH_TIME_OUT);
                     this.cancel();
                 }
+                handleBlue();
+                handleRed();
                 updateBossBar(timeLeft);
                 playFlagAnimation();
                 if (getPlayersInMatch() <= 0) unloadMatch("<red>No players left.");
@@ -158,18 +162,72 @@ public class Match {
         }
     }
 
-    // TODO: Implement opposite color interactions
-    //       Capture: carrier enters their own base while holding enemy flag → +1 score
-    private void handleFlagHolders() {
-        for (LivingEntity redNear : redFlagLocation.getNearbyLivingEntities(3)) {
-            if (!(redNear instanceof Player player)) return;
-            ItemStack item = player.getInventory().getItemInMainHand();
-            if (item == SimpleCTF.BANNER_ITEMS.redFlag && redPlayers.contains(player)) {
-                player.getInventory().remove(item);
-                redFlagLocation.getBlock().setType(Material.RED_BANNER);
-                setRedFlagCarrier(null);
+    private void handleBlue() {
+        for (LivingEntity blueNear : blueFlagLocation.getNearbyLivingEntities(3)) {
+            if (!(blueNear instanceof Player player)) continue;
+            boolean isRed = redPlayers.contains(player);
+            boolean isBlue = bluePlayers.contains(player);
+            if (!isRed && !isBlue) continue;
+            // If youre carrying your own flag
+            if (blueFlagCarrier != null && isBlue && blueFlagCarrier.equals(player)) {
+                // Saving own flag
+                blueFlagLocation.getBlock().setType(Material.BLUE_BANNER);
+                removeFlag(player, "BLUE");
+                broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replaceAll("%player%", player.getName())));
+                continue;
+            }
+            // If youre carrying red's flag
+            if (redFlagCarrier != null && isBlue && redFlagCarrier.equals(player)) {
+                this.blueScore++;
+                initPlayers(false);
+                loadBlocks(true);
+                removeFlag(player, "RED");
+                Component broadcast = MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_RETURN_FLAG.replaceAll("%player%", player.getName()).replaceAll("%opposite_color%", "RED"));
+                broadcastMessage(broadcast);
+                return;
             }
         }
+    }
+    private void handleRed() {
+        for (LivingEntity redNear : redFlagLocation.getNearbyLivingEntities(3)) {
+            if (!(redNear instanceof Player player)) continue;
+            boolean isRed = redPlayers.contains(player);
+            boolean isBlue = bluePlayers.contains(player);
+            if (!isRed && !isBlue) continue;
+            // If youre carrying your own flag
+            if (redFlagCarrier != null && isRed && redFlagCarrier.equals(player)) {
+                // Saving own flag
+                redFlagLocation.getBlock().setType(Material.RED_BANNER);
+                removeFlag(player, "RED");
+                broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replaceAll("%player%", player.getName())));
+                continue;
+            }
+            // If youre carrying blue's flag
+            if (blueFlagCarrier != null && isRed && blueFlagCarrier.equals(player)) {
+                this.redScore++;
+                initPlayers(false);
+                loadBlocks(true);
+                removeFlag(player, "BLUE");
+                Component broadcast = MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_RETURN_FLAG.replaceAll("%player%", player.getName()).replaceAll("%opposite_color%", "BLUE"));
+                broadcastMessage(broadcast);
+                return;
+            }
+        }
+    }
+
+    public void removeFlag(Player player, String type) {
+        type = type.toUpperCase(Locale.ENGLISH);
+        ItemStack target = null;
+        for (ItemStack item : player.getInventory()) {
+            if (item == null || item.getType() == Material.AIR) continue;
+            else if (type.equalsIgnoreCase("RED") && BANNER_ITEMS.isRedFlag(item)) target = item;
+            else if (type.equalsIgnoreCase("BLUE") && BANNER_ITEMS.isBlueFlag(item)) target = item;
+            else continue;
+        }
+        if (target == null) return;
+        player.getInventory().removeItem(target);
+        if (type.equalsIgnoreCase("RED")) setRedFlagCarrier(null);
+        else setBlueFlagCarrier(null);
     }
 
     public Player getRedFlagCarrier() {

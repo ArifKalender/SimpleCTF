@@ -12,13 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +45,7 @@ public class MatchListener implements Listener {
     private void onPlace(PlayerInteractEvent event){
         ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
         if (interactItem.getItemMeta() == null) return;
-        boolean isFlag = interactItem.getItemMeta().getDisplayName().equalsIgnoreCase(BANNER_ITEMS.blueFlag.getItemMeta().getDisplayName()) || interactItem.getItemMeta().getDisplayName().equalsIgnoreCase(BANNER_ITEMS.redFlag.getItemMeta().getDisplayName());
+        boolean isFlag = BANNER_ITEMS.isBlueFlag(interactItem) || BANNER_ITEMS.isRedFlag(interactItem);
         if (isFlag && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) event.setCancelled(true);
     }
 
@@ -62,30 +59,29 @@ public class MatchListener implements Listener {
         }
     }
 
-    // Handle item drop
     @EventHandler
     private void onDrop(PlayerDropItemEvent event) {
-        boolean isRedFlag = event.getItemDrop().getItemStack() == BANNER_ITEMS.redFlag;
-        boolean isBlueFlag = event.getItemDrop().getItemStack() == BANNER_ITEMS.blueFlag;
-        if (!isRedFlag && !isBlueFlag) return;
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (BANNER_ITEMS.isRedFlag(item) && BANNER_ITEMS.isBlueFlag(item)) return;
         Match match = SimpleCTF.getInstance().getCurrentMatch();
-        if (isRedFlag) match.setRedFlagCarrier(null);
-        if (isBlueFlag) match.setBlueFlagCarrier(null);
+        if (match == null) return;
+        if (BANNER_ITEMS.isRedFlag(item)) match.setRedFlagCarrier(null);
+        if (BANNER_ITEMS.isBlueFlag(item)) match.setBlueFlagCarrier(null);
     }
 
     // Handle item pickup
     @EventHandler
     private void onPickup(PlayerAttemptPickupItemEvent event) {
-        boolean isRedFlag = event.getItem().getItemStack() == BANNER_ITEMS.redFlag;
-        boolean isBlueFlag = event.getItem().getItemStack() == BANNER_ITEMS.blueFlag;
+        ItemStack item = event.getItem().getItemStack();
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         Player player = event.getPlayer();
-        if (!isRedFlag && !isBlueFlag) return;
+        if (!BANNER_ITEMS.isRedFlag(item) && !BANNER_ITEMS.isBlueFlag(item)) return;
         if (!match.isPlayerInMatch(player)) {
             event.setCancelled(true);
             return;
         }
-        if (isBlueFlag) match.setBlueFlagCarrier(player);
+        if (BANNER_ITEMS.isRedFlag(item)) match.setRedFlagCarrier(player);
+        else if (BANNER_ITEMS.isBlueFlag(item)) match.setBlueFlagCarrier(player);
     }
 
     @EventHandler

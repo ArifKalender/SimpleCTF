@@ -22,6 +22,7 @@ public class ConfigManager {
     public static String MATCH_TIME_OUT;
     public static String MATCH_START;
     public static String PLAYER_CAUGHT_FLAG;
+    public static String PLAYER_RETURN_FLAG;
     public static String PLAYER_PLACE_FLAG;
     public static String MATCH_OCCUPIED;
     public static String CURRENT_SCORE;
@@ -56,6 +57,7 @@ public class ConfigManager {
             MATCH_TIME_OUT = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchTimeOut", PREFIX + "The match ran out of time!");
             MATCH_START = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchStart", PREFIX + "The match just started!");
             PLAYER_CAUGHT_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerCaughtFlag", PREFIX + "%player% CAUGHT THE %color% FLAG!");
+            PLAYER_RETURN_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerReturnFlag", "%player% returned with %opposite_color% team's flag!");
             PLAYER_PLACE_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerPlaceFlag", PREFIX + "%player% placed back their flag!");
             MATCH_OCCUPIED = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchOccupied", PREFIX + "There already is a match going on in this server, sorry!");
             CURRENT_SCORE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.CurrentScore", PREFIX + "Current score: %score%");

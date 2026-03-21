@@ -1,6 +1,5 @@
 package me.kugelbltz.simpleCTF.model;
 
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,4 +17,13 @@ public class BannerItems {
         redFlag.setItemMeta(redMeta);
         blueFlag.setItemMeta(blueMeta);
     }
+    public boolean isRedFlag(ItemStack itemStack) {
+        String displayName = itemStack.getItemMeta().getDisplayName();
+        return itemStack.getType().equals(Material.RED_BANNER) && displayName.equals(this.redFlag.getItemMeta().getDisplayName());
+    }
+    public boolean isBlueFlag(ItemStack itemStack) {
+        String displayName = itemStack.getItemMeta().getDisplayName();
+        return itemStack.getType().equals(Material.BLUE_BANNER) && displayName.equals(this.blueFlag.getItemMeta().getDisplayName());
+    }
+
 }

@@ -25,6 +25,7 @@ SimpleCTF:
       MatchTimeOut: "The match ran out of time!"
       MatchStart: "The match just started!"
       PlayerCaughtFlag: "%player% CAUGHT THE %color% FLAG!"
+      PlayerReturnFlag: "SCORE! %player% returned with %opposite_color% team's flag to their base!"
       PlayerPlaceFlag: "%player% placed back their flag!"
       MatchOccupied: "There already is a match going on in this server, sorry!"
       CurrentScore: "Blue score: %blue_score% | Red score: %red_score%"
