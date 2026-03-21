@@ -12,6 +12,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -30,14 +31,14 @@ import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 // TODO: Cleanup code xx
 // TODO: Add sound effects!
 public class Match {
-    private Location redFlagLocation, blueFlagLocation;
-    private Player redFlagCarrier, blueFlagCarrier;
-    private int redScore, blueScore;
     private final Set<Player> redPlayers = new HashSet<>();
     private final Set<Player> bluePlayers = new HashSet<>();
+    private final int WIN_SCORE = 3;
+    private Location redFlagLocation, blueFlagLocation;
+    private Entity redFlagCarrier, blueFlagCarrier;
+    private int redScore, blueScore;
     private BossBar bossBar;
     private BukkitTask task;
-    private final int WIN_SCORE = 3;
 
     public Match(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         boolean canStart = initMatch(redPlayers, bluePlayers);
@@ -47,13 +48,13 @@ public class Match {
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         this.redFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag");
         this.blueFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
-        if (redFlagLocation == null || blueFlagLocation == null) {
-            SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
-            broadcastMessage(MM.deserialize("<red> Match environment was not set properly, therefore your match couldn't start."));
-            return false;
-        }
         this.redPlayers.addAll(redPlayers);
         this.bluePlayers.addAll(bluePlayers);
+        if (redFlagLocation == null || blueFlagLocation == null) {
+            SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
+            broadcastMessage(MM.deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
+            return false;
+        }
         this.redScore = 0;
         this.blueScore = 0;
         this.loadBlocks(true);
@@ -73,7 +74,7 @@ public class Match {
         });
     }
 
-    private void resetPlayerState(Player player) {
+    public void resetPlayerState(Player player) {
         player.setExp(0);
         player.setLevel(0);
         player.setFoodLevel(20);
@@ -134,12 +135,8 @@ public class Match {
         if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
         else this.bossBar.setTitle(title);
         this.bossBar.setProgress(timeLeftNormalized);
-        this.redPlayers.forEach(player -> {
-            if (!this.bossBar.getPlayers().contains(player)) this.bossBar.addPlayer(player);
-        });
-        this.bluePlayers.forEach(player -> {
-            if (!this.bossBar.getPlayers().contains(player)) this.bossBar.addPlayer(player);
-        });
+        redPlayers.forEach(this.bossBar::addPlayer);
+        bluePlayers.forEach(this.bossBar::addPlayer);
     }
 
     public void unloadMatch(@Nullable String reason) {
@@ -182,6 +179,7 @@ public class Match {
             }
         }
     }
+
     private void handleRed() {
         for (LivingEntity entity : redFlagLocation.getNearbyLivingEntities(3)) {
             if (!(entity instanceof Player player)) continue;
@@ -204,6 +202,7 @@ public class Match {
         removeFlag(player, team);
         broadcastMessage(MM.deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
+
     private void captureFlag(Player player, Team scoringTeam, Team capturedTeam) {
         if (scoringTeam == Team.RED) this.redScore++;
         else this.blueScore++;
@@ -218,19 +217,19 @@ public class Match {
         ));
     }
 
-    public Player getRedFlagCarrier() {
+    public Entity getRedFlagCarrier() {
         return this.redFlagCarrier;
     }
 
-    public Player getBlueFlagCarrier() {
-        return this.blueFlagCarrier;
-    }
-
-    public void setRedFlagCarrier(@Nullable Player redFlagCarrier) {
+    public void setRedFlagCarrier(@Nullable Entity redFlagCarrier) {
         this.redFlagCarrier = redFlagCarrier;
     }
 
-    public void setBlueFlagCarrier(@Nullable Player blueFlagCarrier) {
+    public Entity getBlueFlagCarrier() {
+        return this.blueFlagCarrier;
+    }
+
+    public void setBlueFlagCarrier(@Nullable Entity blueFlagCarrier) {
         this.blueFlagCarrier = blueFlagCarrier;
     }
 
@@ -281,5 +280,14 @@ public class Match {
 
     public Location getBlueFlagLocation() {
         return blueFlagLocation.clone();
+    }
+
+    public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
+        String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
+        Component component = MM.deserialize(ConfigManager.FLAG_DROPPED_AT
+                .replace("%player%", dropper.getName())
+                .replace("%color%", team.name().toUpperCase())
+                .replace("%coordinates%", locString));
+        broadcastMessage(component);
     }
 }

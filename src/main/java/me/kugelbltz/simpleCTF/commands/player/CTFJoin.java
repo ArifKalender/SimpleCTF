@@ -4,6 +4,7 @@ import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -53,6 +54,35 @@ public class CTFJoin {
         prepareTeams(player, team);
     }
 
+    public static Set<UUID> getRedPlayersUUIDQueue() {
+        return redPlayersQueue;
+    }
+
+    public static Set<UUID> getBluePlayersUUIDQueue() {
+        return bluePlayersQueue;
+    }
+
+    public static Set<Player> getRedPlayersQueue() {
+        Set<Player> toReturn = new HashSet<>();
+        getRedPlayersUUIDQueue().forEach(uuid -> toReturn.add(Bukkit.getPlayer(uuid)));
+        return toReturn;
+    }
+
+    public static Set<Player> getBluePlayersQueue() {
+        Set<Player> toReturn = new HashSet<>();
+        getBluePlayersUUIDQueue().forEach(uuid -> toReturn.add(Bukkit.getPlayer(uuid)));
+        return toReturn;
+    }
+
+    public static void broadcastMessageToQueue(Component component) {
+        getRedPlayersQueue().forEach(player -> {
+            player.sendMessage(component);
+        });
+        getBluePlayersQueue().forEach(player -> {
+            player.sendMessage(component);
+        });
+    }
+
     private void prepareTeams(Player player, Team team) {
         if (team == Team.RED) {
             if (redPlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
@@ -81,25 +111,5 @@ public class CTFJoin {
 
     private void sendHelpMessage(Player player) {
         player.sendMessage(MM.deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
-    }
-
-    public static Set<UUID> getRedPlayersUUIDQueue() {
-        return redPlayersQueue;
-    }
-
-    public static Set<UUID> getBluePlayersUUIDQueue() {
-        return bluePlayersQueue;
-    }
-
-    public static Set<Player> getRedPlayersQueue() {
-        Set<Player> toReturn = new HashSet<>();
-        getRedPlayersUUIDQueue().forEach(uuid -> toReturn.add(Bukkit.getPlayer(uuid)));
-        return toReturn;
-    }
-
-    public static Set<Player> getBluePlayersQueue() {
-        Set<Player> toReturn = new HashSet<>();
-        getBluePlayersUUIDQueue().forEach(uuid -> toReturn.add(Bukkit.getPlayer(uuid)));
-        return toReturn;
     }
 }

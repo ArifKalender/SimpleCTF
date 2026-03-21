@@ -11,7 +11,7 @@ public enum Team {
 
     public static Team getTeam(Player player) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
-        if (match==null) return NONE;
+        if (match == null) return NONE;
         if (match.getBluePlayers().contains(player)) return BLUE;
         if (match.getRedPlayers().contains(player)) return RED;
         return NONE;

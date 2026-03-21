@@ -15,8 +15,11 @@ public class CTFSetFlag {
             player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));
             return;
         }
-        if (args.length != 2) {
-            player.sendMessage(MM.deserialize(ConfigManager.INCORRECT_SYNTAX));
+        if (args.length > 2) {
+            player.sendMessage(MM.deserialize("<red>Correct usage: /ctf setflag <red|blue>"));
+            return;
+        } else if (args.length < 2) {
+            player.sendMessage(MM.deserialize("<red>Correct usage: /ctf setflag <red|blue>"));
             return;
         }
         String color = args[1].toUpperCase(Locale.ENGLISH);
@@ -30,12 +33,12 @@ public class CTFSetFlag {
             case "RED" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);
                 SimpleCTF.getInstance().saveConfig();
-                player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "Make sure to /ctf reload for the changes to take effect!"));
+                player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "Set the location for the red flag!"));
             }
             case "BLUE" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.BlueFlag", location);
                 SimpleCTF.getInstance().saveConfig();
-                player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "Make sure to /ctf reload for the changes to take effect!"));
+                player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "Set the location for the blue flag!"));
             }
             default -> player.sendMessage(MM.deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
 

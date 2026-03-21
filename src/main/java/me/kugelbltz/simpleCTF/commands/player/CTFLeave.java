@@ -3,13 +3,14 @@ package me.kugelbltz.simpleCTF.commands.player;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
-import static me.kugelbltz.simpleCTF.commands.player.CTFJoin.*;
+import static me.kugelbltz.simpleCTF.commands.player.CTFJoin.getBluePlayersUUIDQueue;
+import static me.kugelbltz.simpleCTF.commands.player.CTFJoin.getRedPlayersUUIDQueue;
 
+// FIXME: SimpleCTF » You are not in a team. when in a match (because list resets when /ctf start is used)
 public class CTFLeave {
     public CTFLeave(Player player, String[] args) {
         removePlayer(player, true);
@@ -24,7 +25,7 @@ public class CTFLeave {
             return;
         }
 
-        if (getBluePlayersUUIDQueue().contains(player.getUniqueId()))  {
+        if (getBluePlayersUUIDQueue().contains(player.getUniqueId())) {
             getBluePlayersUUIDQueue().remove(player.getUniqueId());
             getBluePlayersUUIDQueue().forEach(queuedPlayer -> {
                 Bukkit.getPlayer(queuedPlayer).sendMessage(MM.deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));

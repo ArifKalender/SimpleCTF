@@ -16,6 +16,7 @@ public class CTFReload {
         SimpleCTF.getInstance().reloadConfig();
         ConfigManager.init();
     }
+
     private void sendConfigMsg(Player player, String cfgName) {
         player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "<green>Reloading " + cfgName + "..."));
     }

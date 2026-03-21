@@ -4,6 +4,7 @@ import me.kugelbltz.simpleCTF.commands.CaptureTheFlag;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.game.listeners.MatchListener;
+import me.kugelbltz.simpleCTF.game.listeners.QueueListener;
 import me.kugelbltz.simpleCTF.model.BannerItems;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -12,11 +13,15 @@ import org.jetbrains.annotations.Nullable;
 
 public final class SimpleCTF extends JavaPlugin {
 
+    public static BannerItems BANNER_ITEMS;
+    public static MiniMessage MM;
     private static SimpleCTF plugin;
     private static ConfigManager configManager;
     private static Match currentMatch = null;
-    public static BannerItems BANNER_ITEMS;
-    public static MiniMessage MM;
+
+    public static SimpleCTF getInstance() {
+        return plugin;
+    }
 
     @Override
     public void onEnable() {
@@ -24,9 +29,6 @@ public final class SimpleCTF extends JavaPlugin {
         initialize();
     }
 
-    public static SimpleCTF getInstance() {
-        return plugin;
-    }
     private void initialize() {
         MM = MiniMessage.miniMessage();
         loadConfigs();
@@ -37,6 +39,7 @@ public final class SimpleCTF extends JavaPlugin {
 
     private void registerListeners() {
         this.getServer().getPluginManager().registerEvents(new MatchListener(), this);
+        this.getServer().getPluginManager().registerEvents(new QueueListener(), this);
     }
 
     private void registerCommands() {
@@ -59,6 +62,7 @@ public final class SimpleCTF extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        if (getCurrentMatch() != null) getCurrentMatch().unloadMatch("<red>Server restart");
     }
 
 }

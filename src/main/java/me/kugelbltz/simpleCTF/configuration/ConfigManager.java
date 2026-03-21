@@ -28,6 +28,7 @@ public class ConfigManager {
     public static String PLAYER_PLACE_FLAG;
     public static String MATCH_OCCUPIED;
     public static String CURRENT_SCORE;
+    public static String FLAG_DROPPED_AT;
 
     // --- Match variables ---
     public static int MAX_PLAYERS_PER_TEAM;
@@ -45,9 +46,9 @@ public class ConfigManager {
             PREFIX = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Prefix", "<#eb6434>SimpleCTF » <#e8cd33>");
             NO_PERMISSION = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoPermission", PREFIX + "<red>You don't have the permission to execute that command!");
             NO_FRIENDLY_FIRE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoFriendlyFire", PREFIX + "You can not attack your teammates!");
-            INCORRECT_SYNTAX = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.IncorrectSyntax", PREFIX +"That's an invalid command, are you sure you typed that correctly?");
+            INCORRECT_SYNTAX = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.IncorrectSyntax", PREFIX + "That's an invalid command, are you sure you typed that correctly?");
 
-            WRONG_BANNER_TEAM = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.WrongBannerTeam", PREFIX + "You cannot break that flag!");
+            WRONG_BANNER_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.WrongBannerTeam", PREFIX + "You cannot break that flag!");
             TEAM_JOIN = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamJoin", PREFIX + "You joined the %color% team!");
             TEAM_LEAVE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamLeave", PREFIX + "You left the team.");
             PLAYER_JOINED_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.PlayerJoinedTeam", PREFIX + "%player% joined the team!");
@@ -64,6 +65,7 @@ public class ConfigManager {
             PLAYER_PLACE_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerPlaceFlag", PREFIX + "%player% placed back their flag!");
             MATCH_OCCUPIED = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchOccupied", PREFIX + "There already is a match going on in this server, sorry!");
             CURRENT_SCORE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.CurrentScore", PREFIX + "Current score: %score%");
+            FLAG_DROPPED_AT = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.FlagDroppedAt", PREFIX + "%player% dropped %color% flag at %coordinates%!");
 
             // --- Init: Match variables ---
             MAX_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MaxPlayersPerTeam", 4);

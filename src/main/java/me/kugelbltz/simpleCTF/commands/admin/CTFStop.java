@@ -1,6 +1,7 @@
 package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import org.bukkit.entity.Player;
 
@@ -14,9 +15,11 @@ public class CTFStop {
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         if (!isMatchRunning) {
-            player.sendMessage(MM.deserialize("<red>There is no match going on."));
+            CTFJoin.getBluePlayersUUIDQueue().clear();
+            CTFJoin.getRedPlayersUUIDQueue().clear();
+            CTFJoin.broadcastMessageToQueue(MM.deserialize(ConfigManager.PREFIX + "<red> Queue interrupted by an admin!"));
             return;
         }
-        SimpleCTF.getInstance().getCurrentMatch().unloadMatch( ConfigManager.PREFIX + "<red>Match interrupted by an admin!");
+        SimpleCTF.getInstance().getCurrentMatch().unloadMatch(ConfigManager.PREFIX + "<red>Match interrupted by an admin!");
     }
 }
