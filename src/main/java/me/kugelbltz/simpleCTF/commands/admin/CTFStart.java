@@ -8,7 +8,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 public class CTFStart {
-    // TODO: Implement
     public CTFStart(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.start")) {
             player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_PERMISSION));
@@ -25,5 +24,7 @@ public class CTFStart {
             return;
         }
         new Match(CTFJoin.getRedPlayersQueue(), CTFJoin.getBluePlayersQueue());
+        CTFJoin.getBluePlayersUUIDQueue().clear();
+        CTFJoin.getRedPlayersUUIDQueue().clear();
     }
 }

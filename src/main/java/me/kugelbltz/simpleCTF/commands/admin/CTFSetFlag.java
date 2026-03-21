@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import java.util.Locale;
 
 public class CTFSetFlag {
-    // TODO: Implement
     public CTFSetFlag(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.setflag")) {
             player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_PERMISSION));

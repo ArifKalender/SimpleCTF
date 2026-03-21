@@ -1,6 +1,8 @@
 package me.kugelbltz.simpleCTF.commands.player;
 
+import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.game.Match;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,6 +12,8 @@ import static me.kugelbltz.simpleCTF.commands.player.CTFJoin.*;
 public class CTFLeave {
     public CTFLeave(Player player, String[] args) {
         removePlayer(player, true);
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match != null) match.removePlayerFromMatch(player);
     }
 
     public static void removePlayer(Player player, boolean sendMessageToPlayer) {

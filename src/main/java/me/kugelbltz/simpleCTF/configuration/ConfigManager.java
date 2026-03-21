@@ -43,7 +43,7 @@ public class ConfigManager {
             NO_PERMISSION = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoPermission", "<red>You don't have the permission to execute that command!");
             NO_FRIENDLY_FIRE = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.NoFriendlyFire", PREFIX + "You can not attack your teammates!");
 
-            WRONG_BANNER_TEAM = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.WrongBannerTeam", PREFIX + "Only %color% team's players can pickup this banner!");
+            WRONG_BANNER_TEAM = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Warnings.WrongBannerTeam", PREFIX + "You cannot break that flag!");
             TEAM_JOIN = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamJoin", PREFIX + "You joined the %color% team!");
             TEAM_LEAVE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.TeamLeave", PREFIX + "You left the team.");
             PLAYER_JOINED_TEAM = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Queue.PlayerJoinedTeam", PREFIX + "%player% joined the team!");

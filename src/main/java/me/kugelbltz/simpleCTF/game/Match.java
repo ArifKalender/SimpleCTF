@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -21,6 +22,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+// TODO: Reset player state like hunger, inventory, health
+//       Handle leave/death situations properly
 
 public class Match {
     private Location redFlagLocation, blueFlagLocation;
@@ -50,14 +54,30 @@ public class Match {
         this.redScore = 0;
         this.blueScore = 0;
         this.matchRunning = true;
+        this.loadBlocks(true);
         SimpleCTF.getInstance().setCurrentMatch(this);
-        loadBlocks(true);
         initPlayers();
     }
 
     private void initPlayers() {
-        redPlayers.forEach(player -> player.teleport(redFlagLocation));
-        bluePlayers.forEach(player -> player.teleport(blueFlagLocation));
+        redPlayers.forEach(player -> {
+            player.teleport(redFlagLocation);
+            resetPlayerState(player);
+        });
+        bluePlayers.forEach(player -> {
+            player.teleport(blueFlagLocation);
+            resetPlayerState(player);
+        });
+    }
+
+    private void resetPlayerState(Player player) {
+        player.getInventory().clear();
+        player.setExp(0);
+        player.setLevel(0);
+        player.setFoodLevel(20);
+        player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
+        player.getInventory().clear();
+        player.getActivePotionEffects().clear();
     }
 
     private BukkitTask gameLoop() {
@@ -73,6 +93,7 @@ public class Match {
                 }
                 updateBossBar(timeLeft);
                 playFlagAnimation();
+                if (getPlayersInMatch() <= 0) unloadMatch("<red>No players left.");
             }
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
     }
@@ -82,24 +103,24 @@ public class Match {
         boolean redAvailable = this.redFlagLocation.getBlock().getType() == Material.RED_BANNER;
         boolean blueAvailable = this.blueFlagLocation.getBlock().getType() == Material.BLUE_BANNER;
         if (redAvailable)
-            this.redFlagLocation.getWorld().spawnParticle(Particle.DUST, redFlagLocation, 10, 3, 3, 3, Material.RED_CONCRETE_POWDER);
+            this.redFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, redFlagLocation, 10, 1.5, 1.5, 1.5, Material.RED_CONCRETE_POWDER.createBlockData());
         if (blueAvailable)
-            this.blueFlagLocation.getWorld().spawnParticle(Particle.DUST, redFlagLocation, 10, 3, 3, 3, Material.BLUE_CONCRETE_POWDER);
+            this.blueFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, blueFlagLocation, 10, 1.5, 1.5, 1.5, Material.BLUE_CONCRETE_POWDER.createBlockData());
 
         // --- Player particles for flag carriers ---
         boolean redCarrierAvailable = getRedFlagCarrier() != null;
         boolean blueCarrierAvailable = getBlueFlagCarrier() != null;
         if (redCarrierAvailable) {
-            redFlagLocation.getWorld().spawnParticle(Particle.DUST, redFlagCarrier.getLocation(), 10, 2, 2, 2, Material.RED_CONCRETE_POWDER);
+            redFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, redFlagCarrier.getLocation(), 10, 1, 1, 1, Material.RED_CONCRETE_POWDER.createBlockData());
         }
         if (blueCarrierAvailable) {
-            blueFlagCarrier.getWorld().spawnParticle(Particle.DUST, blueFlagCarrier.getLocation(), 10, 2, 2, 2, Material.BLUE_CONCRETE_POWDER);
+            blueFlagCarrier.getWorld().spawnParticle(Particle.FALLING_DUST, blueFlagCarrier.getLocation(), 10, 1, 1, 1, Material.BLUE_CONCRETE_POWDER.createBlockData());
         }
     }
 
     public void updateBossBar(int timeLeft) {
         String title = "Red score: " + this.redScore + " | Blue score: " + this.blueScore;
-        long timeLeftNormalized = ConfigManager.MATCH_TIME / timeLeft;
+        double timeLeftNormalized = timeLeft / (double) ConfigManager.MATCH_TIME;
         if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
         else this.bossBar.setTitle(title);
         this.bossBar.setProgress(timeLeftNormalized);
@@ -112,12 +133,8 @@ public class Match {
     }
 
     public void unloadMatch(@Nullable String reason) {
-        this.redPlayers.forEach(player -> {
-            player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation()); // Assuming that this is the position we want to teleport the player to.
-        });
-        this.bluePlayers.forEach(player -> {
-            player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation()); // Assuming that this is the position we want to teleport the player to.
-        });
+        this.redPlayers.forEach(this::removePlayerFromMatch);
+        this.bluePlayers.forEach(this::removePlayerFromMatch);
         broadcastMessage(MiniMessage.miniMessage().deserialize(reason));
         this.redPlayers.clear();
         this.bluePlayers.clear();
@@ -126,7 +143,8 @@ public class Match {
         this.matchRunning = false;
         this.bossBar.removeAll();
         this.bossBar = null;
-        loadBlocks(false);
+        this.loadBlocks(false);
+        this.task.cancel();
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
@@ -197,5 +215,17 @@ public class Match {
 
     public int getRedScore() {
         return redScore;
+    }
+
+    public long getPlayersInMatch() {
+        return this.redPlayers.size() + this.bluePlayers.size();
+    }
+
+    public void removePlayerFromMatch(Player player) {
+        this.redPlayers.remove(player);
+        this.bluePlayers.remove(player);
+        this.bossBar.removePlayer(player);
+        player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
+        resetPlayerState(player);
     }
 }

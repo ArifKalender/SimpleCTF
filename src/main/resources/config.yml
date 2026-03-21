@@ -11,7 +11,7 @@ SimpleCTF:
     Warnings:
       NoPermission: "<red>You don't have the permission to execute that command!"
       NoFriendlyFire: "You can not attack your teammates!"
-      WrongBannerTeam: "You cannot break your own flag!"
+      WrongBannerTeam: "You cannot break that flag!"
     Queue:
       TeamJoin: "You joined the %color% team!"
       TeamLeave: "You left the team."

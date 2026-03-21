@@ -11,10 +11,14 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -39,6 +43,15 @@ public class MatchListener implements Listener {
         match.broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
         player.getInventory().clear();
     }
+
+    @EventHandler
+    private void onPlace(PlayerInteractEvent event){
+        ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
+        if (interactItem.getItemMeta() == null) return;
+        boolean isFlag = interactItem.getItemMeta().getDisplayName().equalsIgnoreCase(BANNER_ITEMS.blueFlag.getItemMeta().getDisplayName()) || interactItem.getItemMeta().getDisplayName().equalsIgnoreCase(BANNER_ITEMS.redFlag.getItemMeta().getDisplayName());
+        if (isFlag && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) event.setCancelled(true);
+    }
+
     @EventHandler
     private void onJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
@@ -75,7 +88,6 @@ public class MatchListener implements Listener {
         if (isBlueFlag) match.setBlueFlagCarrier(player);
     }
 
-    // Implement flag interactions
     @EventHandler
     private void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
@@ -91,13 +103,24 @@ public class MatchListener implements Listener {
             }
         }
     }
-    
+
     private void handleFlag(PlayerInteractEvent event, String flagColor) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         Player player = event.getPlayer();
-        String playerColor = match.getBluePlayers().contains(player) ? "BLUE" : "RED";
+        String playerColor;
+        if (match.getBluePlayers().contains(player)) playerColor = "BLUE";
+        else if (match.getRedPlayers().contains(player)) playerColor = "RED";
+        else playerColor = "NONE";
         flagColor = flagColor.toUpperCase();
-        if (playerColor.equalsIgnoreCase(flagColor)) {
+        String opponent;
+
+        switch (playerColor) {
+            case "RED" -> opponent = "BLUE";
+            case "BLUE" -> opponent = "RED";
+            default -> opponent = "UNREACHABLE";
+        }
+
+        if (!flagColor.equalsIgnoreCase(opponent)) {
             player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.WRONG_BANNER_TEAM));
             return;
         }
