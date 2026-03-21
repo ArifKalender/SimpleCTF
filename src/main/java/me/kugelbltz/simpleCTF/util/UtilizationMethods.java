@@ -25,13 +25,13 @@ public class UtilizationMethods {
         ItemStack target = null;
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            else if (teamColor.equals(Team.RED) && BANNER_ITEMS.isRedFlag(item)) target = item;
-            else if (teamColor.equals(Team.BLUE) && BANNER_ITEMS.isBlueFlag(item)) target = item;
+            else if (teamColor == Team.RED && BANNER_ITEMS.isRedFlag(item)) target = item;
+            else if (teamColor == Team.BLUE && BANNER_ITEMS.isBlueFlag(item)) target = item;
             else continue;
         }
         if (target == null) return;
         player.getInventory().removeItem(target);
-        if (teamColor.equals(Team.RED)) match.setRedFlagCarrier(null);
+        if (teamColor == Team.RED) match.setRedFlagCarrier(null);
         else match.setBlueFlagCarrier(null);
     }
 

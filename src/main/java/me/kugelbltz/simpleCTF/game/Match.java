@@ -21,23 +21,23 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 // TODO: Handle leave/death situations properly
 // TODO: Cleanup code xx
-//       Team enum instead of string handling
-// TODO: 3 score = win
+// TODO: Add sound effects!
 public class Match {
     private Location redFlagLocation, blueFlagLocation;
     private Player redFlagCarrier, blueFlagCarrier;
     private int redScore, blueScore;
-    private boolean matchRunning = false;
     private final Set<Player> redPlayers = new HashSet<>();
     private final Set<Player> bluePlayers = new HashSet<>();
     private BossBar bossBar;
     private BukkitTask task;
+    private final int WIN_SCORE = 3;
 
     public Match(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         boolean canStart = initMatch(redPlayers, bluePlayers);
@@ -56,7 +56,6 @@ public class Match {
         this.bluePlayers.addAll(bluePlayers);
         this.redScore = 0;
         this.blueScore = 0;
-        this.matchRunning = true;
         this.loadBlocks(true);
         SimpleCTF.getInstance().setCurrentMatch(this);
         initPlayers(true);
@@ -75,13 +74,12 @@ public class Match {
     }
 
     private void resetPlayerState(Player player) {
-        player.getInventory().clear();
         player.setExp(0);
         player.setLevel(0);
         player.setFoodLevel(20);
         player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
         player.getInventory().clear();
-        player.getActivePotionEffects().clear();
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
     }
 
     private BukkitTask gameLoop() {
@@ -97,11 +95,17 @@ public class Match {
                 }
                 handleBlue();
                 handleRed();
+                if (Match.this.blueScore >= Match.this.WIN_SCORE) winMatch(Team.BLUE);
+                else if (Match.this.redScore >= Match.this.WIN_SCORE) winMatch(Team.RED);
                 updateBossBar(timeLeft);
                 playFlagAnimation();
                 if (getPlayersInMatch() <= 0) unloadMatch("<red>No players left.");
             }
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
+    }
+
+    public void winMatch(Team team) {
+        unloadMatch(ConfigManager.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
     private void playFlagAnimation() {
@@ -139,14 +143,11 @@ public class Match {
     }
 
     public void unloadMatch(@Nullable String reason) {
+        broadcastMessage(MiniMessage.miniMessage().deserialize(reason));
         this.redPlayers.forEach(this::removePlayerFromMatch);
         this.bluePlayers.forEach(this::removePlayerFromMatch);
-        broadcastMessage(MiniMessage.miniMessage().deserialize(reason));
-        this.redPlayers.clear();
-        this.bluePlayers.clear();
         this.redScore = 0;
         this.blueScore = 0;
-        this.matchRunning = false;
         this.bossBar.removeAll();
         this.bossBar = null;
         this.loadBlocks(false);
@@ -165,58 +166,57 @@ public class Match {
     }
 
     private void handleBlue() {
-        for (LivingEntity blueNear : blueFlagLocation.getNearbyLivingEntities(3)) {
-            if (!(blueNear instanceof Player player)) continue;
-            boolean isRed = redPlayers.contains(player);
-            boolean isBlue = bluePlayers.contains(player);
-            if (!isRed && !isBlue) continue;
-            // If youre carrying your own flag
-            if (blueFlagCarrier != null && isBlue && blueFlagCarrier.equals(player)) {
-                // Saving own flag
-                blueFlagLocation.getBlock().setType(Material.BLUE_BANNER);
-                removeFlag(player, Team.BLUE);
-                broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replaceAll("%player%", player.getName())));
-                continue;
-            }
-            // If youre carrying red's flag
-            if (redFlagCarrier != null && isBlue && redFlagCarrier.equals(player)) {
-                this.blueScore++;
-                initPlayers(false);
-                loadBlocks(true);
-                removeFlag(player, Team.RED);
-                Component broadcast = MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_RETURN_FLAG.replaceAll("%player%", player.getName()).replaceAll("%opposite_color%", "RED"));
-                broadcastMessage(broadcast);
-                return;
+        for (LivingEntity entity : blueFlagLocation.getNearbyLivingEntities(3)) {
+            if (!(entity instanceof Player player)) continue;
+            Team team = Team.getTeam(player);
+            if (team == Team.NONE) continue;
+
+            if (team == Team.BLUE) {
+                if (blueFlagCarrier != null && blueFlagCarrier.equals(player)) {
+                    saveOwnFlag(player, blueFlagLocation, Material.BLUE_BANNER, team);
+                    continue;
+                }
+                if (redFlagCarrier != null && redFlagCarrier.equals(player)) {
+                    captureFlag(player, team, Team.getOpposite(team));
+                }
             }
         }
     }
     private void handleRed() {
-        for (LivingEntity redNear : redFlagLocation.getNearbyLivingEntities(3)) {
-            if (!(redNear instanceof Player player)) continue;
-            boolean isRed = redPlayers.contains(player);
-            boolean isBlue = bluePlayers.contains(player);
-            if (!isRed && !isBlue) continue;
-            // If youre carrying your own flag
-            if (redFlagCarrier != null && isRed && redFlagCarrier.equals(player)) {
-                // Saving own flag
-                redFlagLocation.getBlock().setType(Material.RED_BANNER);
-                removeFlag(player, Team.RED);
-                broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replaceAll("%player%", player.getName())));
-                continue;
-            }
-            // If youre carrying blue's flag
-            if (blueFlagCarrier != null && isRed && blueFlagCarrier.equals(player)) {
-                this.redScore++;
-                initPlayers(false);
-                loadBlocks(true);
-                removeFlag(player, Team.BLUE);
-                Component broadcast = MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_RETURN_FLAG.replaceAll("%player%", player.getName()).replaceAll("%opposite_color%", "BLUE"));
-                broadcastMessage(broadcast);
-                return;
+        for (LivingEntity entity : redFlagLocation.getNearbyLivingEntities(3)) {
+            if (!(entity instanceof Player player)) continue;
+            Team team = Team.getTeam(player);
+            if (team == Team.NONE) continue;
+            if (team == Team.RED) {
+                if (redFlagCarrier != null && redFlagCarrier.equals(player)) {
+                    saveOwnFlag(player, redFlagLocation, Material.RED_BANNER, team);
+                    continue;
+                }
+                if (blueFlagCarrier != null && blueFlagCarrier.equals(player)) {
+                    captureFlag(player, team, Team.getOpposite(team));
+                }
             }
         }
     }
 
+    private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
+        flagLoc.getBlock().setType(bannerType);
+        removeFlag(player, team);
+        broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
+    }
+    private void captureFlag(Player player, Team scoringTeam, Team capturedTeam) {
+        if (scoringTeam == Team.RED) this.redScore++;
+        else this.blueScore++;
+
+        initPlayers(false);
+        loadBlocks(true);
+        removeFlag(player, capturedTeam);
+        broadcastMessage(MiniMessage.miniMessage().deserialize(
+                ConfigManager.PLAYER_RETURN_FLAG
+                        .replace("%player%", player.getName())
+                        .replace("%opposite_color%", capturedTeam.name())
+        ));
+    }
 
     public Player getRedFlagCarrier() {
         return this.redFlagCarrier;

@@ -26,7 +26,7 @@ public class CTFJoin {
         Team team = null;
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
-            if (team.equals(Team.NONE)) {
+            if (team == Team.NONE) {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.INCORRECT_SYNTAX));
                 return;
             }
@@ -53,14 +53,14 @@ public class CTFJoin {
     }
 
     private void prepareTeams(Player player, Team team) {
-        if (team.equals(Team.RED)) {
+        if (team == Team.RED) {
             if (redPlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
                 redPlayersQueue.add(player.getUniqueId());
             } else {
                 player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_ALREADY_FULL));
                 return;
             }
-        } else if (team.equals(Team.BLUE)) {
+        } else if (team == Team.BLUE) {
             if (bluePlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
                 bluePlayersQueue.add(player.getUniqueId());
             } else {

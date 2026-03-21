@@ -72,7 +72,7 @@ public class MatchListener implements Listener {
         }
 
         Team team = match.getBluePlayers().contains(player) ? Team.BLUE : Team.RED;
-        if (team.equals(Team.RED)) {
+        if (team == Team.RED) {
             player.setRespawnLocation(match.getRedFlagLocation());
             Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> player.spigot().respawn());
             player.teleport(match.getRedFlagLocation());
@@ -89,7 +89,7 @@ public class MatchListener implements Listener {
         ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
         if (interactItem.getItemMeta() == null) return;
         boolean isFlag = BANNER_ITEMS.isBlueFlag(interactItem) || BANNER_ITEMS.isRedFlag(interactItem);
-        if (isFlag && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) event.setCancelled(true);
+        if (isFlag && event.getAction() == Action.RIGHT_CLICK_BLOCK) event.setCancelled(true);
     }
 
 
@@ -157,21 +157,21 @@ public class MatchListener implements Listener {
         Team playerColor = Team.getTeam(player);
         Team opponent = Team.getOpposite(playerColor);
 
-        if (!flagColor.equals(opponent)) {
+        if (flagColor != opponent) {
             player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.WRONG_BANNER_TEAM));
             return;
         }
         event.getClickedBlock().setType(Material.AIR);
         String message;
-        if (flagColor.equals(Team.BLUE)) {
+        if (flagColor == Team.BLUE) {
             UtilizationMethods.addItem(player, BANNER_ITEMS.blueFlag);
             message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "BLUE");
             match.setBlueFlagCarrier(player);
-        } else if (flagColor.equals(Team.RED)) {
+        } else if (flagColor == Team.RED) {
             UtilizationMethods.addItem(player, BANNER_ITEMS.redFlag);
             message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "RED");
             match.setRedFlagCarrier(player);
-        } else message="";
-        match.broadcastMessage(MiniMessage.miniMessage().deserialize(message));
+        } else message=null;
+        if (message != null) match.broadcastMessage(MiniMessage.miniMessage().deserialize(message));
     }
 }

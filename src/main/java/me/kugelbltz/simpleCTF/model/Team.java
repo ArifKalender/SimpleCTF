@@ -5,7 +5,6 @@ import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.entity.Player;
 
 public enum Team {
-
     RED,
     BLUE,
     NONE;
@@ -19,8 +18,8 @@ public enum Team {
     }
 
     public static Team getOpposite(Team team) {
-        if (team.equals(RED)) return BLUE;
-        else if (team.equals(BLUE)) return RED;
+        if (team == RED) return BLUE;
+        else if (team == BLUE) return RED;
         else return NONE;
     }
 }
