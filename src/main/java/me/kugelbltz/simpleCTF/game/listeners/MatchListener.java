@@ -74,6 +74,7 @@ public class MatchListener implements Listener {
     private void onPickup(PlayerAttemptPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
         Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match == null) return;
         Player player = event.getPlayer();
         if (!BANNER_ITEMS.isRedFlag(item) && !BANNER_ITEMS.isBlueFlag(item)) return;
         if (!match.isPlayerInMatch(player)) {
