@@ -4,7 +4,6 @@ import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -12,6 +11,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFJoin {
     private static Set<UUID> redPlayersQueue = new HashSet<>();
@@ -27,11 +28,11 @@ public class CTFJoin {
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
             if (team == Team.NONE) {
-                player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.INCORRECT_SYNTAX));
+                player.sendMessage(MM.deserialize(ConfigManager.INCORRECT_SYNTAX));
                 return;
             }
         } catch (IllegalArgumentException ignored) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.INCORRECT_SYNTAX));
+            player.sendMessage(MM.deserialize(ConfigManager.INCORRECT_SYNTAX));
             return;
         }
         ;
@@ -41,11 +42,11 @@ public class CTFJoin {
         boolean isAlreadyInQueue = redPlayersQueue.contains(player.getUniqueId()) || bluePlayersQueue.contains(player.getUniqueId());
 
         if (isAlreadyInQueue) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.ALREADY_IN_QUEUE));
+            player.sendMessage(MM.deserialize(ConfigManager.ALREADY_IN_QUEUE));
             return;
         }
         if (matchOccupied) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.MATCH_OCCUPIED));
+            player.sendMessage(MM.deserialize(ConfigManager.MATCH_OCCUPIED));
             return;
         }
 
@@ -57,29 +58,29 @@ public class CTFJoin {
             if (redPlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
                 redPlayersQueue.add(player.getUniqueId());
             } else {
-                player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_ALREADY_FULL));
+                player.sendMessage(MM.deserialize(ConfigManager.TEAM_ALREADY_FULL));
                 return;
             }
         } else if (team == Team.BLUE) {
             if (bluePlayersQueue.size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
                 bluePlayersQueue.add(player.getUniqueId());
             } else {
-                player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_ALREADY_FULL));
+                player.sendMessage(MM.deserialize(ConfigManager.TEAM_ALREADY_FULL));
                 return;
             }
         } else return;
 
         redPlayersQueue.forEach(queuePlayer -> {
-            Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+            Bukkit.getPlayer(queuePlayer).sendMessage(MM.deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
         });
         bluePlayersQueue.forEach(queuePlayer -> {
-            Bukkit.getPlayer(queuePlayer).sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+            Bukkit.getPlayer(queuePlayer).sendMessage(MM.deserialize(ConfigManager.PLAYER_JOINED_TEAM.replaceAll("%player%", player.getName()).replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
         });
-        player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.TEAM_JOIN.replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        player.sendMessage(MM.deserialize(ConfigManager.TEAM_JOIN.replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
     }
 
     private void sendHelpMessage(Player player) {
-        player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
+        player.sendMessage(MM.deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
     }
 
     public static Set<UUID> getRedPlayersUUIDQueue() {

@@ -16,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+
 public class CaptureTheFlag implements CommandExecutor {
 
     /**
@@ -33,7 +35,7 @@ public class CaptureTheFlag implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>Only players can execute this command!"));
+            sender.sendMessage(MM.deserialize("<red>Only players can execute this command!"));
             return true;
         }
         if (args.length == 0) {

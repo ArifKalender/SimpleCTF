@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class MatchListener implements Listener {
 
@@ -39,7 +40,7 @@ public class MatchListener implements Listener {
             if (itemStack == null || itemStack.getType() == Material.AIR) continue;
             player.getWorld().dropItem(player.getLocation(), itemStack);
         }
-        match.broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
+        match.broadcastMessage(MM.deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
         player.getInventory().clear();
     }
 
@@ -145,7 +146,7 @@ public class MatchListener implements Listener {
         boolean sameTeam = bothBlue || bothRed;
         if (sameTeam) {
             event.setCancelled(true);
-            attacker.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_FRIENDLY_FIRE));
+            attacker.sendMessage(MM.deserialize(ConfigManager.NO_FRIENDLY_FIRE));
         }
     }
 
@@ -158,7 +159,7 @@ public class MatchListener implements Listener {
         Team opponent = Team.getOpposite(playerColor);
 
         if (flagColor != opponent) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.WRONG_BANNER_TEAM));
+            player.sendMessage(MM.deserialize(ConfigManager.WRONG_BANNER_TEAM));
             return;
         }
         event.getClickedBlock().setType(Material.AIR);
@@ -172,6 +173,6 @@ public class MatchListener implements Listener {
             message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replaceAll("%color%", "RED");
             match.setRedFlagCarrier(player);
         } else message=null;
-        if (message != null) match.broadcastMessage(MiniMessage.miniMessage().deserialize(message));
+        if (message != null) match.broadcastMessage(MM.deserialize(message));
     }
 }

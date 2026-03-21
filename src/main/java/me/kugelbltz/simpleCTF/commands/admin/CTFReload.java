@@ -2,13 +2,14 @@ package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFReload {
     public CTFReload(Player player, String[] ignored) {
         if (!player.hasPermission("simplectf.admin.reload")) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_PERMISSION));
+            player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));
             return;
         }
         sendConfigMsg(player, "config.yml");
@@ -16,6 +17,6 @@ public class CTFReload {
         ConfigManager.init();
     }
     private void sendConfigMsg(Player player, String cfgName) {
-        player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PREFIX + "<green>Reloading " + cfgName + "..."));
+        player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "<green>Reloading " + cfgName + "..."));
     }
 }

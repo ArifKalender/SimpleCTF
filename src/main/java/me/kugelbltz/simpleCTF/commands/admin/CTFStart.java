@@ -7,20 +7,22 @@ import me.kugelbltz.simpleCTF.game.Match;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+
 public class CTFStart {
     public CTFStart(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.start")) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.NO_PERMISSION));
+            player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));
             return;
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         boolean anybodyInQueue = !CTFJoin.getBluePlayersUUIDQueue().isEmpty() || !CTFJoin.getRedPlayersUUIDQueue().isEmpty();
         if (isMatchRunning) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize(ConfigManager.MATCH_OCCUPIED));
+            player.sendMessage(MM.deserialize(ConfigManager.MATCH_OCCUPIED));
             return;
         }
         if (!anybodyInQueue) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>There isn't anybody queued in either red or blue teams."));
+            player.sendMessage(MM.deserialize("<red>There isn't anybody queued in either red or blue teams."));
             return;
         }
         new Match(CTFJoin.getRedPlayersQueue(), CTFJoin.getBluePlayersQueue());

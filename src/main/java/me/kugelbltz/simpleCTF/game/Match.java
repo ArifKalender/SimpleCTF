@@ -4,7 +4,6 @@ import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +23,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 // TODO: Handle leave/death situations properly
@@ -49,7 +49,7 @@ public class Match {
         this.blueFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
         if (redFlagLocation == null || blueFlagLocation == null) {
             SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
-            broadcastMessage(MiniMessage.miniMessage().deserialize("<red> Match environment was not set properly, therefore your match couldn't start."));
+            broadcastMessage(MM.deserialize("<red> Match environment was not set properly, therefore your match couldn't start."));
             return false;
         }
         this.redPlayers.addAll(redPlayers);
@@ -143,7 +143,7 @@ public class Match {
     }
 
     public void unloadMatch(@Nullable String reason) {
-        broadcastMessage(MiniMessage.miniMessage().deserialize(reason));
+        broadcastMessage(MM.deserialize(reason));
         this.redPlayers.forEach(this::removePlayerFromMatch);
         this.bluePlayers.forEach(this::removePlayerFromMatch);
         this.redScore = 0;
@@ -202,7 +202,7 @@ public class Match {
     private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
         flagLoc.getBlock().setType(bannerType);
         removeFlag(player, team);
-        broadcastMessage(MiniMessage.miniMessage().deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
+        broadcastMessage(MM.deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
     private void captureFlag(Player player, Team scoringTeam, Team capturedTeam) {
         if (scoringTeam == Team.RED) this.redScore++;
@@ -211,7 +211,7 @@ public class Match {
         initPlayers(false);
         loadBlocks(true);
         removeFlag(player, capturedTeam);
-        broadcastMessage(MiniMessage.miniMessage().deserialize(
+        broadcastMessage(MM.deserialize(
                 ConfigManager.PLAYER_RETURN_FLAG
                         .replace("%player%", player.getName())
                         .replace("%opposite_color%", capturedTeam.name())

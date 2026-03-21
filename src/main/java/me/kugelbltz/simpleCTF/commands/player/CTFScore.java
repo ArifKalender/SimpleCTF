@@ -3,8 +3,9 @@ package me.kugelbltz.simpleCTF.commands.player;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.game.Match;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
+
+import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFScore {
 
@@ -16,7 +17,7 @@ public class CTFScore {
         } else {
             msg = msg.replaceAll("%blue_score%", String.valueOf(match.getBlueScore())).replaceAll("%red_score%", String.valueOf(match.getRedScore()));
         }
-        player.sendMessage(MiniMessage.miniMessage().deserialize(msg));
+        player.sendMessage(MM.deserialize(msg));
     }
 
 }
