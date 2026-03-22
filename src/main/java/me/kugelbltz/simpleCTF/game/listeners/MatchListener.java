@@ -73,7 +73,7 @@ public class MatchListener implements Listener {
     }
 
     /**
-     * Teleport the player after death to their flag if they're in a match
+     * Teleport the player after death to their flag location if they're in a match
      */
     @EventHandler
     private void onRespawn(PlayerPostRespawnEvent event){
@@ -135,8 +135,7 @@ public class MatchListener implements Listener {
     }
 
     /**
-     * Handle capturing of flags
-     * Prevent placing blocks near flags
+     * Handle capturing of flags, prevent placing blocks near flags
      */
     @EventHandler
     private void onInteract(PlayerInteractEvent event) {

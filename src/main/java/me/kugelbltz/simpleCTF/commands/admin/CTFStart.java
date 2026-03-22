@@ -21,12 +21,13 @@ public class CTFStart implements CTFCommand {
             player.sendMessage(getMM().deserialize(StaticVariables.NO_PERMISSION));
             return;
         }
+
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
-        if (isMatchRunning) {
+        if (isMatchRunning) { //Cannot start a match if a match is already going on
             player.sendMessage(getMM().deserialize(StaticVariables.MATCH_OCCUPIED));
             return;
         }
-        if (!getQueueHandler().anyoneInQueue()) {
+        if (!getQueueHandler().anyoneInQueue()) { // If nobody is in queue can not start a match
             player.sendMessage(getMM().deserialize("<red>There isn't anybody queued in neither red nor blue teams."));
             return;
         }

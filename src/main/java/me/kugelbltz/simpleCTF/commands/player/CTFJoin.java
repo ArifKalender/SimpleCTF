@@ -52,7 +52,7 @@ public class CTFJoin implements CTFCommand {
             return;
         }
 
-        getQueueHandler().prepareTeams(player, team);
+        getQueueHandler().addToQueue(player, team);
     }
 
 

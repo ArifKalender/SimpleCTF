@@ -19,7 +19,6 @@ public final class SimpleCTF extends JavaPlugin {
     private static QueueHandler QUEUE_HANDLER;
     private static SimpleCTF plugin;
     private static Match currentMatch = null;
-
     public static SimpleCTF getInstance() {
         return plugin;
     }
@@ -30,6 +29,9 @@ public final class SimpleCTF extends JavaPlugin {
         initialize();
     }
 
+    /**
+     * General initialization of the plugin
+     */
     private void initialize() {
         loadConfigs();
         registerListeners();
@@ -48,15 +50,23 @@ public final class SimpleCTF extends JavaPlugin {
         Bukkit.getPluginCommand("capturetheflag").setExecutor(new CaptureTheFlag());
     }
 
+    /**
+     * Saves the default config and caches the config
+     */
     private void loadConfigs() {
         saveDefaultConfig();
         StaticVariables.init();
     }
 
+    /** @return The ongoing match, can return null if no match is going on. */
     public Match getCurrentMatch() {
         return currentMatch;
     }
 
+    /**
+     * Used only by {@link Match} to set the current match.
+     * @param match
+     */
     public void setCurrentMatch(@Nullable Match match) {
         currentMatch = match;
     }
@@ -71,10 +81,16 @@ public final class SimpleCTF extends JavaPlugin {
         return BANNER_ITEMS;
     }
 
+    /**
+     * @return MiniMessage instance for the plugin
+     */
     public static MiniMessage getMM() {
         return MINI_MESSAGE;
     }
 
+    /**
+     * @return The queue management class
+     */
     public static QueueHandler getQueueHandler() {
         return QUEUE_HANDLER;
     }

@@ -12,9 +12,6 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class CTFSetFlag implements CTFCommand {
 
-    /**
-     * Command for setting a teams flag locations
-     */
     @Override
     public void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.setflag")) {
@@ -26,11 +23,14 @@ public class CTFSetFlag implements CTFCommand {
             return;
         }
         String color = args[1].toUpperCase(Locale.ENGLISH);
+        // Prepare location
         Location location = player.getLocation();
         location.setPitch(0);
         location.setX(Math.floor(location.getX()));
         location.setY(Math.floor(location.getY()));
         location.setZ(Math.floor(location.getZ()));
+
+        // Sets config value for the team
         switch (color) {
             case "RED" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);

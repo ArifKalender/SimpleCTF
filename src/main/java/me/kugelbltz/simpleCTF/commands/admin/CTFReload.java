@@ -12,10 +12,6 @@ public class CTFReload implements CTFCommand {
         player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<green>Reloading " + cfgName + "..."));
     }
 
-    /**
-     * Command for reloading the config files
-     */
-
     @Override
     public void execute(Player player, String[] ignored) {
         if (!player.hasPermission("simplectf.admin.reload")) {

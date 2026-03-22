@@ -68,6 +68,7 @@ public class Match {
     /**
      * Teleport players to their spawn locations and
      * reset their state if {@code resetState} is true
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void initPlayers(Team team, boolean resetState) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -78,7 +79,7 @@ public class Match {
     }
 
     /**
-     * Handle game loop
+     * Handle game loop, 20 tick intervals
      */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
@@ -107,6 +108,7 @@ public class Match {
 
     /**
      * Plays animations of the flags and flag carriers
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void playFlagAnimation(Team team, Material banner, Material particleColorSource) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -142,7 +144,7 @@ public class Match {
     }
 
     /**
-     * Handles the given flag and nearby entities to it
+     * Handles the given flag and nearby entities to it. Saving your own flag or returning the enemy's flag to your base is handled here.
      */
     private void handleFlag(Team flag, Material bannerType) {
         for (LivingEntity lEntity : getFlagLocation(flag).getNearbyLivingEntities(3)) {
@@ -166,7 +168,8 @@ public class Match {
 
 
     /**
-     * Saves the flag for the given player, given team and given location with the given material
+     * Saves the flag for the given parameters, placing the block and removing the item from inventory, then broadcasting the message.
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -175,9 +178,6 @@ public class Match {
         broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
 
-    /**
-     * Makes it so the player returns the enemy team's flag to their own base
-     */
     private void returnFlag(Player player, Team scoringTeam, Team capturedTeam) {
         setScore(scoringTeam, getScore(scoringTeam) + 1);
 
@@ -228,7 +228,6 @@ public class Match {
 
     /**
      * Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions
-     * @param player To reset
      */
     public void resetPlayerState(Player player) {
         player.setExp(0);
@@ -240,7 +239,7 @@ public class Match {
     }
 
     /**
-     * Makes it so the given team wins the match.
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void winMatch(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -249,7 +248,7 @@ public class Match {
     }
 
     /**
-     * Returns the flag carrier for the given team
+     * @return the flag carrier for the given team
      */
     public Entity getFlagCarrier(Team flagColor) {
         return this.flagCarriers.get(flagColor);
@@ -284,13 +283,16 @@ public class Match {
     }
 
     /**
-     * @return The score of the given team
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public int getScore(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         return teamScores.get(team);
     }
 
+    /**
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
+     */
     public void setScore(Team team, int newScore) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         teamScores.put(team, newScore);
@@ -305,7 +307,8 @@ public class Match {
 
     /**
      * Returns the list of players for the given team.
-     * @apiNote Read-only, returns a copy.
+     * @return A copy of the players for the given team.
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Collection<Player> getPlayers(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -313,7 +316,7 @@ public class Match {
     }
 
     /**
-     * Removes the given player from the match
+     * Removes the given player from the match.
      */
     public void removePlayerFromMatch(Player player) {
         players.get(Team.RED).remove(player); //Not using getPlayers() because it returns a copy where we want to remove the players from the actual list
@@ -324,8 +327,8 @@ public class Match {
     }
 
     /**
-     * @return The flag location for the given team
-     * @apiNote Read-only, returns a copy.
+     * @return A copy of the flag location for the given team
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Location getFlagLocation(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -334,6 +337,7 @@ public class Match {
 
     /**
      * Sets the flag location for the given team
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void setFlagLocation(Team team, Location newLocation) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
@@ -346,6 +350,7 @@ public class Match {
      * @param team     The team of the flag
      * @param dropper  The one who dropped the flag
      * @param location The location at which the flag was dropped
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");

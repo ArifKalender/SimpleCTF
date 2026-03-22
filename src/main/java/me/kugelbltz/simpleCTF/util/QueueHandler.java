@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 
 public class QueueHandler {
@@ -28,9 +27,8 @@ public class QueueHandler {
     }
 
     /**
-     * @param team To get the list of
-     * @apiNote Read only
-     * @return The list of players in a teams queue, pulls from {@code getUUIDQueue()}
+     * @apiNote
+     * @return A copy of the list of players in a teams queue, pulls from {@link QueueHandler#getUUIDQueue(Team)}
      */
     public Set<Player> getPlayerQueue(Team team) {
         Set<Player> toReturn = new HashSet<>();
@@ -43,7 +41,6 @@ public class QueueHandler {
 
     /**
      * Broadcast the given message to all queued players
-     * @param component
      */
     public void broadcastMessageToQueue(Component component) {
         getPlayerQueue(Team.RED).forEach(player -> {
@@ -54,24 +51,27 @@ public class QueueHandler {
         });
     }
 
-    public void prepareTeams(Player player, Team team) {
+    /**
+     * Properly adds the given player to the queue for the given team
+     * @return true if successful, false if else
+     */
+    public boolean addToQueue(Player player, Team team) {
         if (getPlayerQueue(team).size() < StaticVariables.MAX_PLAYERS_PER_TEAM) {
             addPlayerToQueue(player, team);
         } else {
             player.sendMessage(getMM().deserialize(StaticVariables.TEAM_ALREADY_FULL));
-            return;
+            return false;
         }
 
         broadcastMessageToQueue(getMM().deserialize(StaticVariables.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
         player.sendMessage(getMM().deserialize(StaticVariables.TEAM_JOIN.replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        return true;
     }
 
     /**
-     * Adds the given player to the given team's queue
-     * @param player To add
-     * @param team To add to
+     * Adds the given player to the given team's queue directly
      */
-    public void addPlayerToQueue(Player player, Team team) {
+    private void addPlayerToQueue(Player player, Team team) {
         UUID uuid = player.getUniqueId();
         if (team == Team.RED) RED_UUID_QUEUE.add(uuid);
         else if (team == Team.BLUE) BLUE_UUID_QUEUE.add(uuid);
@@ -81,6 +81,7 @@ public class QueueHandler {
     public void removePlayerFromQueue(Player player) {
         removePlayerFromQueue(player.getUniqueId());
     }
+
     public void removePlayerFromQueue(UUID uuid) {
         getUUIDQueue(Team.RED).remove(uuid);
         getUUIDQueue(Team.BLUE).remove(uuid);
@@ -93,12 +94,13 @@ public class QueueHandler {
         return RED_UUID_QUEUE.contains(player.getUniqueId()) || BLUE_UUID_QUEUE.contains(player.getUniqueId());
     }
 
+    /** @return Whether anyone is in either of the queues */
     public boolean anyoneInQueue() {
         return !getUUIDQueue(Team.BLUE).isEmpty() || !getUUIDQueue(Team.RED).isEmpty();
     }
 
     /**
-     * @return The queue {@code Team} of the given player
+     * @return The queue {@link Team} of the given player
      */
     public Team getQueueTeam(Player player) {
         if (RED_UUID_QUEUE.contains(player.getUniqueId())) return Team.RED;
@@ -111,6 +113,11 @@ public class QueueHandler {
         getUUIDQueue(Team.BLUE).clear();
     }
 
+    /**
+     * Removes the player from the queue.
+     * @param player to remove
+     * @param sendMessageToPlayer Whether to try to send the player the leaving message
+     */
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
         if (!this.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
             if (sendMessageToPlayer)

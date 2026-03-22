@@ -15,8 +15,10 @@ public class CTFLeave implements CTFCommand {
      */
     @Override
     public void execute(Player player, String[] args) {
+        // Remove player from queue
         if (getQueueHandler().alreadyInQueue(player)) getQueueHandler().removePlayer(player, true);
         Match match = SimpleCTF.getInstance().getCurrentMatch();
+        // Remove player from match
         if (match != null) match.removePlayerFromMatch(player);
     }
 }
