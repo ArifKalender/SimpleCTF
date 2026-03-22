@@ -112,15 +112,15 @@ public class QueueHandler {
     }
 
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
-        if (!getQueueHandler().alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
+        if (!this.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
             if (sendMessageToPlayer)
                 player.sendMessage(getMM().deserialize(StaticVariables.NOT_IN_TEAM));
             return;
         }
-        Team team = getQueueHandler().getQueueTeam(player);
+        Team team = this.getQueueTeam(player);
         if (team == Team.NONE) return;
-        getQueueHandler().removePlayerFromQueue(player);
-        getQueueHandler().getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
+        this.removePlayerFromQueue(player);
+        this.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
                 .sendMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
         if (sendMessageToPlayer)
             player.sendMessage(getMM().deserialize(StaticVariables.TEAM_LEAVE));

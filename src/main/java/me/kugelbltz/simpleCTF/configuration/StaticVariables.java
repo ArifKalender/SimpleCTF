@@ -33,6 +33,7 @@ public class StaticVariables {
     public static int MAX_PLAYERS_PER_TEAM;
     public static int MIN_PLAYERS_PER_TEAM;
     public static int MATCH_TIME;
+    public static int WIN_SCORE;
 
     public StaticVariables() {
         init();
@@ -68,6 +69,7 @@ public class StaticVariables {
         MAX_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MaxPlayersPerTeam", 4);
         MIN_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MinPlayersPerTeam", 1);
         MATCH_TIME = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.MatchTime", 600);
+        WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
     }
 
 }

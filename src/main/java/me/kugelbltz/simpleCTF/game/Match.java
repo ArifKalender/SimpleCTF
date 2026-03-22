@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
+import static me.kugelbltz.simpleCTF.configuration.StaticVariables.WIN_SCORE;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 public class Match {
@@ -32,7 +33,6 @@ public class Match {
     private final Map<Team, Location> flagLocations = new HashMap<>();
     private final Map<Team, Entity> flagCarriers = new HashMap<>();
     private final Map<Team, Integer> teamScores = new HashMap<>();
-    private static final int WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
     private BossBar bossBar;
     private BukkitTask task;
 
@@ -70,6 +70,7 @@ public class Match {
      * reset their state if {@code resetState} is true
      */
     private void initPlayers(Team team, boolean resetState) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         getPlayers(team).forEach(player -> {
             player.teleport(flagLocations.get(team));
             if (resetState) resetPlayerState(player);
@@ -108,6 +109,7 @@ public class Match {
      * Plays animations of the flags and flag carriers
      */
     private void playFlagAnimation(Team team, Material banner, Material particleColorSource) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         // --- Block particles for flags ---
         Location flagLoc = getFlagLocation(team);
         boolean available = flagLoc.getBlock().getType() == banner;
@@ -167,6 +169,7 @@ public class Match {
      * Saves the flag for the given player, given team and given location with the given material
      */
     private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         flagLoc.getBlock().setType(bannerType);
         removeFlag(player, team);
         broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
@@ -240,8 +243,8 @@ public class Match {
      * Makes it so the given team wins the match.
      */
     public void winMatch(Team team) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
-
         unloadMatch(StaticVariables.MATCH_WIN.replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
@@ -284,10 +287,12 @@ public class Match {
      * @return The score of the given team
      */
     public int getScore(Team team) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         return teamScores.get(team);
     }
 
     public void setScore(Team team, int newScore) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         teamScores.put(team, newScore);
     }
 
@@ -300,9 +305,10 @@ public class Match {
 
     /**
      * Returns the list of players for the given team.
-     * @apiNote Read-only
+     * @apiNote Read-only, returns a copy.
      */
     public Collection<Player> getPlayers(Team team) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         return new HashSet<>(players.get(team));
     }
 
@@ -319,9 +325,10 @@ public class Match {
 
     /**
      * @return The flag location for the given team
-     * @apiNote Read-only
+     * @apiNote Read-only, returns a copy.
      */
     public Location getFlagLocation(Team team) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         return flagLocations.get(team).clone();
     }
 
@@ -329,6 +336,7 @@ public class Match {
      * Sets the flag location for the given team
      */
     public void setFlagLocation(Team team, Location newLocation) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         flagLocations.put(team, newLocation);
     }
 
@@ -340,6 +348,7 @@ public class Match {
      * @param location The location at which the flag was dropped
      */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
         Component component = getMM().deserialize(StaticVariables.FLAG_DROPPED_AT
                 .replace("%player%", dropper.getName())
