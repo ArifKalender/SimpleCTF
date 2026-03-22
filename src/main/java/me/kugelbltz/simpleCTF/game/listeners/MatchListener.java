@@ -170,6 +170,7 @@ public class MatchListener implements Listener {
      */
     @EventHandler
     private void onDamage(EntityDamageByEntityEvent event) {
+        if (SimpleCTF.getInstance().getCurrentMatch() == null) return;
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player victim)) return;
         boolean sameTeam = Team.getTeam(victim) == Team.getTeam(attacker);
         if (sameTeam) {
