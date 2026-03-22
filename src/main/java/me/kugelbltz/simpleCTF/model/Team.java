@@ -38,7 +38,7 @@ public enum Team {
     public static ItemStack getTeamFlag(Team team) {
         if (team == RED) return BANNER_ITEMS.redFlag;
         else if (team == BLUE) return BANNER_ITEMS.blueFlag;
-        else return null;
+        else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 
     /**

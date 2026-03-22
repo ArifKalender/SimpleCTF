@@ -13,7 +13,7 @@ public class CTFLeave {
     /**
      * Command for players to leave from a match or their queue
      */
-    public CTFLeave(Player player, String[] args) {
+    public void execute(Player player, String[] args) {
         removePlayer(player, true);
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match != null) match.removePlayerFromMatch(player);
@@ -25,6 +25,7 @@ public class CTFLeave {
             return;
         }
         Team team = CTFJoin.getQueueTeam(player);
+        if(CTFJoin.getUUIDQueue(team) == null) return;
         CTFJoin.getUUIDQueue(team).remove(player.getUniqueId());
         CTFJoin.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer.sendMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
         if (sendMessageToPlayer) player.sendMessage(MM.deserialize(StaticVariables.TEAM_LEAVE));

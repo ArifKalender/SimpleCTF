@@ -13,7 +13,7 @@ public class CTFStart {
     /**
      * Command for forcibly starting a match
      */
-    public CTFStart(Player player, String[] args) {
+    public void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.start")) {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;

@@ -28,9 +28,6 @@ import java.util.Set;
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
-// TODO: Handle leave/death situations properly
-// TODO: Add sound effects!
-// FIXME: Particles can be messed up
 public class Match {
     private final Set<Player> redPlayers = new HashSet<>();
     private final Set<Player> bluePlayers = new HashSet<>();
@@ -237,10 +234,10 @@ public class Match {
         this.bluePlayers.forEach(this::removePlayerFromMatch);
         this.redScore = 0;
         this.blueScore = 0;
-        this.bossBar.removeAll();
         this.bossBar = null;
         this.loadBlocks(false);
         this.task.cancel();
+        if (this.bossBar != null) this.bossBar.removeAll();
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
@@ -263,8 +260,6 @@ public class Match {
     public void winMatch(Team team) {
         unloadMatch(StaticVariables.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
-        UtilizationMethods.playSoundForGroup(getTeamPlayers(team), Sound.ITEM_GOAT_HORN_SOUND_1, 3F, 1F);
-        UtilizationMethods.playSoundForGroup(getTeamPlayers(Team.getOpposite(team)), Sound.ENTITY_WITHER_AMBIENT, 3F, 1F);
     }
 
     /**
@@ -273,7 +268,7 @@ public class Match {
     public Entity getFlagCarrier(Team flagColor) {
         if (flagColor == Team.RED) return this.redFlagCarrier;
         else if (flagColor == Team.BLUE) return this.blueFlagCarrier;
-        else return null;
+        else throw new IllegalArgumentException();
     }
 
     /**
@@ -291,7 +286,7 @@ public class Match {
     public Set<Player> getTeamPlayers(Team team) {
         if (team == Team.RED) return this.redPlayers;
         else if (team == Team.BLUE) return this.bluePlayers;
-        else return null;
+        else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 
     /**
@@ -353,7 +348,7 @@ public class Match {
     public Location getFlagLocation(Team team) {
         if (team == Team.RED) return this.redFlagLocation.clone();
         else if (team == Team.BLUE) return this.blueFlagLocation.clone();
-        else return null;
+        else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 
     /**

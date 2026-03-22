@@ -19,8 +19,8 @@ public class CTFJoin {
     /**
      * Command for players to join a team
      */
-    public CTFJoin(Player player, String[] args) {
-        if (args[1] == null) {
+    public void execute(Player player, String[] args) {
+        if (args.length == 1 || args[1] == null) {
             sendHelpMessage(player);
             return;
         }
@@ -59,7 +59,7 @@ public class CTFJoin {
     public static Set<UUID> getUUIDQueue(Team team) {
         if (team == Team.RED) return redPlayersQueue;
         else if (team == Team.BLUE) return bluePlayersQueue;
-        else return null;
+        else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 
     /**

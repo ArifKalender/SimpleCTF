@@ -34,13 +34,13 @@ public class CaptureTheFlag implements CommandExecutor {
         }
         String arg = args[0].toUpperCase(Locale.ENGLISH);
         switch (arg) {
-            case "JOIN" -> new CTFJoin(player, args);
-            case "LEAVE" -> new CTFLeave(player, args);
-            case "SCORE" -> new CTFScore(player, args);
-            case "START" -> new CTFStart(player, args);
-            case "STOP" -> new CTFStop(player, args);
-            case "SETFLAG" -> new CTFSetFlag(player, args);
-            case "RELOAD" -> new CTFReload(player, args);
+            case "JOIN" -> new CTFJoin().execute(player, args);
+            case "LEAVE" -> new CTFLeave().execute(player, args);
+            case "SCORE" -> new CTFScore().execute(player, args);
+            case "START" -> new CTFStart().execute(player, args);
+            case "STOP" -> new CTFStop().execute(player, args);
+            case "SETFLAG" -> new CTFSetFlag().execute(player, args);
+            case "RELOAD" -> new CTFReload().execute(player, args);
             default -> sendHelpMessage(sender);
         }
         return true;

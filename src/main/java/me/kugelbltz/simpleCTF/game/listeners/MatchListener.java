@@ -156,6 +156,7 @@ public class MatchListener implements Listener {
             }
             case Material.RED_BANNER -> {
                 handleFlag(event, Team.RED);
+                event.setCancelled(true);
                 return;
             }
         }
@@ -187,7 +188,7 @@ public class MatchListener implements Listener {
     @EventHandler
     private void onMatchWin(MatchWinEvent event) {
         UtilizationMethods.playSoundForGroup(event.getWinners(), Sound.ITEM_GOAT_HORN_SOUND_1, 3F, 1F);
-        UtilizationMethods.playSoundForGroup(event.getWinners(), Sound.ENTITY_WITHER_AMBIENT, 3F, 0F);
+        UtilizationMethods.playSoundForGroup(event.getLosers(), Sound.ENTITY_WITHER_AMBIENT, 3F, 0F);
     }
 
     /**

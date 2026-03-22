@@ -12,7 +12,7 @@ public class CTFScore {
     /**
      * Command for players to see the current scores of the ongoing match
      */
-    public CTFScore(Player player, String[] args) {
+    public void execute(Player player, String[] args) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         String msg = StaticVariables.CURRENT_SCORE;
         if (match == null) {

@@ -14,7 +14,7 @@ public class CTFSetFlag {
     /**
      * Command for setting a teams flag locations
      */
-    public CTFSetFlag(Player player, String[] args) {
+    public void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.setflag")) {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
@@ -29,9 +29,9 @@ public class CTFSetFlag {
         String color = args[1].toUpperCase(Locale.ENGLISH);
         Location location = player.getLocation();
         location.setPitch(0);
-        location.setX((long) location.getX());
-        location.setY((long) location.getY());
-        location.setZ((long) location.getZ());
+        location.setX((int) location.getX());
+        location.setY((int) location.getY());
+        location.setZ((int) location.getZ());
         switch (color) {
             case "RED" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);
@@ -44,7 +44,6 @@ public class CTFSetFlag {
                 player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "Set the location for the blue flag!"));
             }
             default -> player.sendMessage(MM.deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
-
         }
     }
 }

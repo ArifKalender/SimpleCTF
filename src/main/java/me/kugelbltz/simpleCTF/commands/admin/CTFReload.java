@@ -10,7 +10,7 @@ public class CTFReload {
     /**
      * Command for reloading the config files
      */
-    public CTFReload(Player player, String[] ignored) {
+    public void execute(Player player, String[] ignored) {
         if (!player.hasPermission("simplectf.admin.reload")) {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
