@@ -1,15 +1,15 @@
 package me.kugelbltz.simpleCTF.util;
 
+import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class QueueHandler {
 
@@ -57,12 +57,12 @@ public class QueueHandler {
         if (getPlayerQueue(team).size() < StaticVariables.MAX_PLAYERS_PER_TEAM) {
             addPlayerToQueue(player, team);
         } else {
-            player.sendMessage(MM.deserialize(StaticVariables.TEAM_ALREADY_FULL));
+            player.sendMessage(getMM().deserialize(StaticVariables.TEAM_ALREADY_FULL));
             return;
         }
 
-        broadcastMessageToQueue(MM.deserialize(StaticVariables.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
-        player.sendMessage(MM.deserialize(StaticVariables.TEAM_JOIN.replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        broadcastMessageToQueue(getMM().deserialize(StaticVariables.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
+        player.sendMessage(getMM().deserialize(StaticVariables.TEAM_JOIN.replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
     }
 
     /**

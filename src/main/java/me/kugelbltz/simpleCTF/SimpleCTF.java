@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 public final class SimpleCTF extends JavaPlugin {
 
-    public static BannerItems BANNER_ITEMS;
-    public static MiniMessage MM;
+    private static BannerItems BANNER_ITEMS;
+    private static MiniMessage MM;
     private static SimpleCTF plugin;
     private static Match currentMatch = null;
 
@@ -64,4 +64,11 @@ public final class SimpleCTF extends JavaPlugin {
         if (getCurrentMatch() != null) getCurrentMatch().unloadMatch("<red>Server restart");
     }
 
+    public static BannerItems getBannerItems() {
+        return BANNER_ITEMS;
+    }
+
+    public static MiniMessage getMM() {
+        return MM;
+    }
 }

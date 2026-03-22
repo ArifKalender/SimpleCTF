@@ -23,8 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
-import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+import static me.kugelbltz.simpleCTF.SimpleCTF.*;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.addItem;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.playSoundForGroup;
 
@@ -44,7 +43,7 @@ public class MatchListener implements Listener {
 
         // --- Drop the flag item ---
         UtilizationMethods.dropAllFlags(player);
-        match.broadcastMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName())));
+        match.broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName())));
         player.getInventory().clear();
     }
 
@@ -92,7 +91,7 @@ public class MatchListener implements Listener {
     @EventHandler
     private void onPlace(PlayerInteractEvent event) {
         ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
-        if (BANNER_ITEMS.isFlag(interactItem) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        if (getBannerItems().isFlag(interactItem) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
             event.setCancelled(true);
     }
 
@@ -105,10 +104,9 @@ public class MatchListener implements Listener {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
-        Team team = Team.getTeam(player);
-        if (BANNER_ITEMS.isFlag(item)) {
+        if (getBannerItems().isFlag(item)) {
             match.setFlagCarrier(event.getItemDrop(), Team.getTeamFromFlag(event.getItemDrop().getItemStack()));
-            match.broadcastFlagDropLocation(team, player, player.getLocation());
+            match.broadcastFlagDropLocation(Team.getTeamFromFlag(item), player, player.getLocation());
         }
     }
 
@@ -121,7 +119,7 @@ public class MatchListener implements Listener {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
-        if (!BANNER_ITEMS.isFlag(item)) return;
+        if (!getBannerItems().isFlag(item)) return;
         if (!match.isPlayerInMatch(player)) {
             event.setCancelled(true);
             return;
@@ -129,7 +127,7 @@ public class MatchListener implements Listener {
         Team itemTeam = Team.getTeamFromFlag(item);
         if (itemTeam == Team.NONE) return;
         match.setFlagCarrier(player, itemTeam);
-        match.broadcastMessage(MM.deserialize(
+        match.broadcastMessage(getMM().deserialize(
                 StaticVariables.PLAYER_CAUGHT_FLAG
                         .replace("%player%", player.getName())
                         .replace("%color%", itemTeam.name().toUpperCase())
@@ -175,7 +173,7 @@ public class MatchListener implements Listener {
         boolean sameTeam = Team.getTeam(victim) == Team.getTeam(attacker);
         if (sameTeam) {
             event.setCancelled(true);
-            attacker.sendMessage(MM.deserialize(StaticVariables.NO_FRIENDLY_FIRE));
+            attacker.sendMessage(getMM().deserialize(StaticVariables.NO_FRIENDLY_FIRE));
         }
     }
 
@@ -211,7 +209,7 @@ public class MatchListener implements Listener {
         Team opponent = Team.getOpposite(playerColor);
 
         if (flagColor != opponent) {
-            player.sendMessage(MM.deserialize(StaticVariables.WRONG_BANNER_TEAM));
+            player.sendMessage(getMM().deserialize(StaticVariables.WRONG_BANNER_TEAM));
             return;
         }
         event.getClickedBlock().setType(Material.AIR);
@@ -230,7 +228,7 @@ public class MatchListener implements Listener {
         Team capturer = Team.getOpposite(capturedTeam);
         playSoundForGroup(match.getPlayers(capturedTeam), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1F, 0F);
         playSoundForGroup(match.getPlayers(capturer), Sound.ENTITY_RAVAGER_CELEBRATE, 1F, 2F);
-        match.broadcastMessage(MM.deserialize(message));
+        match.broadcastMessage(getMM().deserialize(message));
     }
 
 }

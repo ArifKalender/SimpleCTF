@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 public class Match {
@@ -32,7 +32,7 @@ public class Match {
     private final Map<Team, Location> flagLocations = new HashMap<>();
     private final Map<Team, Entity> flagCarriers = new HashMap<>();
     private final Map<Team, Integer> teamScores = new HashMap<>();
-    private final int WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
+    private static final int WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
     private BossBar bossBar;
     private BukkitTask task;
 
@@ -52,7 +52,7 @@ public class Match {
         players.put(Team.BLUE, bluePlayers);
         if (flagLocations.get(Team.RED) == null || flagLocations.get(Team.BLUE) == null) {
             SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
-            broadcastMessage(MM.deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
+            broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
             return false;
         }
         this.loadBlocks(true);
@@ -61,7 +61,7 @@ public class Match {
         setScore(Team.BLUE, 0);
         initPlayers(Team.RED, true);
         initPlayers(Team.BLUE, true);
-        broadcastMessage(MM.deserialize(StaticVariables.MATCH_START));
+        broadcastMessage(getMM().deserialize(StaticVariables.MATCH_START));
         return true;
     }
 
@@ -95,8 +95,8 @@ public class Match {
                 playFlagAnimation(Team.RED, Material.RED_BANNER, Material.RED_CONCRETE);
                 playFlagAnimation(Team.BLUE, Material.BLUE_BANNER, Material.BLUE_CONCRETE);
 
-                if (getScore(Team.BLUE) >= Match.this.WIN_SCORE) winMatch(Team.BLUE);
-                else if (getScore(Team.RED) >= Match.this.WIN_SCORE) winMatch(Team.RED);
+                if (getScore(Team.BLUE) >= WIN_SCORE) winMatch(Team.BLUE);
+                else if (getScore(Team.RED) >= WIN_SCORE) winMatch(Team.RED);
 
                 updateBossBar(timeLeft);
                 if (getPlayersInMatch() <= 0) unloadMatch("<red>No players left.");
@@ -169,7 +169,7 @@ public class Match {
     private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
         flagLoc.getBlock().setType(bannerType);
         removeFlag(player, team);
-        broadcastMessage(MM.deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
+        broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
 
     /**
@@ -182,7 +182,7 @@ public class Match {
         initPlayers(Team.BLUE, false);
         loadBlocks(true);
         removeFlag(player, capturedTeam);
-        broadcastMessage(MM.deserialize(
+        broadcastMessage(getMM().deserialize(
                 StaticVariables.PLAYER_RETURN_FLAG
                         .replace("%player%", player.getName())
                         .replace("%opposite_color%", capturedTeam.name())
@@ -209,13 +209,13 @@ public class Match {
      * @param reason The message to send the players, internally handled via {@code MiniMessage} API
      */
     public void unloadMatch(@Nullable String reason) {
-        if (reason != null) broadcastMessage(MM.deserialize(reason));
-        players.get(Team.RED).forEach(this::removePlayerFromMatch);
-        players.get(Team.BLUE).forEach(this::removePlayerFromMatch);
+        if (reason != null) broadcastMessage(getMM().deserialize(reason));
+        getPlayers(Team.RED).forEach(this::removePlayerFromMatch);
+        getPlayers(Team.BLUE).forEach(this::removePlayerFromMatch);
         setScore(Team.RED, 0);
         setScore(Team.BLUE, 0);
         this.loadBlocks(false);
-        this.task.cancel();
+        if (this.task != null) this.task.cancel();
         if (this.bossBar != null) {
             this.bossBar.removeAll();
             this.bossBar=null;
@@ -241,6 +241,7 @@ public class Match {
      */
     public void winMatch(Team team) {
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
+
         unloadMatch(StaticVariables.MATCH_WIN.replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
@@ -264,10 +265,10 @@ public class Match {
      * @param component Message to send
      */
     public void broadcastMessage(Component component) {
-        players.get(Team.RED).forEach(player -> {
+        getPlayers(Team.RED).forEach(player -> {
             player.sendMessage(component);
         });
-        players.get(Team.BLUE).forEach(player -> {
+        getPlayers(Team.BLUE).forEach(player -> {
             player.sendMessage(component);
         });
     }
@@ -276,7 +277,7 @@ public class Match {
      * @return Whether the given player is in a match or not
      */
     public boolean isPlayerInMatch(Player player) {
-        return players.get(Team.RED).contains(player) || players.get(Team.BLUE).contains(player);
+        return getPlayers(Team.RED).contains(player) || getPlayers(Team.BLUE).contains(player);
     }
 
     /**
@@ -293,8 +294,8 @@ public class Match {
     /**
      * The amount of players in the game
      */
-    public long getPlayersInMatch() {
-        return players.get(Team.RED).size() + players.get(Team.BLUE).size();
+    public int getPlayersInMatch() {
+        return getPlayers(Team.RED).size() + getPlayers(Team.BLUE).size();
     }
 
     /**
@@ -309,9 +310,9 @@ public class Match {
      * Removes the given player from the match
      */
     public void removePlayerFromMatch(Player player) {
-        players.get(Team.RED).remove(player);
+        players.get(Team.RED).remove(player); //Not using getPlayers() because it returns a copy where we want to remove the players from the actual list
         players.get(Team.BLUE).remove(player);
-        this.bossBar.removePlayer(player);
+        if (this.bossBar != null) this.bossBar.removePlayer(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
         resetPlayerState(player);
     }
@@ -340,7 +341,7 @@ public class Match {
      */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
-        Component component = MM.deserialize(StaticVariables.FLAG_DROPPED_AT
+        Component component = getMM().deserialize(StaticVariables.FLAG_DROPPED_AT
                 .replace("%player%", dropper.getName())
                 .replace("%color%", team.name().toUpperCase())
                 .replace("%coordinates%", locString));

@@ -5,7 +5,7 @@ import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
 public enum Team {
     RED,
@@ -36,8 +36,8 @@ public enum Team {
      * @return The {@code ItemStack} item of the given team, refer to {@code BannerItems}
      */
     public static ItemStack getTeamFlag(Team team) {
-        if (team == RED) return BANNER_ITEMS.redFlag;
-        else if (team == BLUE) return BANNER_ITEMS.blueFlag;
+        if (team == RED) return getBannerItems().redFlag;
+        else if (team == BLUE) return getBannerItems().blueFlag;
         else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 
@@ -45,8 +45,8 @@ public enum Team {
      * @return The Team of the given {@code ItemStack}, if given item is invalid returns {@code Team.NONE}
      */
     public static Team getTeamFromFlag(ItemStack itemStack) {
-        if (BANNER_ITEMS.isBlueFlag(itemStack)) return BLUE;
-        else if (BANNER_ITEMS.isRedFlag(itemStack)) return RED;
+        if (getBannerItems().isBlueFlag(itemStack)) return BLUE;
+        else if (getBannerItems().isRedFlag(itemStack)) return RED;
         else return NONE;
     }
 }

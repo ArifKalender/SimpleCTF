@@ -8,11 +8,11 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
 public class UtilizationMethods {
 
@@ -37,7 +37,7 @@ public class UtilizationMethods {
         ItemStack target = null;
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            if (BANNER_ITEMS.isFlag(item, teamColor)) {
+            if (getBannerItems().isFlag(item, teamColor)) {
                 target = item;
                 break;
             }
@@ -59,7 +59,7 @@ public class UtilizationMethods {
         boolean found = false;
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            else if (BANNER_ITEMS.isFlag(item)) {
+            else if (getBannerItems().isFlag(item)) {
                 player.getInventory().removeItem(item);
                 Item drop = player.getWorld().dropItem(player.getLocation(), item);
                 Team flagTeam = Team.getTeamFromFlag(item);
