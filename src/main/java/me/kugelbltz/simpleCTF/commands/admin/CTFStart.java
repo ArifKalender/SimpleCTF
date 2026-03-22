@@ -28,7 +28,7 @@ public class CTFStart {
             player.sendMessage(MM.deserialize("<red>There isn't anybody queued in neither red nor blue teams."));
             return;
         }
-        new Match(CTFJoin.getPlayerQueue(Team.RED), CTFJoin.getPlayerQueue(Team.BLUE));
+        new Match().startMatch(CTFJoin.getPlayerQueue(Team.RED), CTFJoin.getPlayerQueue(Team.BLUE));
         CTFJoin.getUUIDQueue(Team.RED).clear();
         CTFJoin.getUUIDQueue(Team.BLUE).clear();
     }

@@ -39,7 +39,7 @@ public class Match {
     private BossBar bossBar;
     private BukkitTask task;
 
-    public Match(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
+    public void startMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         boolean canStart = initMatch(redPlayers, bluePlayers);
         if (canStart) this.task = gameLoop();
     }
@@ -64,6 +64,7 @@ public class Match {
         setScore(Team.BLUE, 0);
         initPlayers(Team.RED, true);
         initPlayers(Team.BLUE, true);
+        broadcastMessage(MM.deserialize(StaticVariables.MATCH_START));
         return true;
     }
 
@@ -94,8 +95,8 @@ public class Match {
                 }
                 handleFlag(Team.RED, Material.RED_BANNER);
                 handleFlag(Team.BLUE, Material.BLUE_BANNER);
-                playFlagAnimation(Team.RED, Material.RED_CONCRETE);
-                playFlagAnimation(Team.BLUE, Material.BLUE_CONCRETE);
+                playFlagAnimation(Team.RED, Material.RED_BANNER, Material.RED_CONCRETE);
+                playFlagAnimation(Team.BLUE, Material.BLUE_BANNER, Material.BLUE_CONCRETE);
 
                 if (getScore(Team.BLUE) >= Match.this.WIN_SCORE) winMatch(Team.BLUE);
                 else if (getScore(Team.RED) >= Match.this.WIN_SCORE) winMatch(Team.RED);
@@ -109,10 +110,10 @@ public class Match {
     /**
      * Plays animations of the flags and flag carriers
      */
-    private void playFlagAnimation(Team team, Material particleColorSource) {
+    private void playFlagAnimation(Team team, Material banner, Material particleColorSource) {
         // --- Block particles for flags ---
         Location flagLoc = getFlagLocation(team);
-        boolean available = flagLoc.getBlock().getType() == Material.RED_BANNER;
+        boolean available = flagLoc.getBlock().getType() == banner;
         if (available) flagLoc.getWorld().spawnParticle(Particle.FALLING_DUST, flagLoc,
                 10, 1.5, 1.5, 1.5, particleColorSource.createBlockData());
         else flagLoc.getWorld().spawnParticle(Particle.CRIT, flagLoc,
@@ -145,17 +146,21 @@ public class Match {
      * Handles the given flag and nearby entities to it
      */
     private void handleFlag(Team flag, Material bannerType) {
-        for (LivingEntity entity : getFlagLocation(flag).getNearbyLivingEntities(3)) {
-            if (!(entity instanceof Player player)) continue;
-            Team self = Team.getTeam(player);
-            if (self == Team.NONE) continue;
-            Team enemy = Team.getOpposite(flag);
+        for (LivingEntity lEntity : getFlagLocation(flag).getNearbyLivingEntities(3)) {
+            if (!(lEntity instanceof Player player)) return;
+            Team loopPlayerTeam = Team.getTeam(player);
+            Team enemyTeam = Team.getOpposite(flag);
+            Entity flagCarrierFunc = getFlagCarrier(flag);
+            Entity flagCarrierEnemy = getFlagCarrier(enemyTeam);
+            Location flagLoc = getFlagLocation(flag);
 
-            if (self == flag && getFlagCarrier(flag) != null && getFlagCarrier(flag).equals(player)) {
-                saveOwnFlag(player, getFlagLocation(flag), bannerType, self);
-                continue;
-            } else if (self == enemy && getFlagCarrier(enemy) != null && getFlagCarrier(enemy).equals(player)) {
-                returnFlag(player, enemy, flag);
+            if (loopPlayerTeam == flag) {
+                if (flagCarrierFunc != null && flagCarrierFunc.equals(player)) {
+                    saveOwnFlag(player, flagLoc, bannerType, flag);
+                }
+                if (flagCarrierEnemy != null && flagCarrierEnemy.equals(player)) {
+                    returnFlag(player, loopPlayerTeam, enemyTeam);
+                }
             }
         }
     }
@@ -239,8 +244,8 @@ public class Match {
      * Makes it so the given team wins the match.
      */
     public void winMatch(Team team) {
-        unloadMatch(StaticVariables.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
+        unloadMatch(StaticVariables.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
     /**

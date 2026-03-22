@@ -33,4 +33,10 @@ public class BannerItems {
     public boolean isFlag(ItemStack itemStack) {
         return isRedFlag(itemStack) || isBlueFlag(itemStack);
     }
+
+    public boolean isFlag(ItemStack itemStack, Team targetTeam) {
+        if (targetTeam == Team.BLUE) return isBlueFlag(itemStack);
+        else if (targetTeam == Team.RED) return isRedFlag(itemStack);
+        else return false;
+    }
 }

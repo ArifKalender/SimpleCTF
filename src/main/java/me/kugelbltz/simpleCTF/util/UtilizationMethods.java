@@ -28,7 +28,7 @@ public class UtilizationMethods {
     }
 
     /**
-     * Removes the given flag from the player's inventory
+     * Removes the given flag once from the player's inventory
      * @return true if a flag is found, false otherwise
      */
     public static boolean removeFlag(Player player, Team teamColor) {
@@ -37,8 +37,10 @@ public class UtilizationMethods {
         ItemStack target = null;
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            else if (teamColor == Team.RED && BANNER_ITEMS.isRedFlag(item)) target = item;
-            else if (teamColor == Team.BLUE && BANNER_ITEMS.isBlueFlag(item)) target = item;
+            if (BANNER_ITEMS.isFlag(item, teamColor)) {
+                target = item;
+                break;
+            }
             else continue;
         }
         if (target == null) return false;

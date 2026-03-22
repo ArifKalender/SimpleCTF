@@ -19,19 +19,16 @@ public class CTFSetFlag {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
         }
-        if (args.length > 2) {
-            player.sendMessage(MM.deserialize("<red>Correct usage: /ctf setflag <red|blue>"));
-            return;
-        } else if (args.length < 2) {
+        if (args.length != 2) {
             player.sendMessage(MM.deserialize("<red>Correct usage: /ctf setflag <red|blue>"));
             return;
         }
         String color = args[1].toUpperCase(Locale.ENGLISH);
         Location location = player.getLocation();
         location.setPitch(0);
-        location.setX((int) location.getX());
+        location.setX(Math.floor(location.getX()));
         location.setY((int) location.getY());
-        location.setZ((int) location.getZ());
+        location.setZ(Math.floor(location.getZ()));
         switch (color) {
             case "RED" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);

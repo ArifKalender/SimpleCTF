@@ -59,7 +59,7 @@ public class StaticVariables {
 
             MATCH_WIN = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchWin", "The %color% team won the match!");
             MATCH_TIME_OUT = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchTimeOut", "The match ran out of time!");
-            MATCH_START = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchStart", "The match just started!");
+            MATCH_START = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchStart", "<bold>The match just started!");
             PLAYER_CAUGHT_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerCaughtFlag", "%player% CAUGHT THE %color% FLAG!");
             PLAYER_RETURN_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerReturnFlag", "%player% returned with %opposite_color% team's flag!");
             PLAYER_PLACE_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerPlaceFlag", "%player% placed back their flag!");

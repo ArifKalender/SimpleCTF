@@ -18,12 +18,15 @@ public class CTFStop {
             return;
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
+        player.sendMessage(MM.deserialize("<red> "));
         if (!isMatchRunning) {
-            CTFJoin.broadcastMessageToQueue(MM.deserialize(StaticVariables.PREFIX + "<red> Queue interrupted by an admin!"));
+            player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "<red>Cleaning current queue..."));
+            CTFJoin.broadcastMessageToQueue(MM.deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));
             CTFJoin.getUUIDQueue(Team.RED).clear();
             CTFJoin.getUUIDQueue(Team.BLUE).clear();
             return;
         }
+        player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "<red>Interrupting current match..."));
         SimpleCTF.getInstance().getCurrentMatch().unloadMatch(StaticVariables.PREFIX + "<red>Match interrupted by an admin!");
     }
 }
