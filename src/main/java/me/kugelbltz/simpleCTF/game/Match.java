@@ -46,8 +46,8 @@ public class Match {
      * Returns true if successful, false if not
      */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
-        setFlagLocations(Team.RED, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag"));
-        setFlagLocations(Team.BLUE, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag"));
+        setFlagLocation(Team.RED, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag"));
+        setFlagLocation(Team.BLUE, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag"));
         players.put(Team.RED, redPlayers);
         players.put(Team.BLUE, bluePlayers);
         if (flagLocations.get(Team.RED) == null || flagLocations.get(Team.BLUE) == null) {
@@ -328,7 +328,7 @@ public class Match {
     /**
      * Sets the flag location for the given team
      */
-    public void setFlagLocations(Team team, Location newLocation) {
+    public void setFlagLocation(Team team, Location newLocation) {
         flagLocations.put(team, newLocation);
     }
 
