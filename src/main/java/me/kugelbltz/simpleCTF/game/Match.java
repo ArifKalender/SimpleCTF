@@ -22,10 +22,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
@@ -195,7 +192,6 @@ public class Match {
 
     /**
      * Updates the bossbar
-     *
      * @param timeLeft To update the health left of the boss bar
      */
     private void updateBossBar(int timeLeft) {
@@ -210,7 +206,6 @@ public class Match {
 
     /**
      * Unloads match for the given reason
-     *
      * @param reason The message to send the players, internally handled via {@code MiniMessage} API
      */
     public void unloadMatch(@Nullable String reason) {
@@ -230,7 +225,6 @@ public class Match {
 
     /**
      * Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions
-     *
      * @param player To reset
      */
     public void resetPlayerState(Player player) {
@@ -303,8 +297,12 @@ public class Match {
         return players.get(Team.RED).size() + players.get(Team.BLUE).size();
     }
 
+    /**
+     * Returns the list of players for the given team.
+     * @apiNote Read-only
+     */
     public Collection<Player> getPlayers(Team team) {
-        return players.get(team);
+        return new HashSet<>(players.get(team));
     }
 
     /**
@@ -320,11 +318,15 @@ public class Match {
 
     /**
      * @return The flag location for the given team
+     * @apiNote Read-only
      */
     public Location getFlagLocation(Team team) {
-        return flagLocations.get(team);
+        return flagLocations.get(team).clone();
     }
 
+    /**
+     * Sets the flag location for the given team
+     */
     public void setFlagLocations(Team team, Location newLocation) {
         flagLocations.put(team, newLocation);
     }

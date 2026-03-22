@@ -40,8 +40,7 @@ public class MatchListener implements Listener {
         if (match == null) return;
         if (!match.isPlayerInMatch(player)) return;
         quitDuringMatch.add(player.getUniqueId());
-        match.getPlayers(Team.RED).remove(player);
-        match.getPlayers(Team.BLUE).remove(player);
+        match.removePlayerFromMatch(player);
 
         // --- Drop the flag item ---
         UtilizationMethods.dropAllFlags(player);
