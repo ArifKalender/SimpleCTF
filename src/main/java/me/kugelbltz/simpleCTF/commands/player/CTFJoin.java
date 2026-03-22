@@ -10,8 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.Locale;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.util.QueueHandler.alreadyInQueue;
-import static me.kugelbltz.simpleCTF.util.QueueHandler.prepareTeams;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 public class CTFJoin implements CTFCommand {
 
@@ -44,7 +43,7 @@ public class CTFJoin implements CTFCommand {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         boolean matchOccupied = match != null;
 
-        if (alreadyInQueue(player)) {
+        if (getQueueHandler().alreadyInQueue(player)) {
             player.sendMessage(getMM().deserialize(StaticVariables.ALREADY_IN_QUEUE));
             return;
         }
@@ -53,7 +52,7 @@ public class CTFJoin implements CTFCommand {
             return;
         }
 
-        prepareTeams(player, team);
+        getQueueHandler().prepareTeams(player, team);
     }
 
 

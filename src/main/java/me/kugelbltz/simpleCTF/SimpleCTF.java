@@ -6,6 +6,7 @@ import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.game.listeners.MatchListener;
 import me.kugelbltz.simpleCTF.game.listeners.QueueListener;
 import me.kugelbltz.simpleCTF.model.BannerItems;
+import me.kugelbltz.simpleCTF.util.QueueHandler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,7 +15,8 @@ import org.jetbrains.annotations.Nullable;
 public final class SimpleCTF extends JavaPlugin {
 
     private static BannerItems BANNER_ITEMS;
-    private static MiniMessage MM;
+    private static MiniMessage MINI_MESSAGE;
+    private static QueueHandler QUEUE_HANDLER;
     private static SimpleCTF plugin;
     private static Match currentMatch = null;
 
@@ -29,11 +31,12 @@ public final class SimpleCTF extends JavaPlugin {
     }
 
     private void initialize() {
-        MM = MiniMessage.miniMessage();
         loadConfigs();
         registerListeners();
         registerCommands();
+        MINI_MESSAGE = MiniMessage.miniMessage();
         BANNER_ITEMS = new BannerItems();
+        QUEUE_HANDLER = new QueueHandler();
     }
 
     private void registerListeners() {
@@ -69,6 +72,10 @@ public final class SimpleCTF extends JavaPlugin {
     }
 
     public static MiniMessage getMM() {
-        return MM;
+        return MINI_MESSAGE;
+    }
+
+    public static QueueHandler getQueueHandler() {
+        return QUEUE_HANDLER;
     }
 }

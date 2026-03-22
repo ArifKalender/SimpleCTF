@@ -1,6 +1,5 @@
 package me.kugelbltz.simpleCTF.util;
 
-import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
@@ -10,17 +9,19 @@ import org.bukkit.entity.Player;
 import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
+
 
 public class QueueHandler {
 
-    private static Collection<UUID> RED_UUID_QUEUE = new HashSet<>();
-    private static Collection<UUID> BLUE_UUID_QUEUE = new HashSet<>();
+    private Collection<UUID> RED_UUID_QUEUE = new HashSet<>();
+    private Collection<UUID> BLUE_UUID_QUEUE = new HashSet<>();
 
     /**
      * @param team To get the list of
      * @return The list of UUID's of players in a team's queue
      */
-    private static Collection<UUID> getUUIDQueue(Team team) {
+    private Collection<UUID> getUUIDQueue(Team team) {
         if (team == Team.RED) return RED_UUID_QUEUE;
         else if (team == Team.BLUE) return BLUE_UUID_QUEUE;
         else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
@@ -31,7 +32,7 @@ public class QueueHandler {
      * @apiNote Read only
      * @return The list of players in a teams queue, pulls from {@code getUUIDQueue()}
      */
-    public static Set<Player> getPlayerQueue(Team team) {
+    public Set<Player> getPlayerQueue(Team team) {
         Set<Player> toReturn = new HashSet<>();
         getUUIDQueue(team).forEach(uuid -> {
             Player toAdd = Bukkit.getPlayer(uuid);
@@ -44,7 +45,7 @@ public class QueueHandler {
      * Broadcast the given message to all queued players
      * @param component
      */
-    public static void broadcastMessageToQueue(Component component) {
+    public void broadcastMessageToQueue(Component component) {
         getPlayerQueue(Team.RED).forEach(player -> {
             player.sendMessage(component);
         });
@@ -53,7 +54,7 @@ public class QueueHandler {
         });
     }
 
-    public static void prepareTeams(Player player, Team team) {
+    public void prepareTeams(Player player, Team team) {
         if (getPlayerQueue(team).size() < StaticVariables.MAX_PLAYERS_PER_TEAM) {
             addPlayerToQueue(player, team);
         } else {
@@ -70,17 +71,17 @@ public class QueueHandler {
      * @param player To add
      * @param team To add to
      */
-    public static void addPlayerToQueue(Player player, Team team) {
+    public void addPlayerToQueue(Player player, Team team) {
         UUID uuid = player.getUniqueId();
         if (team == Team.RED) RED_UUID_QUEUE.add(uuid);
         else if (team == Team.BLUE) BLUE_UUID_QUEUE.add(uuid);
         else return;
     }
 
-    public static void removePlayerFromQueue(Player player) {
+    public void removePlayerFromQueue(Player player) {
         removePlayerFromQueue(player.getUniqueId());
     }
-    public static void removePlayerFromQueue(UUID uuid) {
+    public void removePlayerFromQueue(UUID uuid) {
         getUUIDQueue(Team.RED).remove(uuid);
         getUUIDQueue(Team.BLUE).remove(uuid);
     }
@@ -88,26 +89,41 @@ public class QueueHandler {
     /**
      * @return Whether the given player is in a queue or not.
      */
-    public static boolean alreadyInQueue(Player player) {
+    public boolean alreadyInQueue(Player player) {
         return RED_UUID_QUEUE.contains(player.getUniqueId()) || BLUE_UUID_QUEUE.contains(player.getUniqueId());
     }
 
-    public static boolean anyoneInQueue() {
+    public boolean anyoneInQueue() {
         return !getUUIDQueue(Team.BLUE).isEmpty() || !getUUIDQueue(Team.RED).isEmpty();
     }
 
     /**
      * @return The queue {@code Team} of the given player
      */
-    public static Team getQueueTeam(Player player) {
+    public Team getQueueTeam(Player player) {
         if (RED_UUID_QUEUE.contains(player.getUniqueId())) return Team.RED;
         else if (BLUE_UUID_QUEUE.contains(player.getUniqueId())) return Team.BLUE;
         else return Team.NONE;
     }
 
-    public static void clearQueue() {
+    public void clearQueue() {
         getUUIDQueue(Team.RED).clear();
         getUUIDQueue(Team.BLUE).clear();
+    }
+
+    public void removePlayer(Player player, boolean sendMessageToPlayer) {
+        if (!getQueueHandler().alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
+            if (sendMessageToPlayer)
+                player.sendMessage(getMM().deserialize(StaticVariables.NOT_IN_TEAM));
+            return;
+        }
+        Team team = getQueueHandler().getQueueTeam(player);
+        if (team == Team.NONE) return;
+        getQueueHandler().removePlayerFromQueue(player);
+        getQueueHandler().getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
+                .sendMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
+        if (sendMessageToPlayer)
+            player.sendMessage(getMM().deserialize(StaticVariables.TEAM_LEAVE));
     }
 
 }

@@ -41,7 +41,6 @@ public class UtilizationMethods {
                 target = item;
                 break;
             }
-            else continue;
         }
         if (target == null) return false;
         player.getInventory().removeItem(target);
@@ -67,7 +66,6 @@ public class UtilizationMethods {
                 match.broadcastFlagDropLocation(flagTeam, player, player.getLocation());
                 found = true;
             }
-            else continue;
         }
         return found;
     }

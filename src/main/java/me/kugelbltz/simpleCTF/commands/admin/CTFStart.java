@@ -5,10 +5,11 @@ import me.kugelbltz.simpleCTF.commands.CTFCommand;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
+import me.kugelbltz.simpleCTF.util.QueueHandler;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.util.QueueHandler.*;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 public class CTFStart implements CTFCommand {
     /**
@@ -25,11 +26,11 @@ public class CTFStart implements CTFCommand {
             player.sendMessage(getMM().deserialize(StaticVariables.MATCH_OCCUPIED));
             return;
         }
-        if (!anyoneInQueue()) {
+        if (!getQueueHandler().anyoneInQueue()) {
             player.sendMessage(getMM().deserialize("<red>There isn't anybody queued in neither red nor blue teams."));
             return;
         }
-        new Match().startMatch(getPlayerQueue(Team.RED), getPlayerQueue(Team.BLUE));
-        clearQueue();
+        new Match().startMatch(getQueueHandler().getPlayerQueue(Team.RED), getQueueHandler().getPlayerQueue(Team.BLUE));
+        getQueueHandler().clearQueue();
     }
 }

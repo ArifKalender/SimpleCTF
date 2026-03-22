@@ -6,8 +6,7 @@ import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.util.QueueHandler.broadcastMessageToQueue;
-import static me.kugelbltz.simpleCTF.util.QueueHandler.clearQueue;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 public class CTFStop implements CTFCommand {
     /**
@@ -22,8 +21,8 @@ public class CTFStop implements CTFCommand {
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         if (!isMatchRunning) {
             player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<red>Cleaning current queue..."));
-            broadcastMessageToQueue(getMM().deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));
-            clearQueue();
+            getQueueHandler().broadcastMessageToQueue(getMM().deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));
+            getQueueHandler().clearQueue();
             return;
         }
         player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<red>Interrupting current match..."));
