@@ -4,8 +4,12 @@ import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
 
@@ -31,8 +35,15 @@ public class UtilizationMethods {
         }
         if (target == null) return;
         player.getInventory().removeItem(target);
-        if (teamColor == Team.RED) match.setRedFlagCarrier(null);
-        else match.setBlueFlagCarrier(null);
+        match.setFlagCarrier(null, teamColor);
+    }
+
+    public static void playSoundForGroup(Collection<Player> players, Sound sound, @Nullable Float volume, @Nullable Float pitch) {
+        if (volume == null) volume = 1f;
+        if (pitch == null) pitch = 1f;
+        for (Player player : players) {
+            player.playSound(player, sound, volume, pitch);
+        }
     }
 
 }

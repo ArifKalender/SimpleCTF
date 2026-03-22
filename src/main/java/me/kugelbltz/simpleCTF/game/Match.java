@@ -2,12 +2,12 @@ package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
+import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.model.Team;
+import me.kugelbltz.simpleCTF.util.UtilizationMethods;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -17,6 +17,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -28,8 +29,8 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 // TODO: Handle leave/death situations properly
-// TODO: Cleanup code xx
 // TODO: Add sound effects!
+// FIXME: Particles can be messed up
 public class Match {
     private final Set<Player> redPlayers = new HashSet<>();
     private final Set<Player> bluePlayers = new HashSet<>();
@@ -74,15 +75,6 @@ public class Match {
         });
     }
 
-    public void resetPlayerState(Player player) {
-        player.setExp(0);
-        player.setLevel(0);
-        player.setFoodLevel(20);
-        player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
-        player.getInventory().clear();
-        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-    }
-
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
             int timeLeft = ConfigManager.MATCH_TIME;
@@ -105,51 +97,24 @@ public class Match {
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
     }
 
-    public void winMatch(Team team) {
-        unloadMatch(ConfigManager.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
-    }
-
     private void playFlagAnimation() {
         // --- Block particles for flags ---
         boolean redAvailable = this.redFlagLocation.getBlock().getType() == Material.RED_BANNER;
         boolean blueAvailable = this.blueFlagLocation.getBlock().getType() == Material.BLUE_BANNER;
-        if (redAvailable)
-            this.redFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, redFlagLocation, 10, 1.5, 1.5, 1.5, Material.RED_CONCRETE_POWDER.createBlockData());
-        if (blueAvailable)
-            this.blueFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, blueFlagLocation, 10, 1.5, 1.5, 1.5, Material.BLUE_CONCRETE_POWDER.createBlockData());
+        if (redAvailable) this.redFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, redFlagLocation, 10, 1.5, 1.5, 1.5, Material.RED_CONCRETE_POWDER.createBlockData());
+        else this.redFlagLocation.getWorld().spawnParticle(Particle.CRIT, redFlagLocation, 10, 0.5, 0.5, 0.5, 0.05);
+        if (blueAvailable) this.blueFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, blueFlagLocation, 10, 1.5, 1.5, 1.5, Material.BLUE_CONCRETE_POWDER.createBlockData());
+        else this.blueFlagLocation.getWorld().spawnParticle(Particle.CRIT, blueFlagLocation, 10, 0.5, 0.5, 0.5, 0.05);
 
         // --- Player particles for flag carriers ---
-        boolean redCarrierAvailable = getRedFlagCarrier() != null;
-        boolean blueCarrierAvailable = getBlueFlagCarrier() != null;
+        boolean redCarrierAvailable = getFlagCarrier(Team.RED) != null;
+        boolean blueCarrierAvailable = getFlagCarrier(Team.BLUE) != null;
         if (redCarrierAvailable) {
-            redFlagLocation.getWorld().spawnParticle(Particle.FALLING_DUST, redFlagCarrier.getLocation(), 10, 1, 1, 1, Material.RED_CONCRETE_POWDER.createBlockData());
+            redFlagCarrier.getWorld().spawnParticle(Particle.FALLING_DUST, redFlagCarrier.getLocation(), 10, 1, 1, 1, Material.RED_CONCRETE_POWDER.createBlockData());
         }
         if (blueCarrierAvailable) {
             blueFlagCarrier.getWorld().spawnParticle(Particle.FALLING_DUST, blueFlagCarrier.getLocation(), 10, 1, 1, 1, Material.BLUE_CONCRETE_POWDER.createBlockData());
         }
-    }
-
-    public void updateBossBar(int timeLeft) {
-        String title = "Red score: " + this.redScore + " | Blue score: " + this.blueScore;
-        double timeLeftNormalized = timeLeft / (double) ConfigManager.MATCH_TIME;
-        if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
-        else this.bossBar.setTitle(title);
-        this.bossBar.setProgress(timeLeftNormalized);
-        redPlayers.forEach(this.bossBar::addPlayer);
-        bluePlayers.forEach(this.bossBar::addPlayer);
-    }
-
-    public void unloadMatch(@Nullable String reason) {
-        broadcastMessage(MM.deserialize(reason));
-        this.redPlayers.forEach(this::removePlayerFromMatch);
-        this.bluePlayers.forEach(this::removePlayerFromMatch);
-        this.redScore = 0;
-        this.blueScore = 0;
-        this.bossBar.removeAll();
-        this.bossBar = null;
-        this.loadBlocks(false);
-        this.task.cancel();
-        SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
     private void loadBlocks(boolean place) {
@@ -174,7 +139,7 @@ public class Match {
                     continue;
                 }
                 if (redFlagCarrier != null && redFlagCarrier.equals(player)) {
-                    captureFlag(player, team, Team.getOpposite(team));
+                    returnFlag(player, team, Team.getOpposite(team));
                 }
             }
         }
@@ -191,7 +156,7 @@ public class Match {
                     continue;
                 }
                 if (blueFlagCarrier != null && blueFlagCarrier.equals(player)) {
-                    captureFlag(player, team, Team.getOpposite(team));
+                    returnFlag(player, team, Team.getOpposite(team));
                 }
             }
         }
@@ -203,7 +168,7 @@ public class Match {
         broadcastMessage(MM.deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
 
-    private void captureFlag(Player player, Team scoringTeam, Team capturedTeam) {
+    private void returnFlag(Player player, Team scoringTeam, Team capturedTeam) {
         if (scoringTeam == Team.RED) this.redScore++;
         else this.blueScore++;
 
@@ -215,30 +180,64 @@ public class Match {
                         .replace("%player%", player.getName())
                         .replace("%opposite_color%", capturedTeam.name())
         ));
+        Bukkit.getPluginManager().callEvent(new FlagScoreEvent(player, scoringTeam, capturedTeam));
     }
 
-    public Entity getRedFlagCarrier() {
-        return this.redFlagCarrier;
+    private void updateBossBar(int timeLeft) {
+        String title = "Red score: " + this.redScore + " | Blue score: " + this.blueScore;
+        double timeLeftNormalized = timeLeft / (double) ConfigManager.MATCH_TIME;
+        if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
+        else this.bossBar.setTitle(title);
+        this.bossBar.setProgress(timeLeftNormalized);
+        redPlayers.forEach(this.bossBar::addPlayer);
+        bluePlayers.forEach(this.bossBar::addPlayer);
     }
 
-    public void setRedFlagCarrier(@Nullable Entity redFlagCarrier) {
-        this.redFlagCarrier = redFlagCarrier;
+    public void unloadMatch(@Nullable String reason) {
+        broadcastMessage(MM.deserialize(reason));
+        this.redPlayers.forEach(this::removePlayerFromMatch);
+        this.bluePlayers.forEach(this::removePlayerFromMatch);
+        this.redScore = 0;
+        this.blueScore = 0;
+        this.bossBar.removeAll();
+        this.bossBar = null;
+        this.loadBlocks(false);
+        this.task.cancel();
+        SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
-    public Entity getBlueFlagCarrier() {
-        return this.blueFlagCarrier;
+    public void resetPlayerState(Player player) {
+        player.setExp(0);
+        player.setLevel(0);
+        player.setFoodLevel(20);
+        player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
+        player.getInventory().clear();
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
     }
 
-    public void setBlueFlagCarrier(@Nullable Entity blueFlagCarrier) {
-        this.blueFlagCarrier = blueFlagCarrier;
+    public void winMatch(Team team) {
+        unloadMatch(ConfigManager.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
+        Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
+        UtilizationMethods.playSoundForGroup(getTeamPlayers(team), Sound.ITEM_GOAT_HORN_SOUND_1, 3F, 1F);
+        UtilizationMethods.playSoundForGroup(getTeamPlayers(Team.getOpposite(team)), Sound.ENTITY_WITHER_AMBIENT, 3F, 1F);
     }
 
-    public Set<Player> getRedPlayers() {
-        return redPlayers;
+    public Entity getFlagCarrier(Team flagColor) {
+        if (flagColor == Team.RED) return this.redFlagCarrier;
+        else if (flagColor == Team.BLUE) return this.blueFlagCarrier;
+        else return null;
     }
 
-    public Set<Player> getBluePlayers() {
-        return bluePlayers;
+    public void setFlagCarrier(@Nullable Entity entity, @NotNull Team flagColor) {
+        if (flagColor == Team.RED) this.redFlagCarrier = entity;
+        else if (flagColor == Team.BLUE) this.blueFlagCarrier = entity;
+        else return;
+    }
+
+    public Set<Player> getTeamPlayers(Team team) {
+        if (team == Team.RED) return this.redPlayers;
+        else if (team == Team.BLUE) return this.bluePlayers;
+        else return null;
     }
 
     public void broadcastMessage(Component component) {
@@ -274,12 +273,10 @@ public class Match {
         resetPlayerState(player);
     }
 
-    public Location getRedFlagLocation() {
-        return redFlagLocation.clone();
-    }
-
-    public Location getBlueFlagLocation() {
-        return blueFlagLocation.clone();
+    public Location getFlagLocation(Team team) {
+        if (team == Team.RED) return this.redFlagLocation.clone();
+        else if (team == Team.BLUE) return this.blueFlagLocation.clone();
+        else return null;
     }
 
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {

@@ -25,7 +25,6 @@ public class CTFSetFlag {
         String color = args[1].toUpperCase(Locale.ENGLISH);
         Location location = player.getLocation();
         location.setPitch(0);
-        location.setYaw(0);
         location.setX((long) location.getX());
         location.setY((long) location.getY());
         location.setZ((long) location.getZ());

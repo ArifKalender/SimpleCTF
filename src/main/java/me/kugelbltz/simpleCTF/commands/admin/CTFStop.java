@@ -3,6 +3,7 @@ package me.kugelbltz.simpleCTF.commands.admin;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
@@ -15,9 +16,9 @@ public class CTFStop {
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         if (!isMatchRunning) {
-            CTFJoin.getBluePlayersUUIDQueue().clear();
-            CTFJoin.getRedPlayersUUIDQueue().clear();
             CTFJoin.broadcastMessageToQueue(MM.deserialize(ConfigManager.PREFIX + "<red> Queue interrupted by an admin!"));
+            CTFJoin.getUUIDQueue(Team.RED).clear();
+            CTFJoin.getUUIDQueue(Team.BLUE).clear();
             return;
         }
         SimpleCTF.getInstance().getCurrentMatch().unloadMatch(ConfigManager.PREFIX + "<red>Match interrupted by an admin!");

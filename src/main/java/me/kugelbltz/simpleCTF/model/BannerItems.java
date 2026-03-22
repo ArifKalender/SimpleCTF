@@ -19,13 +19,18 @@ public class BannerItems {
     }
 
     public boolean isRedFlag(ItemStack itemStack) {
+        if (itemStack.getItemMeta() == null) return false;
         String displayName = itemStack.getItemMeta().getDisplayName();
         return itemStack.getType() == Material.RED_BANNER && displayName.equals(this.redFlag.getItemMeta().getDisplayName());
     }
 
     public boolean isBlueFlag(ItemStack itemStack) {
+        if (itemStack.getItemMeta() == null) return false;
         String displayName = itemStack.getItemMeta().getDisplayName();
         return itemStack.getType() == Material.BLUE_BANNER && displayName.equals(this.blueFlag.getItemMeta().getDisplayName());
     }
 
+    public boolean isFlag(ItemStack itemStack) {
+        return isRedFlag(itemStack) || isBlueFlag(itemStack);
+    }
 }
