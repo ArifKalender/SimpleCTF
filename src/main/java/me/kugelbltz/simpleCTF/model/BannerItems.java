@@ -8,8 +8,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class BannerItems {
-    public final ItemStack blueFlag = new ItemStack(Material.BLUE_BANNER, 1);
-    public final ItemStack redFlag = new ItemStack(Material.RED_BANNER, 1);
+    private final ItemStack blueFlag = new ItemStack(Material.BLUE_BANNER, 1);
+    private final ItemStack redFlag = new ItemStack(Material.RED_BANNER, 1);
 
     public BannerItems() {
         ItemMeta redMeta = redFlag.getItemMeta();
@@ -43,5 +43,13 @@ public class BannerItems {
         if (targetTeam == Team.BLUE) return isBlueFlag(itemStack);
         else if (targetTeam == Team.RED) return isRedFlag(itemStack);
         else return false;
+    }
+
+    public ItemStack getBlueFlag() {
+        return blueFlag.clone();
+    }
+
+    public ItemStack getRedFlag() {
+        return redFlag.clone();
     }
 }

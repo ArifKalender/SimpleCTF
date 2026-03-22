@@ -36,8 +36,8 @@ public enum Team {
      * @return The {@code ItemStack} item of the given team, refer to {@code BannerItems}
      */
     public static ItemStack getTeamFlag(Team team) {
-        if (team == RED) return getBannerItems().redFlag;
-        else if (team == BLUE) return getBannerItems().blueFlag;
+        if (team == RED) return getBannerItems().getRedFlag();
+        else if (team == BLUE) return getBannerItems().getBlueFlag();
         else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 

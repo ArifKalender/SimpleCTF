@@ -281,7 +281,7 @@ public class Match {
     }
 
     /**
-     * @return The score of the blue team
+     * @return The score of the given team
      */
     public int getScore(Team team) {
         return teamScores.get(team);
