@@ -7,7 +7,7 @@ import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Locale;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.util.QueueHandler.alreadyInQueue;
@@ -15,12 +15,16 @@ import static me.kugelbltz.simpleCTF.util.QueueHandler.prepareTeams;
 
 public class CTFJoin implements CTFCommand {
 
+    private static void sendHelpMessage(Player player) {
+        player.sendMessage(getMM().deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
+    }
+
     /**
      * Command for players to join a team
      */
     @Override
     public void execute(Player player, String[] args) {
-        if (args.length != 2){
+        if (args.length != 2) {
             sendHelpMessage(player);
             return;
         }
@@ -50,9 +54,6 @@ public class CTFJoin implements CTFCommand {
         }
 
         prepareTeams(player, team);
-    }
-    private static void sendHelpMessage(Player player) {
-        player.sendMessage(getMM().deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
     }
 
 

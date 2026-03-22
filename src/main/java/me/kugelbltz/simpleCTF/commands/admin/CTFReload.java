@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class CTFReload implements CTFCommand {
+    private static void sendConfigMsg(Player player, String cfgName) {
+        player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<green>Reloading " + cfgName + "..."));
+    }
+
     /**
      * Command for reloading the config files
      */
@@ -21,9 +25,5 @@ public class CTFReload implements CTFCommand {
         sendConfigMsg(player, "config.yml");
         SimpleCTF.getInstance().reloadConfig();
         StaticVariables.init();
-    }
-
-    private static void sendConfigMsg(Player player, String cfgName) {
-        player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<green>Reloading " + cfgName + "..."));
     }
 }

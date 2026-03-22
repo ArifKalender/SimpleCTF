@@ -2,13 +2,12 @@ package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
-import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.util.QueueHandler.*;
+import static me.kugelbltz.simpleCTF.util.QueueHandler.broadcastMessageToQueue;
+import static me.kugelbltz.simpleCTF.util.QueueHandler.clearQueue;
 
 public class CTFStop implements CTFCommand {
     /**

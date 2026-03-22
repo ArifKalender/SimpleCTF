@@ -12,17 +12,6 @@ import static me.kugelbltz.simpleCTF.util.QueueHandler.*;
 
 // FIXME: SimpleCTF » You are not in a team. when in a match (because list resets when /ctf start is used)
 public class CTFLeave implements CTFCommand {
-    /**
-     * Command for players to leave from a match or their queue
-     */
-    @Override
-    public void execute(Player player, String[] args) {
-        removePlayer(player, true);
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
-        if (match != null)
-            match.removePlayerFromMatch(player);
-    }
-
     public static void removePlayer(Player player, boolean sendMessageToPlayer) {
         if (!alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
             if (sendMessageToPlayer)
@@ -36,5 +25,16 @@ public class CTFLeave implements CTFCommand {
                 .sendMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
         if (sendMessageToPlayer)
             player.sendMessage(getMM().deserialize(StaticVariables.TEAM_LEAVE));
+    }
+
+    /**
+     * Command for players to leave from a match or their queue
+     */
+    @Override
+    public void execute(Player player, String[] args) {
+        removePlayer(player, true);
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match != null)
+            match.removePlayerFromMatch(player);
     }
 }
