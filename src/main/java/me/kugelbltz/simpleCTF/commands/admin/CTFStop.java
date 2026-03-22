@@ -1,31 +1,33 @@
 package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.commands.CTFCommand;
 import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.util.QueueHandler.*;
 
-public class CTFStop {
+public class CTFStop implements CTFCommand {
     /**
      * Command for forcibly stopping a match or clearing the queue
      */
-    public static void execute(Player player, String[] args) {
+    @Override
+    public void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.stop")) {
-            player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
+            player.sendMessage(getMM().deserialize(StaticVariables.NO_PERMISSION));
             return;
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         if (!isMatchRunning) {
-            player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "<red>Cleaning current queue..."));
-            broadcastMessageToQueue(MM.deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));
+            player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<red>Cleaning current queue..."));
+            broadcastMessageToQueue(getMM().deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));
             clearQueue();
             return;
         }
-        player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "<red>Interrupting current match..."));
+        player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<red>Interrupting current match..."));
         SimpleCTF.getInstance().getCurrentMatch().unloadMatch(StaticVariables.PREFIX + "<red>Match interrupted by an admin!");
     }
 }
