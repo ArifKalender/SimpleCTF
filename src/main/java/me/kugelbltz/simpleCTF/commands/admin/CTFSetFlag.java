@@ -27,7 +27,7 @@ public class CTFSetFlag {
         Location location = player.getLocation();
         location.setPitch(0);
         location.setX(Math.floor(location.getX()));
-        location.setY((int) location.getY());
+        location.setY(Math.floor(location.getY()));
         location.setZ(Math.floor(location.getZ()));
         switch (color) {
             case "RED" -> {

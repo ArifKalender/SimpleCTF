@@ -209,7 +209,7 @@ public class Match {
      * @param reason The message to send the players, internally handled via {@code MiniMessage} API
      */
     public void unloadMatch(@Nullable String reason) {
-        broadcastMessage(MM.deserialize(reason));
+        if (reason != null) broadcastMessage(MM.deserialize(reason));
         players.get(Team.RED).forEach(this::removePlayerFromMatch);
         players.get(Team.BLUE).forEach(this::removePlayerFromMatch);
         setScore(Team.RED, 0);
