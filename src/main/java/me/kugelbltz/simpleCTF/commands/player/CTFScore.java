@@ -3,6 +3,7 @@ package me.kugelbltz.simpleCTF.commands.player;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
@@ -18,7 +19,7 @@ public class CTFScore {
         if (match == null) {
             msg = msg.replaceAll("%blue_score%", "0").replaceAll("%red_score%", "0");
         } else {
-            msg = msg.replaceAll("%blue_score%", String.valueOf(match.getBlueScore())).replaceAll("%red_score%", String.valueOf(match.getRedScore()));
+            msg = msg.replaceAll("%blue_score%", String.valueOf(match.getScore(Team.BLUE))).replaceAll("%red_score%", String.valueOf(match.getScore(Team.RED)));
         }
         player.sendMessage(MM.deserialize(msg));
     }

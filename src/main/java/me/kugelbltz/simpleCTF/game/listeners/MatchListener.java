@@ -21,10 +21,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.BANNER_ITEMS;
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
@@ -198,8 +195,8 @@ public class MatchListener implements Listener {
     private void onScore(FlagScoreEvent event) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
-        Set<Player> capturingTeam = match.getTeamPlayers(event.getCapturingTeam());
-        Set<Player> capturedTeam = match.getTeamPlayers(event.getCapturedTeam());
+        Collection<Player> capturingTeam = match.getTeamPlayers(event.getCapturingTeam());
+        Collection<Player> capturedTeam = match.getTeamPlayers(event.getCapturedTeam());
         UtilizationMethods.playSoundForGroup(capturingTeam, Sound.BLOCK_BELL_USE, 3F, 0F);
         UtilizationMethods.playSoundForGroup(capturedTeam, Sound.BLOCK_BELL_USE, 3F, 2F);
     }
