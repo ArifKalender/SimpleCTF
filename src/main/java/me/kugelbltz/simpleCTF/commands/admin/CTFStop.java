@@ -18,7 +18,6 @@ public class CTFStop {
             return;
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
-        player.sendMessage(MM.deserialize("<red> "));
         if (!isMatchRunning) {
             player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "<red>Cleaning current queue..."));
             CTFJoin.broadcastMessageToQueue(MM.deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));

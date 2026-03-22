@@ -40,7 +40,7 @@ public class StaticVariables {
     }
 
     public static void init() {
-        // As task, just in case init is triggered before complete startup.
+        // Designed to be only available after complete server startup, therefore running inside a scheduled task.
         Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> {
             // --- Init: Strings ---
             PREFIX = SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Prefix", "<#eb6434>SimpleCTF » <#e8cd33>");

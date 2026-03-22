@@ -246,7 +246,7 @@ public class Match {
      * Makes it so the given team wins the match.
      */
     public void winMatch(Team team) {
-        Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
+        Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
         unloadMatch(StaticVariables.MATCH_WIN.replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
@@ -262,13 +262,6 @@ public class Match {
      */
     public void setFlagCarrier(@Nullable Entity entity, @NotNull Team flagColor) {
         this.flagCarriers.put(flagColor, entity);
-    }
-
-    /**
-     * @return The players in the given team
-     */
-    public Collection<Player> getTeamPlayers(Team team) {
-        return players.get(team);
     }
 
     /**

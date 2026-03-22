@@ -40,8 +40,8 @@ public class MatchListener implements Listener {
         if (match == null) return;
         if (!match.isPlayerInMatch(player)) return;
         quitDuringMatch.add(player.getUniqueId());
-        match.getTeamPlayers(Team.RED).remove(player);
-        match.getTeamPlayers(Team.BLUE).remove(player);
+        match.getPlayers(Team.RED).remove(player);
+        match.getPlayers(Team.BLUE).remove(player);
 
         // --- Drop the flag item ---
         UtilizationMethods.dropAllFlags(player);
@@ -195,8 +195,8 @@ public class MatchListener implements Listener {
     private void onScore(FlagScoreEvent event) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
-        Collection<Player> capturingTeam = match.getTeamPlayers(event.getCapturingTeam());
-        Collection<Player> capturedTeam = match.getTeamPlayers(event.getCapturedTeam());
+        Collection<Player> capturingTeam = match.getPlayers(event.getCapturingTeam());
+        Collection<Player> capturedTeam = match.getPlayers(event.getCapturedTeam());
         UtilizationMethods.playSoundForGroup(capturingTeam, Sound.BLOCK_BELL_USE, 3F, 0F);
         UtilizationMethods.playSoundForGroup(capturedTeam, Sound.BLOCK_BELL_USE, 3F, 2F);
     }
@@ -228,8 +228,8 @@ public class MatchListener implements Listener {
         match.setFlagCarrier(player, capturedTeam);
         addItem(player, Team.getTeamFlag(capturedTeam));
         Team capturer = Team.getOpposite(capturedTeam);
-        playSoundForGroup(match.getTeamPlayers(capturedTeam), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1F, 0F);
-        playSoundForGroup(match.getTeamPlayers(capturer), Sound.ENTITY_RAVAGER_CELEBRATE, 1F, 2F);
+        playSoundForGroup(match.getPlayers(capturedTeam), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1F, 0F);
+        playSoundForGroup(match.getPlayers(capturer), Sound.ENTITY_RAVAGER_CELEBRATE, 1F, 2F);
         match.broadcastMessage(MM.deserialize(message));
     }
 
