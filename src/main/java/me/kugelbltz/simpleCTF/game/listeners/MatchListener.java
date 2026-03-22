@@ -45,7 +45,7 @@ public class MatchListener implements Listener {
 
         // --- Drop the flag item ---
         UtilizationMethods.dropAllFlags(player);
-        match.broadcastMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
+        match.broadcastMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName())));
         player.getInventory().clear();
     }
 
@@ -224,7 +224,7 @@ public class MatchListener implements Listener {
      * Plays sound effects for teams
      */
     private void captureFlag(Player player, Team capturedTeam, Match match) {
-        String message = StaticVariables.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replace("%color%", capturedTeam.name().toUpperCase(Locale.ENGLISH));
+        String message = StaticVariables.PLAYER_CAUGHT_FLAG.replace("%player%", player.getName()).replace("%color%", capturedTeam.name().toUpperCase(Locale.ENGLISH));
         match.setFlagCarrier(player, capturedTeam);
         addItem(player, Team.getTeamFlag(capturedTeam));
         Team capturer = Team.getOpposite(capturedTeam);

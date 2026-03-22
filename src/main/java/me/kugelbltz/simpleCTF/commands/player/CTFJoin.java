@@ -20,7 +20,7 @@ public class CTFJoin {
      * Command for players to join a team
      */
     public void execute(Player player, String[] args) {
-        if (args.length == 1 || args[1] == null) {
+        if (args.length != 2){
             sendHelpMessage(player);
             return;
         }
@@ -98,7 +98,7 @@ public class CTFJoin {
         }
 
         broadcastMessageToQueue(MM.deserialize(StaticVariables.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
-        player.sendMessage(MM.deserialize(StaticVariables.TEAM_JOIN.replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        player.sendMessage(MM.deserialize(StaticVariables.TEAM_JOIN.replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
     }
 
     private void sendHelpMessage(Player player) {

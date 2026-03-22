@@ -16,18 +16,24 @@ public class CTFLeave {
     public void execute(Player player, String[] args) {
         removePlayer(player, true);
         Match match = SimpleCTF.getInstance().getCurrentMatch();
-        if (match != null) match.removePlayerFromMatch(player);
+        if (match != null)
+            match.removePlayerFromMatch(player);
     }
 
     public static void removePlayer(Player player, boolean sendMessageToPlayer) {
         if (!CTFJoin.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
-            if (sendMessageToPlayer) player.sendMessage(MM.deserialize(StaticVariables.NOT_IN_TEAM));
+            if (sendMessageToPlayer)
+                player.sendMessage(MM.deserialize(StaticVariables.NOT_IN_TEAM));
             return;
         }
         Team team = CTFJoin.getQueueTeam(player);
-        if(CTFJoin.getUUIDQueue(team) == null) return;
+        if (team == Team.NONE) return;
+        if (CTFJoin.getUUIDQueue(team) == null)
+            return;
         CTFJoin.getUUIDQueue(team).remove(player.getUniqueId());
-        CTFJoin.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer.sendMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
-        if (sendMessageToPlayer) player.sendMessage(MM.deserialize(StaticVariables.TEAM_LEAVE));
+        CTFJoin.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
+                .sendMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
+        if (sendMessageToPlayer)
+            player.sendMessage(MM.deserialize(StaticVariables.TEAM_LEAVE));
     }
 }

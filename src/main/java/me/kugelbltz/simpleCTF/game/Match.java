@@ -147,7 +147,7 @@ public class Match {
      */
     private void handleFlag(Team flag, Material bannerType) {
         for (LivingEntity lEntity : getFlagLocation(flag).getNearbyLivingEntities(3)) {
-            if (!(lEntity instanceof Player player)) return;
+            if (!(lEntity instanceof Player player)) continue;
             Team loopPlayerTeam = Team.getTeam(player);
             Team enemyTeam = Team.getOpposite(flag);
             Entity flagCarrierFunc = getFlagCarrier(flag);
@@ -219,10 +219,12 @@ public class Match {
         players.get(Team.BLUE).forEach(this::removePlayerFromMatch);
         setScore(Team.RED, 0);
         setScore(Team.BLUE, 0);
-        this.bossBar = null;
         this.loadBlocks(false);
         this.task.cancel();
-        if (this.bossBar != null) this.bossBar.removeAll();
+        if (this.bossBar != null) {
+            this.bossBar.removeAll();
+            this.bossBar=null;
+        }
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
@@ -245,7 +247,7 @@ public class Match {
      */
     public void winMatch(Team team) {
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
-        unloadMatch(StaticVariables.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
+        unloadMatch(StaticVariables.MATCH_WIN.replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
     /**

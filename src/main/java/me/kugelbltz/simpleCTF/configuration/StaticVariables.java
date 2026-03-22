@@ -64,7 +64,7 @@ public class StaticVariables {
             PLAYER_RETURN_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerReturnFlag", "%player% returned with %opposite_color% team's flag!");
             PLAYER_PLACE_FLAG = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.PlayerPlaceFlag", "%player% placed back their flag!");
             MATCH_OCCUPIED = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.MatchOccupied", "There already is a match going on in this server, sorry!");
-            CURRENT_SCORE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.CurrentScore", "Current score: %score%");
+            CURRENT_SCORE = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.CurrentScore", "Blue score: %blue_score% | Red score: %red_score%");
             FLAG_DROPPED_AT = PREFIX + SimpleCTF.getInstance().getConfig().getString("SimpleCTF.Strings.Match.FlagDroppedAt", "%player% dropped %color% flag at %coordinates%!");
 
             // --- Init: Match variables ---

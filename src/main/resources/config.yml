@@ -3,7 +3,6 @@ SimpleCTF:
     Queue:
       MaxPlayersPerTeam: 8
       MinPlayersPerTeam: 1
-      QueueCountdown: 10
     Match:
       MatchTime: 600
       WinScore: 3
