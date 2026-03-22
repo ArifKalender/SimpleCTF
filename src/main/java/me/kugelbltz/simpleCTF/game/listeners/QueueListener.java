@@ -8,6 +8,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class QueueListener implements Listener {
 
+    /**
+     * Removing the queue players if they leave when they're queued
+     */
     @EventHandler
     private void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();

@@ -17,13 +17,16 @@ public class CTFJoin {
     private static Set<UUID> redPlayersQueue = new HashSet<>();
     private static Set<UUID> bluePlayersQueue = new HashSet<>();
 
+    /**
+     * Command for players to join a team
+     */
     public CTFJoin(Player player, String[] args) {
         if (args[1] == null) {
             sendHelpMessage(player);
             return;
         }
 
-        Team team = null;
+        Team team;
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
             if (team == Team.NONE) {
@@ -50,6 +53,10 @@ public class CTFJoin {
         prepareTeams(player, team);
     }
 
+    /**
+     * @param team To get the list of
+     * @return The list of UUID's of players in a team's queue
+     */
     public static Set<UUID> getUUIDQueue(Team team) {
         if (team == Team.RED) return redPlayersQueue;
         else if (team == Team.BLUE) return bluePlayersQueue;
@@ -57,8 +64,9 @@ public class CTFJoin {
     }
 
     /**
-     * @param team
+     * @param team To get the list of
      * @apiNote Read only
+     * @return The list of players in a teams queue, pulls from {@code getUUIDQueue()}
      */
     public static Set<Player> getPlayerQueue(Team team) {
         Set<Player> toReturn = new HashSet<>();
@@ -69,6 +77,10 @@ public class CTFJoin {
         return toReturn;
     }
 
+    /**
+     * Broadcast the given message to all queued players
+     * @param component
+     */
     public static void broadcastMessageToQueue(Component component) {
         getPlayerQueue(Team.RED).forEach(player -> {
             player.sendMessage(component);
@@ -94,6 +106,11 @@ public class CTFJoin {
         player.sendMessage(MM.deserialize("<red>Invalid command syntax! Correct usage: /ctf join <red|blue>"));
     }
 
+    /**
+     * Adds the given player to the given team's queue
+     * @param player To add
+     * @param team To add to
+     */
     public static void addPlayerToQueue(Player player, Team team) {
         UUID uuid = player.getUniqueId();
         if (team == Team.RED) redPlayersQueue.add(uuid);
@@ -101,10 +118,16 @@ public class CTFJoin {
         else return;
     }
 
+    /**
+     * @return Whether the given player is in a queue or not.
+     */
     public static boolean alreadyInQueue(Player player) {
         return redPlayersQueue.contains(player.getUniqueId()) || bluePlayersQueue.contains(player.getUniqueId());
     }
 
+    /**
+     * @return The queue {@code Team} of the given player
+     */
     public static Team getQueueTeam(Player player) {
         if (redPlayersQueue.contains(player.getUniqueId())) return Team.RED;
         else if (bluePlayersQueue.contains(player.getUniqueId())) return Team.BLUE;

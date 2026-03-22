@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFStop {
+    /**
+     * Command for forcibly stopping a match or clearing the queue
+     */
     public CTFStop(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.stop")) {
             player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));

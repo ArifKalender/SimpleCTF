@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFReload {
+    /**
+     * Command for reloading the config files
+     */
     public CTFReload(Player player, String[] ignored) {
         if (!player.hasPermission("simplectf.admin.reload")) {
             player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));

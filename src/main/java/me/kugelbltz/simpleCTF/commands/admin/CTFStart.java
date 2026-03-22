@@ -10,6 +10,9 @@ import org.bukkit.entity.Player;
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFStart {
+    /**
+     * Command for forcibly starting a match
+     */
     public CTFStart(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.start")) {
             player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));
@@ -22,7 +25,7 @@ public class CTFStart {
             return;
         }
         if (!anybodyInQueue) {
-            player.sendMessage(MM.deserialize("<red>There isn't anybody queued in either red or blue teams."));
+            player.sendMessage(MM.deserialize("<red>There isn't anybody queued in neither red nor blue teams."));
             return;
         }
         new Match(CTFJoin.getPlayerQueue(Team.RED), CTFJoin.getPlayerQueue(Team.BLUE));

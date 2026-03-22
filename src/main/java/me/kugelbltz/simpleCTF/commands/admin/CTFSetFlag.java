@@ -10,6 +10,10 @@ import java.util.Locale;
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFSetFlag {
+
+    /**
+     * Command for setting a teams flag locations
+     */
     public CTFSetFlag(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.setflag")) {
             player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));

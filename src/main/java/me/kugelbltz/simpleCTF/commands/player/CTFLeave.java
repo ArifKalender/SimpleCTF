@@ -10,6 +10,9 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 // FIXME: SimpleCTF » You are not in a team. when in a match (because list resets when /ctf start is used)
 public class CTFLeave {
+    /**
+     * Command for players to leave from a match or their queue
+     */
     public CTFLeave(Player player, String[] args) {
         removePlayer(player, true);
         Match match = SimpleCTF.getInstance().getCurrentMatch();

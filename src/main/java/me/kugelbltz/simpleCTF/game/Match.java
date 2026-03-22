@@ -46,6 +46,10 @@ public class Match {
         if (canStart) this.task = gameLoop();
     }
 
+    /**
+     * Initialize and reset match state
+     * Returns true if successful, false if not
+     */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         this.redFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag");
         this.blueFlagLocation = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
@@ -64,6 +68,10 @@ public class Match {
         return true;
     }
 
+    /**
+     * Teleport players to their spawn locations and
+     * reset their state if {@code resetState} is true
+     */
     private void initPlayers(boolean resetState) {
         redPlayers.forEach(player -> {
             player.teleport(redFlagLocation);
@@ -75,6 +83,9 @@ public class Match {
         });
     }
 
+    /**
+     * Handle game loop
+     */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
             int timeLeft = ConfigManager.MATCH_TIME;
@@ -97,6 +108,9 @@ public class Match {
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
     }
 
+    /**
+     * Plays animations of the flags and flag carriers
+     */
     private void playFlagAnimation() {
         // --- Block particles for flags ---
         boolean redAvailable = this.redFlagLocation.getBlock().getType() == Material.RED_BANNER;
@@ -117,6 +131,10 @@ public class Match {
         }
     }
 
+    /**
+     * If {@code place} is {@code true}, then it places the BANNER blocks. If else, places AIR blocks.
+     * @param place Whether to place the banners
+     */
     private void loadBlocks(boolean place) {
         if (place) {
             this.redFlagLocation.getBlock().setType(Material.RED_BANNER);
@@ -127,6 +145,9 @@ public class Match {
         }
     }
 
+    /**
+     * Handles the blue flag and nearby entities to it
+     */
     private void handleBlue() {
         for (LivingEntity entity : blueFlagLocation.getNearbyLivingEntities(3)) {
             if (!(entity instanceof Player player)) continue;
@@ -145,6 +166,9 @@ public class Match {
         }
     }
 
+    /**
+     * Handles the red flag and nearby entities to it
+     */
     private void handleRed() {
         for (LivingEntity entity : redFlagLocation.getNearbyLivingEntities(3)) {
             if (!(entity instanceof Player player)) continue;
@@ -162,12 +186,18 @@ public class Match {
         }
     }
 
+    /**
+     * Saves the flag for the given player, given team and given location with the given material
+     */
     private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
         flagLoc.getBlock().setType(bannerType);
         removeFlag(player, team);
         broadcastMessage(MM.deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
 
+    /**
+     * Makes it so the player returns the enemy team's flag to their own base
+     */
     private void returnFlag(Player player, Team scoringTeam, Team capturedTeam) {
         if (scoringTeam == Team.RED) this.redScore++;
         else this.blueScore++;
@@ -183,6 +213,10 @@ public class Match {
         Bukkit.getPluginManager().callEvent(new FlagScoreEvent(player, scoringTeam, capturedTeam));
     }
 
+    /**
+     * Updates the bossbar
+     * @param timeLeft To update the health left of the boss bar
+     */
     private void updateBossBar(int timeLeft) {
         String title = "Red score: " + this.redScore + " | Blue score: " + this.blueScore;
         double timeLeftNormalized = timeLeft / (double) ConfigManager.MATCH_TIME;
@@ -193,6 +227,10 @@ public class Match {
         bluePlayers.forEach(this.bossBar::addPlayer);
     }
 
+    /**
+     * Unloads match for the given reason
+     * @param reason The message to send the players, internally handled via {@code MiniMessage} API
+     */
     public void unloadMatch(@Nullable String reason) {
         broadcastMessage(MM.deserialize(reason));
         this.redPlayers.forEach(this::removePlayerFromMatch);
@@ -206,6 +244,10 @@ public class Match {
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
+    /**
+     * Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions
+     * @param player To reset
+     */
     public void resetPlayerState(Player player) {
         player.setExp(0);
         player.setLevel(0);
@@ -215,6 +257,9 @@ public class Match {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
     }
 
+    /**
+     * Makes it so the given team wins the match.
+     */
     public void winMatch(Team team) {
         unloadMatch(ConfigManager.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
@@ -222,24 +267,37 @@ public class Match {
         UtilizationMethods.playSoundForGroup(getTeamPlayers(Team.getOpposite(team)), Sound.ENTITY_WITHER_AMBIENT, 3F, 1F);
     }
 
+    /**
+     * Returns the flag carrier for the given team
+     */
     public Entity getFlagCarrier(Team flagColor) {
         if (flagColor == Team.RED) return this.redFlagCarrier;
         else if (flagColor == Team.BLUE) return this.blueFlagCarrier;
         else return null;
     }
 
+    /**
+     * Sets the flag carrier for the given team
+     */
     public void setFlagCarrier(@Nullable Entity entity, @NotNull Team flagColor) {
         if (flagColor == Team.RED) this.redFlagCarrier = entity;
         else if (flagColor == Team.BLUE) this.blueFlagCarrier = entity;
         else return;
     }
 
+    /**
+     * @return The players in the given team
+     */
     public Set<Player> getTeamPlayers(Team team) {
         if (team == Team.RED) return this.redPlayers;
         else if (team == Team.BLUE) return this.bluePlayers;
         else return null;
     }
 
+    /**
+     * Broadcasts the given component to the players in the match
+     * @param component Message to send
+     */
     public void broadcastMessage(Component component) {
         redPlayers.forEach(player -> {
             player.sendMessage(component);
@@ -249,22 +307,38 @@ public class Match {
         });
     }
 
+    /**
+     * @return Whether the given player is in a match or not
+     */
     public boolean isPlayerInMatch(Player player) {
         return redPlayers.contains(player) || bluePlayers.contains(player);
     }
 
+    /**
+     * @return The score of the blue team
+     */
     public int getBlueScore() {
         return blueScore;
     }
 
+    /**
+     *
+     * @return The score of the red team
+     */
     public int getRedScore() {
         return redScore;
     }
 
+    /**
+     * The amount of players in the game
+     */
     public long getPlayersInMatch() {
         return this.redPlayers.size() + this.bluePlayers.size();
     }
 
+    /**
+     * Removes the given player from the match
+     */
     public void removePlayerFromMatch(Player player) {
         this.redPlayers.remove(player);
         this.bluePlayers.remove(player);
@@ -273,12 +347,21 @@ public class Match {
         resetPlayerState(player);
     }
 
+    /**
+     * @return The flag location for the given team
+     */
     public Location getFlagLocation(Team team) {
         if (team == Team.RED) return this.redFlagLocation.clone();
         else if (team == Team.BLUE) return this.blueFlagLocation.clone();
         else return null;
     }
 
+    /**
+     * Broadcasts the dropped flag's location.
+     * @param team The team of the flag
+     * @param dropper The one who dropped the flag
+     * @param location The location at which the flag was dropped
+     */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
         Component component = MM.deserialize(ConfigManager.FLAG_DROPPED_AT

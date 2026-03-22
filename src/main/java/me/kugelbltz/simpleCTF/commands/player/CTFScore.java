@@ -9,6 +9,9 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
 
 public class CTFScore {
 
+    /**
+     * Command for players to see the current scores of the ongoing match
+     */
     public CTFScore(Player player, String[] args) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         String msg = ConfigManager.CURRENT_SCORE;

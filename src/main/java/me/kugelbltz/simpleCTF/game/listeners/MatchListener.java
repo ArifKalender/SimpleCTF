@@ -1,5 +1,6 @@
 package me.kugelbltz.simpleCTF.game.listeners;
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.ConfigManager;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
@@ -34,22 +35,26 @@ public class MatchListener implements Listener {
 
     Set<UUID> quitDuringMatch = new HashSet<>();
 
-    // TODO: Implement match consequences
     @EventHandler
     private void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
+        // --- Remove player from the ongoing match ---
         Match match = SimpleCTF.getInstance().getCurrentMatch();
-        if (match.isPlayerInMatch(player)) quitDuringMatch.add(player.getUniqueId());
+        if (match == null) return;
+        if (!match.isPlayerInMatch(player)) return;
+        quitDuringMatch.add(player.getUniqueId());
         match.getTeamPlayers(Team.RED).remove(player);
         match.getTeamPlayers(Team.BLUE).remove(player);
-        for (ItemStack itemStack : player.getInventory()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) continue;
-            player.getWorld().dropItem(player.getLocation(), itemStack);
-        }
+
+        // --- Drop the flag item ---
+        UtilizationMethods.dropAllFlags(player);
         match.broadcastMessage(MM.deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
         player.getInventory().clear();
     }
 
+    /**
+     * Reset player if they left the game during a match
+     */
     @EventHandler
     private void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
@@ -60,25 +65,34 @@ public class MatchListener implements Listener {
         }
     }
 
+    /**
+     * Drop flags if the player dies during a match
+     */
     @EventHandler
     private void onDeath(PlayerDeathEvent event) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
         if (!match.isPlayerInMatch(player)) return;
-        Team team = Team.getTeam(player);
-
-        match.setFlagCarrier(null, team);
-        UtilizationMethods.removeFlag(player, team);
-        player.getWorld().dropItem(player.getLocation(), Team.getTeamFlag(team));
-        match.broadcastFlagDropLocation(team, player, player.getLocation());
-
-        player.setRespawnLocation(match.getFlagLocation(team));
-        Bukkit.getScheduler().runTask(SimpleCTF.getInstance(), () -> player.spigot().respawn());
-        player.teleport(match.getFlagLocation(team));
-
+        UtilizationMethods.dropAllFlags(player);
     }
 
+    /**
+     * Teleport the player after death to their flag if they're in a match
+     */
+    @EventHandler
+    private void onRespawn(PlayerPostRespawnEvent event){
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match == null) return;
+        Player player = event.getPlayer();
+        Team team = Team.getTeam(player);
+        if (team == Team.NONE) return;
+        Bukkit.getScheduler().runTaskLater(SimpleCTF.getInstance(), () -> player.teleport(match.getFlagLocation(team)), 1);
+    }
+
+    /**
+     * Prevent block placing for flag items
+     */
     @EventHandler
     private void onPlace(PlayerInteractEvent event) {
         ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
@@ -86,7 +100,9 @@ public class MatchListener implements Listener {
             event.setCancelled(true);
     }
 
-
+    /**
+     * Handle flag drops
+     */
     @EventHandler
     private void onDrop(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
@@ -100,7 +116,9 @@ public class MatchListener implements Listener {
         }
     }
 
-    // Handle item pickup
+    /**
+     * Handle flag pickups
+     */
     @EventHandler
     private void onPickup(PlayerAttemptPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
@@ -122,6 +140,10 @@ public class MatchListener implements Listener {
         ));
     }
 
+    /**
+     * Handle capturing of flags
+     * Prevent placing blocks near flags
+     */
     @EventHandler
     private void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
@@ -146,7 +168,9 @@ public class MatchListener implements Listener {
         }
     }
 
-    // Prevent friendly fire
+    /**
+     * Prevent friendly fire
+     */
     @EventHandler
     private void onDamage(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player victim)) return;
@@ -157,12 +181,18 @@ public class MatchListener implements Listener {
         }
     }
 
+    /**
+     * Sound effects for winning the match
+     */
     @EventHandler
     private void onMatchWin(MatchWinEvent event) {
         UtilizationMethods.playSoundForGroup(event.getWinners(), Sound.ITEM_GOAT_HORN_SOUND_1, 3F, 1F);
         UtilizationMethods.playSoundForGroup(event.getWinners(), Sound.ENTITY_WITHER_AMBIENT, 3F, 0F);
     }
 
+    /**
+     * Sound effects for flag scoring
+     */
     @EventHandler
     private void onScore(FlagScoreEvent event) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
@@ -172,6 +202,7 @@ public class MatchListener implements Listener {
         UtilizationMethods.playSoundForGroup(capturingTeam, Sound.BLOCK_BELL_USE, 3F, 0F);
         UtilizationMethods.playSoundForGroup(capturedTeam, Sound.BLOCK_BELL_USE, 3F, 2F);
     }
+
 
 
     private void handleFlag(PlayerInteractEvent event, Team flagColor) {
@@ -189,6 +220,11 @@ public class MatchListener implements Listener {
         captureFlag(player, flagColor, match);
     }
 
+    /**
+     * Gives the flag item to player
+     * Broadcasts pickups
+     * Plays sound effects for teams
+     */
     private void captureFlag(Player player, Team capturedTeam, Match match) {
         String message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replace("%color%", capturedTeam.name().toUpperCase(Locale.ENGLISH));
         match.setFlagCarrier(player, capturedTeam);
