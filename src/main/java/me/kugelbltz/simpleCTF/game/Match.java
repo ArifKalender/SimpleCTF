@@ -34,7 +34,7 @@ import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 public class Match {
     private final Set<Player> redPlayers = new HashSet<>();
     private final Set<Player> bluePlayers = new HashSet<>();
-    private final int WIN_SCORE = 3;
+    private final int WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
     private Location redFlagLocation, blueFlagLocation;
     private Entity redFlagCarrier, blueFlagCarrier;
     private int redScore, blueScore;

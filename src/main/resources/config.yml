@@ -6,6 +6,7 @@ SimpleCTF:
       QueueCountdown: 10
     Match:
       MatchTime: 600
+      WinScore: 3
   Strings:
     Prefix: "<#eb6434>SimpleCTF » <#e8cd33>"
     Warnings:
