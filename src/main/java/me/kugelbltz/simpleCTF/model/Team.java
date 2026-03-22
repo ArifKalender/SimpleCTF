@@ -18,8 +18,8 @@ public enum Team {
     public static Team getTeam(Player player) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return NONE;
-        if (match.getTeamPlayers(BLUE).contains(player)) return BLUE;
-        if (match.getTeamPlayers(RED).contains(player)) return RED;
+        if (match.getPlayers(BLUE).contains(player)) return BLUE;
+        if (match.getPlayers(RED).contains(player)) return RED;
         return NONE;
     }
 

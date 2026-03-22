@@ -7,6 +7,7 @@ import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
+import static me.kugelbltz.simpleCTF.util.QueueHandler.*;
 
 // FIXME: SimpleCTF » You are not in a team. when in a match (because list resets when /ctf start is used)
 public class CTFLeave {
@@ -21,17 +22,15 @@ public class CTFLeave {
     }
 
     public static void removePlayer(Player player, boolean sendMessageToPlayer) {
-        if (!CTFJoin.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
+        if (!alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
             if (sendMessageToPlayer)
                 player.sendMessage(MM.deserialize(StaticVariables.NOT_IN_TEAM));
             return;
         }
-        Team team = CTFJoin.getQueueTeam(player);
+        Team team = getQueueTeam(player);
         if (team == Team.NONE) return;
-        if (CTFJoin.getUUIDQueue(team) == null)
-            return;
-        CTFJoin.getUUIDQueue(team).remove(player.getUniqueId());
-        CTFJoin.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
+        removePlayerFromQueue(player);
+        getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
                 .sendMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
         if (sendMessageToPlayer)
             player.sendMessage(MM.deserialize(StaticVariables.TEAM_LEAVE));
