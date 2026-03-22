@@ -14,7 +14,7 @@ public class CTFSetFlag {
     /**
      * Command for setting a teams flag locations
      */
-    public void execute(Player player, String[] args) {
+    public static void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.setflag")) {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;

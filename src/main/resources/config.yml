@@ -16,8 +16,8 @@ SimpleCTF:
     Queue:
       TeamJoin: "You joined the %color% team!"
       TeamLeave: "You left the team."
-      PlayerJoinedTeam: "%player% joined the %color% team!"
-      PlayerLeftTeam: "%player% left the team."
+      PlayerJoinedTeam: "%player% joined the %color% queue!"
+      PlayerLeftTeam: "%player% left the queue."
       AlreadyInQueue: "You are already in a queue! Use /ctf leave"
       TeamAlreadyFull: "Sorry, but that team is full!"
       NotInTeam: "You are not in a team."

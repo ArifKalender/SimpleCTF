@@ -10,7 +10,7 @@ public class CTFReload {
     /**
      * Command for reloading the config files
      */
-    public void execute(Player player, String[] ignored) {
+    public static void execute(Player player, String[] ignored) {
         if (!player.hasPermission("simplectf.admin.reload")) {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
@@ -20,7 +20,7 @@ public class CTFReload {
         StaticVariables.init();
     }
 
-    private void sendConfigMsg(Player player, String cfgName) {
+    private static void sendConfigMsg(Player player, String cfgName) {
         player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "<green>Reloading " + cfgName + "..."));
     }
 }

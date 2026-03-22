@@ -17,7 +17,7 @@ public class CTFJoin {
     /**
      * Command for players to join a team
      */
-    public void execute(Player player, String[] args) {
+    public static void execute(Player player, String[] args) {
         if (args.length != 2){
             sendHelpMessage(player);
             return;

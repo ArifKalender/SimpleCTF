@@ -14,7 +14,7 @@ public class CTFLeave {
     /**
      * Command for players to leave from a match or their queue
      */
-    public void execute(Player player, String[] args) {
+    public static void execute(Player player, String[] args) {
         removePlayer(player, true);
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match != null)

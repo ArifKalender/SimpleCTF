@@ -13,7 +13,7 @@ public class CTFStop {
     /**
      * Command for forcibly stopping a match or clearing the queue
      */
-    public void execute(Player player, String[] args) {
+    public static void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.stop")) {
             player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
