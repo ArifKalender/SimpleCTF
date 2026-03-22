@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF;
 
 import me.kugelbltz.simpleCTF.commands.CaptureTheFlag;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.game.listeners.MatchListener;
 import me.kugelbltz.simpleCTF.game.listeners.QueueListener;
@@ -16,7 +16,6 @@ public final class SimpleCTF extends JavaPlugin {
     public static BannerItems BANNER_ITEMS;
     public static MiniMessage MM;
     private static SimpleCTF plugin;
-    private static ConfigManager configManager;
     private static Match currentMatch = null;
 
     public static SimpleCTF getInstance() {
@@ -48,7 +47,7 @@ public final class SimpleCTF extends JavaPlugin {
 
     private void loadConfigs() {
         saveDefaultConfig();
-        configManager = new ConfigManager();
+        StaticVariables.init();
     }
 
     public Match getCurrentMatch() {

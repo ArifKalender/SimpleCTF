@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.entity.Player;
 
@@ -14,7 +14,7 @@ public class CTFScore {
      */
     public CTFScore(Player player, String[] args) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
-        String msg = ConfigManager.CURRENT_SCORE;
+        String msg = StaticVariables.CURRENT_SCORE;
         if (match == null) {
             msg = msg.replaceAll("%blue_score%", "0").replaceAll("%red_score%", "0");
         } else {

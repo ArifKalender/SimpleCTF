@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
@@ -21,12 +21,12 @@ public class CTFLeave {
 
     public static void removePlayer(Player player, boolean sendMessageToPlayer) {
         if (!CTFJoin.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
-            if (sendMessageToPlayer) player.sendMessage(MM.deserialize(ConfigManager.NOT_IN_TEAM));
+            if (sendMessageToPlayer) player.sendMessage(MM.deserialize(StaticVariables.NOT_IN_TEAM));
             return;
         }
         Team team = CTFJoin.getQueueTeam(player);
         CTFJoin.getUUIDQueue(team).remove(player.getUniqueId());
-        CTFJoin.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer.sendMessage(MM.deserialize(ConfigManager.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
-        if (sendMessageToPlayer) player.sendMessage(MM.deserialize(ConfigManager.TEAM_LEAVE));
+        CTFJoin.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer.sendMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
+        if (sendMessageToPlayer) player.sendMessage(MM.deserialize(StaticVariables.TEAM_LEAVE));
     }
 }

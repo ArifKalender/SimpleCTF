@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
@@ -15,13 +15,13 @@ public class CTFStart {
      */
     public CTFStart(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.start")) {
-            player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));
+            player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         boolean anybodyInQueue = !CTFJoin.getUUIDQueue(Team.BLUE).isEmpty() || !CTFJoin.getUUIDQueue(Team.RED).isEmpty();
         if (isMatchRunning) {
-            player.sendMessage(MM.deserialize(ConfigManager.MATCH_OCCUPIED));
+            player.sendMessage(MM.deserialize(StaticVariables.MATCH_OCCUPIED));
             return;
         }
         if (!anybodyInQueue) {

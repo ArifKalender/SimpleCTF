@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.game.listeners;
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.game.Match;
@@ -48,7 +48,7 @@ public class MatchListener implements Listener {
 
         // --- Drop the flag item ---
         UtilizationMethods.dropAllFlags(player);
-        match.broadcastMessage(MM.deserialize(ConfigManager.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
+        match.broadcastMessage(MM.deserialize(StaticVariables.PLAYER_LEFT_TEAM.replaceAll("%player%", player.getName())));
         player.getInventory().clear();
     }
 
@@ -134,7 +134,7 @@ public class MatchListener implements Listener {
         if (itemTeam == Team.NONE) return;
         match.setFlagCarrier(player, itemTeam);
         match.broadcastMessage(MM.deserialize(
-                ConfigManager.PLAYER_CAUGHT_FLAG
+                StaticVariables.PLAYER_CAUGHT_FLAG
                         .replace("%player%", player.getName())
                         .replace("%color%", itemTeam.name().toUpperCase())
         ));
@@ -177,7 +177,7 @@ public class MatchListener implements Listener {
         boolean sameTeam = Team.getTeam(victim) == Team.getTeam(attacker);
         if (sameTeam) {
             event.setCancelled(true);
-            attacker.sendMessage(MM.deserialize(ConfigManager.NO_FRIENDLY_FIRE));
+            attacker.sendMessage(MM.deserialize(StaticVariables.NO_FRIENDLY_FIRE));
         }
     }
 
@@ -213,7 +213,7 @@ public class MatchListener implements Listener {
         Team opponent = Team.getOpposite(playerColor);
 
         if (flagColor != opponent) {
-            player.sendMessage(MM.deserialize(ConfigManager.WRONG_BANNER_TEAM));
+            player.sendMessage(MM.deserialize(StaticVariables.WRONG_BANNER_TEAM));
             return;
         }
         event.getClickedBlock().setType(Material.AIR);
@@ -226,7 +226,7 @@ public class MatchListener implements Listener {
      * Plays sound effects for teams
      */
     private void captureFlag(Player player, Team capturedTeam, Match match) {
-        String message = ConfigManager.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replace("%color%", capturedTeam.name().toUpperCase(Locale.ENGLISH));
+        String message = StaticVariables.PLAYER_CAUGHT_FLAG.replaceAll("%player%", player.getName()).replace("%color%", capturedTeam.name().toUpperCase(Locale.ENGLISH));
         match.setFlagCarrier(player, capturedTeam);
         addItem(player, Team.getTeamFlag(capturedTeam));
         Team capturer = Team.getOpposite(capturedTeam);

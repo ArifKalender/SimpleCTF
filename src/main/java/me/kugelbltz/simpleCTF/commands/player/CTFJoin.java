@@ -1,14 +1,13 @@
 package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.MM;
@@ -30,11 +29,11 @@ public class CTFJoin {
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
             if (team == Team.NONE) {
-                player.sendMessage(MM.deserialize(ConfigManager.INCORRECT_SYNTAX));
+                player.sendMessage(MM.deserialize(StaticVariables.INCORRECT_SYNTAX));
                 return;
             }
         } catch (IllegalArgumentException ignored) {
-            player.sendMessage(MM.deserialize(ConfigManager.INCORRECT_SYNTAX));
+            player.sendMessage(MM.deserialize(StaticVariables.INCORRECT_SYNTAX));
             return;
         }
 
@@ -42,11 +41,11 @@ public class CTFJoin {
         boolean matchOccupied = match != null;
 
         if (alreadyInQueue(player)) {
-            player.sendMessage(MM.deserialize(ConfigManager.ALREADY_IN_QUEUE));
+            player.sendMessage(MM.deserialize(StaticVariables.ALREADY_IN_QUEUE));
             return;
         }
         if (matchOccupied) {
-            player.sendMessage(MM.deserialize(ConfigManager.MATCH_OCCUPIED));
+            player.sendMessage(MM.deserialize(StaticVariables.MATCH_OCCUPIED));
             return;
         }
 
@@ -91,15 +90,15 @@ public class CTFJoin {
     }
 
     private void prepareTeams(Player player, Team team) {
-        if (getPlayerQueue(team).size() < ConfigManager.MAX_PLAYERS_PER_TEAM) {
+        if (getPlayerQueue(team).size() < StaticVariables.MAX_PLAYERS_PER_TEAM) {
             addPlayerToQueue(player, team);
         } else {
-            player.sendMessage(MM.deserialize(ConfigManager.TEAM_ALREADY_FULL));
+            player.sendMessage(MM.deserialize(StaticVariables.TEAM_ALREADY_FULL));
             return;
         }
 
-        broadcastMessageToQueue(MM.deserialize(ConfigManager.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
-        player.sendMessage(MM.deserialize(ConfigManager.TEAM_JOIN.replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        broadcastMessageToQueue(MM.deserialize(StaticVariables.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
+        player.sendMessage(MM.deserialize(StaticVariables.TEAM_JOIN.replaceAll("%color%", team.name().toLowerCase(Locale.ENGLISH))));
     }
 
     private void sendHelpMessage(Player player) {

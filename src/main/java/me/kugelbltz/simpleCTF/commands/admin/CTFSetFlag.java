@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -16,7 +16,7 @@ public class CTFSetFlag {
      */
     public CTFSetFlag(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.setflag")) {
-            player.sendMessage(MM.deserialize(ConfigManager.NO_PERMISSION));
+            player.sendMessage(MM.deserialize(StaticVariables.NO_PERMISSION));
             return;
         }
         if (args.length > 2) {
@@ -36,12 +36,12 @@ public class CTFSetFlag {
             case "RED" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);
                 SimpleCTF.getInstance().saveConfig();
-                player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "Set the location for the red flag!"));
+                player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "Set the location for the red flag!"));
             }
             case "BLUE" -> {
                 SimpleCTF.getInstance().getConfig().set("Match.Locations.BlueFlag", location);
                 SimpleCTF.getInstance().saveConfig();
-                player.sendMessage(MM.deserialize(ConfigManager.PREFIX + "Set the location for the blue flag!"));
+                player.sendMessage(MM.deserialize(StaticVariables.PREFIX + "Set the location for the blue flag!"));
             }
             default -> player.sendMessage(MM.deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
 

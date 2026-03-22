@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.ConfigManager;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.model.Team;
@@ -88,13 +88,13 @@ public class Match {
      */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
-            int timeLeft = ConfigManager.MATCH_TIME;
+            int timeLeft = StaticVariables.MATCH_TIME;
 
             @Override
             public void run() {
                 timeLeft--;
                 if (timeLeft <= 0) {
-                    unloadMatch(ConfigManager.MATCH_TIME_OUT);
+                    unloadMatch(StaticVariables.MATCH_TIME_OUT);
                     this.cancel();
                 }
                 handleBlue();
@@ -192,7 +192,7 @@ public class Match {
     private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
         flagLoc.getBlock().setType(bannerType);
         removeFlag(player, team);
-        broadcastMessage(MM.deserialize(ConfigManager.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
+        broadcastMessage(MM.deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
     }
 
     /**
@@ -206,7 +206,7 @@ public class Match {
         loadBlocks(true);
         removeFlag(player, capturedTeam);
         broadcastMessage(MM.deserialize(
-                ConfigManager.PLAYER_RETURN_FLAG
+                StaticVariables.PLAYER_RETURN_FLAG
                         .replace("%player%", player.getName())
                         .replace("%opposite_color%", capturedTeam.name())
         ));
@@ -219,7 +219,7 @@ public class Match {
      */
     private void updateBossBar(int timeLeft) {
         String title = "Red score: " + this.redScore + " | Blue score: " + this.blueScore;
-        double timeLeftNormalized = timeLeft / (double) ConfigManager.MATCH_TIME;
+        double timeLeftNormalized = timeLeft / (double) StaticVariables.MATCH_TIME;
         if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
         else this.bossBar.setTitle(title);
         this.bossBar.setProgress(timeLeftNormalized);
@@ -261,7 +261,7 @@ public class Match {
      * Makes it so the given team wins the match.
      */
     public void winMatch(Team team) {
-        unloadMatch(ConfigManager.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
+        unloadMatch(StaticVariables.MATCH_WIN.replaceAll("%color%", team.name().toUpperCase(Locale.ENGLISH)));
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getTeamPlayers(team), getTeamPlayers(Team.getOpposite(team))));
         UtilizationMethods.playSoundForGroup(getTeamPlayers(team), Sound.ITEM_GOAT_HORN_SOUND_1, 3F, 1F);
         UtilizationMethods.playSoundForGroup(getTeamPlayers(Team.getOpposite(team)), Sound.ENTITY_WITHER_AMBIENT, 3F, 1F);
@@ -364,7 +364,7 @@ public class Match {
      */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
-        Component component = MM.deserialize(ConfigManager.FLAG_DROPPED_AT
+        Component component = MM.deserialize(StaticVariables.FLAG_DROPPED_AT
                 .replace("%player%", dropper.getName())
                 .replace("%color%", team.name().toUpperCase())
                 .replace("%coordinates%", locString));

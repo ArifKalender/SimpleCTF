@@ -3,7 +3,7 @@ package me.kugelbltz.simpleCTF.configuration;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import org.bukkit.Bukkit;
 
-public class ConfigManager {
+public class StaticVariables {
 
     // --- Strings ---
     public static String PREFIX;
@@ -35,7 +35,7 @@ public class ConfigManager {
     public static int MIN_PLAYERS_PER_TEAM;
     public static int MATCH_TIME;
 
-    public ConfigManager() {
+    public StaticVariables() {
         init();
     }
 
