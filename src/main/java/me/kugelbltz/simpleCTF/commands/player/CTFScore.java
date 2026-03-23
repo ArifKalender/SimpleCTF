@@ -21,7 +21,9 @@ public class CTFScore implements CTFCommand {
         if (match == null) {
             msg = msg.replace("%blue_score%", "0").replace("%red_score%", "0");
         } else {
-            msg = msg.replace("%blue_score%", String.valueOf(match.getScore(Team.BLUE))).replace("%red_score%", String.valueOf(match.getScore(Team.RED)));
+            String blueScore = String.valueOf(match.getScoreManager().getScore(Team.BLUE));
+            String redScore = String.valueOf(match.getScoreManager().getScore(Team.RED));
+            msg = msg.replace("%blue_score%", blueScore).replace("%red_score%", redScore);
         }
         player.sendMessage(getMM().deserialize(msg));
     }

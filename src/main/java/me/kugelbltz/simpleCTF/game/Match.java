@@ -2,43 +2,42 @@ package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
-import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
+import me.kugelbltz.simpleCTF.game.managers.FlagManager;
+import me.kugelbltz.simpleCTF.game.managers.MessageManager;
+import me.kugelbltz.simpleCTF.game.managers.ScoreManager;
 import me.kugelbltz.simpleCTF.model.Team;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.configuration.StaticVariables.WIN_SCORE;
-import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
 
 public class Match {
     private final Map<Team, Collection<Player>> players = new HashMap<>();
-    private final Map<Team, Location> flagLocations = new HashMap<>();
-    private final Map<Team, Entity> flagCarriers = new HashMap<>();
-    private final Map<Team, Integer> teamScores = new HashMap<>();
-    private BossBar bossBar;
     private BukkitTask task;
 
+    private ScoreManager scoreManager;
+    private MessageManager messageManager;
+    private FlagManager flagManager;
+
     public void startMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
+        initManagers();
         boolean canStart = initMatch(redPlayers, bluePlayers);
         if (canStart) this.task = gameLoop();
+    }
+
+    private void initManagers() {
+        this.scoreManager = new ScoreManager(this);
+        this.messageManager = new MessageManager(this);
+        this.flagManager = new FlagManager(this);
     }
 
     /**
@@ -46,22 +45,22 @@ public class Match {
      * Returns true if successful, false if not
      */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
-        setFlagLocation(Team.RED, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag"));
-        setFlagLocation(Team.BLUE, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag"));
+        getFlagManager().setFlagLocation(Team.RED, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag"));
+        getFlagManager().setFlagLocation(Team.BLUE, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag"));
         players.put(Team.RED, redPlayers);
         players.put(Team.BLUE, bluePlayers);
-        if (flagLocations.get(Team.RED) == null || flagLocations.get(Team.BLUE) == null) {
+        if (getFlagManager().getFlagLocation(Team.RED) == null || getFlagManager().getFlagLocation(Team.BLUE) == null) {
             SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
-            broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
+            getMessageManager().broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
             return false;
         }
-        this.loadBlocks(true);
+        getFlagManager().loadFlags(true);
         SimpleCTF.getInstance().setCurrentMatch(this);
-        setScore(Team.RED, 0);
-        setScore(Team.BLUE, 0);
+        getScoreManager().setScore(Team.RED, 0);
+        getScoreManager().setScore(Team.BLUE, 0);
         initPlayers(Team.RED, true);
         initPlayers(Team.BLUE, true);
-        broadcastMessage(getMM().deserialize(StaticVariables.MATCH_START));
+        getMessageManager().broadcastMessage(getMM().deserialize(StaticVariables.MATCH_START));
         return true;
     }
 
@@ -70,10 +69,10 @@ public class Match {
      * reset their state if {@code resetState} is true
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    private void initPlayers(Team team, boolean resetState) {
+    public void initPlayers(Team team, boolean resetState) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         getPlayers(team).forEach(player -> {
-            player.teleport(flagLocations.get(team));
+            player.teleport(getFlagManager().getFlagLocation(team));
             if (resetState) resetPlayerState(player);
         });
     }
@@ -92,137 +91,36 @@ public class Match {
                     unloadMatch(StaticVariables.MATCH_TIME_OUT);
                     this.cancel();
                 }
-                handleFlag(Team.RED, Material.RED_BANNER);
-                handleFlag(Team.BLUE, Material.BLUE_BANNER);
-                playFlagAnimation(Team.RED, Material.RED_BANNER, Material.RED_CONCRETE);
-                playFlagAnimation(Team.BLUE, Material.BLUE_BANNER, Material.BLUE_CONCRETE);
+                getFlagManager().handleFlag(Team.RED, Material.RED_BANNER);
+                getFlagManager().handleFlag(Team.BLUE, Material.BLUE_BANNER);
+                getFlagManager().playFlagAnimation(Team.RED, Material.RED_BANNER, Material.RED_CONCRETE);
+                getFlagManager().playFlagAnimation(Team.BLUE, Material.BLUE_BANNER, Material.BLUE_CONCRETE);
 
-                if (getScore(Team.BLUE) >= WIN_SCORE) winMatch(Team.BLUE);
-                else if (getScore(Team.RED) >= WIN_SCORE) winMatch(Team.RED);
+                if (getScoreManager().getScore(Team.BLUE) >= WIN_SCORE) winMatch(Team.BLUE);
+                else if (getScoreManager().getScore(Team.RED) >= WIN_SCORE) winMatch(Team.RED);
 
-                updateBossBar(timeLeft);
-                if (getPlayersInMatch() <= 0) unloadMatch("<red>No players left.");
+                getMessageManager().updateBossBar(timeLeft);
+                int playersInMatch = getPlayers(Team.RED).size() + getPlayers(Team.BLUE).size();
+                if (playersInMatch <= 0) unloadMatch("<red>No players left.");
             }
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
     }
 
-    /**
-     * Plays animations of the flags and flag carriers
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
-    private void playFlagAnimation(Team team, Material banner, Material particleColorSource) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        // --- Block particles for flags ---
-        Location flagLoc = getFlagLocation(team);
-        boolean available = flagLoc.getBlock().getType() == banner;
-        if (available) flagLoc.getWorld().spawnParticle(Particle.FALLING_DUST, flagLoc,
-                10, 1.5, 1.5, 1.5, particleColorSource.createBlockData());
-        else flagLoc.getWorld().spawnParticle(Particle.CRIT, flagLoc,
-                10, 0.5, 0.5, 0.5, 0.05);
 
-        // --- Player particles for flag carriers ---
-        Entity carrier = getFlagCarrier(team);
-        if (carrier != null) {
-            carrier.getWorld().spawnParticle(Particle.FALLING_DUST, carrier.getLocation(),
-                    10, 1, 1, 1, particleColorSource.createBlockData());
-        }
-    }
-
-    /**
-     * If {@code place} is {@code true}, then it places the BANNER blocks. If else, places AIR blocks.
-     *
-     * @param place Whether to place the banners
-     */
-    private void loadBlocks(boolean place) {
-        if (place) {
-            getFlagLocation(Team.RED).getBlock().setType(Material.RED_BANNER);
-            getFlagLocation(Team.BLUE).getBlock().setType(Material.BLUE_BANNER);
-        } else {
-            getFlagLocation(Team.RED).getBlock().setType(Material.AIR);
-            getFlagLocation(Team.BLUE).getBlock().setType(Material.AIR);
-        }
-    }
-
-    /**
-     * Handles the given flag and nearby entities to it. Saving your own flag or returning the enemy's flag to your base is handled here.
-     */
-    private void handleFlag(Team flag, Material bannerType) {
-        for (LivingEntity lEntity : getFlagLocation(flag).getNearbyLivingEntities(3)) {
-            if (!(lEntity instanceof Player player)) continue;
-            Team loopPlayerTeam = Team.getTeam(player);
-            Team enemyTeam = Team.getOpposite(flag);
-            Entity flagCarrierFunc = getFlagCarrier(flag);
-            Entity flagCarrierEnemy = getFlagCarrier(enemyTeam);
-            Location flagLoc = getFlagLocation(flag);
-
-            if (loopPlayerTeam == flag) {
-                if (flagCarrierFunc != null && flagCarrierFunc.equals(player)) {
-                    saveOwnFlag(player, flagLoc, bannerType, flag);
-                }
-                if (flagCarrierEnemy != null && flagCarrierEnemy.equals(player)) {
-                    returnFlag(player, loopPlayerTeam, enemyTeam);
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Saves the flag for the given parameters, placing the block and removing the item from inventory, then broadcasting the message.
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
-    private void saveOwnFlag(Player player, Location flagLoc, Material bannerType, Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        flagLoc.getBlock().setType(bannerType);
-        removeFlag(player, team);
-        broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
-    }
-
-    private void returnFlag(Player player, Team scoringTeam, Team capturedTeam) {
-        setScore(scoringTeam, getScore(scoringTeam) + 1);
-
-        initPlayers(Team.RED, false);
-        initPlayers(Team.BLUE, false);
-        loadBlocks(true);
-        removeFlag(player, capturedTeam);
-        broadcastMessage(getMM().deserialize(
-                StaticVariables.PLAYER_RETURN_FLAG
-                        .replace("%player%", player.getName())
-                        .replace("%opposite_color%", capturedTeam.name())
-        ));
-        Bukkit.getPluginManager().callEvent(new FlagScoreEvent(player, scoringTeam, capturedTeam));
-    }
-
-    /**
-     * Updates the bossbar
-     * @param timeLeft To update the health left of the boss bar
-     */
-    private void updateBossBar(int timeLeft) {
-        String title = "Red score: " + getScore(Team.RED) + " | Blue score: " + getScore(Team.BLUE);
-        double timeLeftNormalized = timeLeft / (double) StaticVariables.MATCH_TIME;
-        if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
-        else this.bossBar.setTitle(title);
-        this.bossBar.setProgress(timeLeftNormalized);
-        players.get(Team.RED).forEach(this.bossBar::addPlayer);
-        players.get(Team.BLUE).forEach(this.bossBar::addPlayer);
-    }
 
     /**
      * Unloads match for the given reason
      * @param reason The message to send the players, internally handled via {@code MiniMessage} API
      */
     public void unloadMatch(@Nullable String reason) {
-        if (reason != null) broadcastMessage(getMM().deserialize(reason));
+        if (reason != null) getMessageManager().broadcastMessage(getMM().deserialize(reason));
         getPlayers(Team.RED).forEach(this::removePlayerFromMatch);
         getPlayers(Team.BLUE).forEach(this::removePlayerFromMatch);
-        setScore(Team.RED, 0);
-        setScore(Team.BLUE, 0);
-        this.loadBlocks(false);
+        getScoreManager().setScore(Team.RED, 0);
+        getScoreManager().setScore(Team.BLUE, 0);
+        getFlagManager().loadFlags(false);
+        getMessageManager().unloadBossBar();
         if (this.task != null) this.task.cancel();
-        if (this.bossBar != null) {
-            this.bossBar.removeAll();
-            this.bossBar=null;
-        }
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
@@ -247,33 +145,7 @@ public class Match {
         unloadMatch(StaticVariables.MATCH_WIN.replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
 
-    /**
-     * @return the flag carrier for the given team
-     */
-    public Entity getFlagCarrier(Team flagColor) {
-        return this.flagCarriers.get(flagColor);
-    }
 
-    /**
-     * Sets the flag carrier for the given team
-     */
-    public void setFlagCarrier(@Nullable Entity entity, @NotNull Team flagColor) {
-        this.flagCarriers.put(flagColor, entity);
-    }
-
-    /**
-     * Broadcasts the given component to the players in the match
-     *
-     * @param component Message to send
-     */
-    public void broadcastMessage(Component component) {
-        getPlayers(Team.RED).forEach(player -> {
-            player.sendMessage(component);
-        });
-        getPlayers(Team.BLUE).forEach(player -> {
-            player.sendMessage(component);
-        });
-    }
 
     /**
      * @return Whether the given player is in a match or not
@@ -282,28 +154,6 @@ public class Match {
         return getPlayers(Team.RED).contains(player) || getPlayers(Team.BLUE).contains(player);
     }
 
-    /**
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
-    public int getScore(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        return teamScores.get(team);
-    }
-
-    /**
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
-    public void setScore(Team team, int newScore) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        teamScores.put(team, newScore);
-    }
-
-    /**
-     * The amount of players in the game
-     */
-    public int getPlayersInMatch() {
-        return getPlayers(Team.RED).size() + getPlayers(Team.BLUE).size();
-    }
 
     /**
      * Returns the list of players for the given team.
@@ -321,44 +171,30 @@ public class Match {
     public void removePlayerFromMatch(Player player) {
         players.get(Team.RED).remove(player); //Not using getPlayers() because it returns a copy where we want to remove the players from the actual list
         players.get(Team.BLUE).remove(player);
-        if (this.bossBar != null) this.bossBar.removePlayer(player);
+        getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
         resetPlayerState(player);
     }
 
     /**
-     * @return A copy of the flag location for the given team
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
+     * Managers team scores
      */
-    public Location getFlagLocation(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        return flagLocations.get(team).clone();
+    public ScoreManager getScoreManager() {
+        return scoreManager;
     }
 
     /**
-     * Sets the flag location for the given team
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
+     * Manages bossbar and broadcasts
      */
-    public void setFlagLocation(Team team, Location newLocation) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        flagLocations.put(team, newLocation);
+    public MessageManager getMessageManager() {
+        return messageManager;
     }
 
     /**
-     * Broadcasts the dropped flag's location.
-     *
-     * @param team     The team of the flag
-     * @param dropper  The one who dropped the flag
-     * @param location The location at which the flag was dropped
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
+     * Manages flags, banner blocks, returning logic
      */
-    public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
-        Component component = getMM().deserialize(StaticVariables.FLAG_DROPPED_AT
-                .replace("%player%", dropper.getName())
-                .replace("%color%", team.name().toUpperCase())
-                .replace("%coordinates%", locString));
-        broadcastMessage(component);
+    public FlagManager getFlagManager() {
+        return flagManager;
     }
+
 }

@@ -43,7 +43,7 @@ public class MatchListener implements Listener {
 
         // --- Drop the flag item ---
         UtilizationMethods.dropAllFlags(player);
-        match.broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName())));
+        match.getMessageManager().broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName())));
         player.getInventory().clear();
     }
 
@@ -82,7 +82,7 @@ public class MatchListener implements Listener {
         Player player = event.getPlayer();
         Team team = Team.getTeam(player);
         if (team == Team.NONE) return;
-        Bukkit.getScheduler().runTaskLater(SimpleCTF.getInstance(), () -> player.teleport(match.getFlagLocation(team)), 1);
+        Bukkit.getScheduler().runTaskLater(SimpleCTF.getInstance(), () -> player.teleport(match.getFlagManager().getFlagLocation(team)), 1);
     }
 
     /**
@@ -105,8 +105,8 @@ public class MatchListener implements Listener {
         if (match == null) return;
         Player player = event.getPlayer();
         if (getBannerItems().isFlag(item)) {
-            match.setFlagCarrier(event.getItemDrop(), Team.getTeamFromFlag(event.getItemDrop().getItemStack()));
-            match.broadcastFlagDropLocation(Team.getTeamFromFlag(item), player, player.getLocation());
+            match.getFlagManager().setFlagCarrier(event.getItemDrop(), Team.getTeamFromFlag(event.getItemDrop().getItemStack()));
+            match.getFlagManager().broadcastFlagDropLocation(Team.getTeamFromFlag(item), player, player.getLocation());
         }
     }
 
@@ -126,11 +126,11 @@ public class MatchListener implements Listener {
         }
         Team itemTeam = Team.getTeamFromFlag(item);
         if (itemTeam == Team.NONE) return;
-        match.setFlagCarrier(player, itemTeam);
-        match.broadcastMessage(getMM().deserialize(
+        match.getFlagManager().setFlagCarrier(player, itemTeam);
+        match.getMessageManager().broadcastMessage(getMM().deserialize(
                 StaticVariables.PLAYER_CAUGHT_FLAG
                         .replace("%player%", player.getName())
-                        .replace("%color%", itemTeam.name().toUpperCase())
+                        .replace("%color%", itemTeam.name().toUpperCase(Locale.ENGLISH))
         ));
     }
 
@@ -155,8 +155,8 @@ public class MatchListener implements Listener {
         }
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
-        double blueDistance = clickedBlock.getLocation().distance(match.getFlagLocation(Team.BLUE));
-        double redDistance = clickedBlock.getLocation().distance(match.getFlagLocation(Team.RED));
+        double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));
+        double redDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.RED));
         if (blueDistance < 3 || redDistance < 3) {
             event.setCancelled(true);
         }
@@ -222,12 +222,12 @@ public class MatchListener implements Listener {
      */
     private void captureFlag(Player player, Team capturedTeam, Match match) {
         String message = StaticVariables.PLAYER_CAUGHT_FLAG.replace("%player%", player.getName()).replace("%color%", capturedTeam.name().toUpperCase(Locale.ENGLISH));
-        match.setFlagCarrier(player, capturedTeam);
+        match.getFlagManager().setFlagCarrier(player, capturedTeam);
         addItem(player, Team.getTeamFlag(capturedTeam));
         Team capturer = Team.getOpposite(capturedTeam);
         playSoundForGroup(match.getPlayers(capturedTeam), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1F, 0F);
         playSoundForGroup(match.getPlayers(capturer), Sound.ENTITY_RAVAGER_CELEBRATE, 1F, 2F);
-        match.broadcastMessage(getMM().deserialize(message));
+        match.getMessageManager().broadcastMessage(getMM().deserialize(message));
     }
 
 }

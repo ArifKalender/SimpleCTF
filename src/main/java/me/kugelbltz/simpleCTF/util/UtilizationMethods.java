@@ -44,7 +44,7 @@ public class UtilizationMethods {
         }
         if (target == null) return false;
         player.getInventory().removeItem(target);
-        match.setFlagCarrier(null, Team.getTeamFromFlag(target));
+        match.getFlagManager().setFlagCarrier(null, Team.getTeamFromFlag(target));
         return true;
     }
 
@@ -62,8 +62,8 @@ public class UtilizationMethods {
                 player.getInventory().removeItem(item);
                 Item drop = player.getWorld().dropItem(player.getLocation(), item);
                 Team flagTeam = Team.getTeamFromFlag(item);
-                match.setFlagCarrier(drop, flagTeam);
-                match.broadcastFlagDropLocation(flagTeam, player, player.getLocation());
+                match.getFlagManager().setFlagCarrier(drop, flagTeam);
+                match.getFlagManager().broadcastFlagDropLocation(flagTeam, player, player.getLocation());
                 found = true;
             }
         }

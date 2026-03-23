@@ -34,10 +34,7 @@ public class StaticVariables {
     public static int MIN_PLAYERS_PER_TEAM;
     public static int MATCH_TIME;
     public static int WIN_SCORE;
-
-    public StaticVariables() {
-        init();
-    }
+    
 
     public static void init() {
         // --- Init: Strings ---

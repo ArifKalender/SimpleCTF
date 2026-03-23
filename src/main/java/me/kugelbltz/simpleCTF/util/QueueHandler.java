@@ -13,16 +13,16 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class QueueHandler {
 
-    private Collection<UUID> RED_UUID_QUEUE = new HashSet<>();
-    private Collection<UUID> BLUE_UUID_QUEUE = new HashSet<>();
+    private final Collection<UUID> redUuidQueue = new HashSet<>();
+    private final Collection<UUID> blueUuidQueue = new HashSet<>();
 
     /**
      * @param team To get the list of
      * @return The list of UUID's of players in a team's queue
      */
     private Collection<UUID> getUUIDQueue(Team team) {
-        if (team == Team.RED) return RED_UUID_QUEUE;
-        else if (team == Team.BLUE) return BLUE_UUID_QUEUE;
+        if (team == Team.RED) return redUuidQueue;
+        else if (team == Team.BLUE) return blueUuidQueue;
         else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
     }
 
@@ -73,8 +73,8 @@ public class QueueHandler {
      */
     private void addPlayerToQueue(Player player, Team team) {
         UUID uuid = player.getUniqueId();
-        if (team == Team.RED) RED_UUID_QUEUE.add(uuid);
-        else if (team == Team.BLUE) BLUE_UUID_QUEUE.add(uuid);
+        if (team == Team.RED) redUuidQueue.add(uuid);
+        else if (team == Team.BLUE) blueUuidQueue.add(uuid);
         else return;
     }
 
@@ -91,7 +91,7 @@ public class QueueHandler {
      * @return Whether the given player is in a queue or not.
      */
     public boolean alreadyInQueue(Player player) {
-        return RED_UUID_QUEUE.contains(player.getUniqueId()) || BLUE_UUID_QUEUE.contains(player.getUniqueId());
+        return redUuidQueue.contains(player.getUniqueId()) || blueUuidQueue.contains(player.getUniqueId());
     }
 
     /** @return Whether anyone is in either of the queues */
@@ -103,8 +103,8 @@ public class QueueHandler {
      * @return The queue {@link Team} of the given player
      */
     public Team getQueueTeam(Player player) {
-        if (RED_UUID_QUEUE.contains(player.getUniqueId())) return Team.RED;
-        else if (BLUE_UUID_QUEUE.contains(player.getUniqueId())) return Team.BLUE;
+        if (redUuidQueue.contains(player.getUniqueId())) return Team.RED;
+        else if (blueUuidQueue.contains(player.getUniqueId())) return Team.BLUE;
         else return Team.NONE;
     }
 
