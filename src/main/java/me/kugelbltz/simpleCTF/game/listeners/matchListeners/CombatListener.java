@@ -22,7 +22,7 @@ public class CombatListener implements Listener {
      * Drop flags if the player dies during a match
      */
     @EventHandler
-    private void onDeath(PlayerDeathEvent event) {
+    public void onDeath(PlayerDeathEvent event) {
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
@@ -34,7 +34,7 @@ public class CombatListener implements Listener {
      * Teleport the player after death to their flag location if they're in a match
      */
     @EventHandler
-    private void onRespawn(PlayerPostRespawnEvent event) {
+    public void onRespawn(PlayerPostRespawnEvent event) {
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
@@ -48,7 +48,7 @@ public class CombatListener implements Listener {
      * Prevent friendly fire
      */
     @EventHandler
-    private void onDamage(EntityDamageByEntityEvent event) {
+    public void onDamage(EntityDamageByEntityEvent event) {
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player victim)) return;

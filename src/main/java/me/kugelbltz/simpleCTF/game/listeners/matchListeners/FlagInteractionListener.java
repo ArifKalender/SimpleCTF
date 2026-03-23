@@ -30,7 +30,7 @@ public class FlagInteractionListener implements Listener {
      * Prevent block placing for flag items
      */
     @EventHandler
-    private void onPlace(PlayerInteractEvent event) {
+    public void onPlace(PlayerInteractEvent event) {
         ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
         if (getBannerItems().isFlag(interactItem) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
             event.setCancelled(true);
@@ -40,7 +40,7 @@ public class FlagInteractionListener implements Listener {
      * Handle flag drops
      */
     @EventHandler
-    private void onDrop(PlayerDropItemEvent event) {
+    public void onDrop(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
@@ -55,7 +55,7 @@ public class FlagInteractionListener implements Listener {
      * Handle flag pickups
      */
     @EventHandler
-    private void onPickup(PlayerAttemptPickupItemEvent event) {
+    public void onPickup(PlayerAttemptPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
@@ -79,7 +79,7 @@ public class FlagInteractionListener implements Listener {
      * Handle capturing of flags, prevent placing blocks near flags
      */
     @EventHandler
-    private void onInteract(PlayerInteractEvent event) {
+    public void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
         switch (clickedBlock.getType()) {

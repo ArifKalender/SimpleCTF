@@ -66,7 +66,7 @@ public class QueueHandler {
         }
 
         broadcastMessageToQueue(getMM().deserialize(Message.PLAYER_JOINED_TEAM.get().replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
-        player.sendMessage(getMM().deserialize(Message.TEAM_JOIN.get().replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        player.sendMessage(getMM().deserialize(Message.TEAM_JOIN.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
         return true;
     }
 

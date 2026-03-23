@@ -25,7 +25,7 @@ public class PlayerLifecycleListener implements Listener {
     Set<UUID> quitDuringMatch = new HashSet<>();
 
     @EventHandler
-    private void onLeave(PlayerQuitEvent event) {
+    public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         // --- Remove player from the ongoing match ---
         Match match = SimpleCTF.getCurrentMatch();
@@ -44,7 +44,7 @@ public class PlayerLifecycleListener implements Listener {
      * Reset player if they left the game during a match
      */
     @EventHandler
-    private void onJoin(PlayerJoinEvent event) {
+    public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (quitDuringMatch.contains(player.getUniqueId())) {
             player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
@@ -58,7 +58,7 @@ public class PlayerLifecycleListener implements Listener {
      * Sound effects for winning the match
      */
     @EventHandler
-    private void onMatchWin(MatchWinEvent event) {
+    public void onMatchWin(MatchWinEvent event) {
         GeneralUtils.playSoundForGroup(event.getWinners(), Sound.ITEM_GOAT_HORN_SOUND_1, 3F, 1F);
         GeneralUtils.playSoundForGroup(event.getLosers(), Sound.ENTITY_WITHER_AMBIENT, 3F, 0F);
     }
@@ -67,7 +67,7 @@ public class PlayerLifecycleListener implements Listener {
      * Sound effects for flag scoring
      */
     @EventHandler
-    private void onScore(FlagScoreEvent event) {
+    public void onScore(FlagScoreEvent event) {
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Collection<Player> capturingTeam = match.getPlayers(event.getCapturingTeam());
@@ -75,6 +75,4 @@ public class PlayerLifecycleListener implements Listener {
         GeneralUtils.playSoundForGroup(capturingTeam, Sound.BLOCK_BELL_USE, 3F, 0F);
         GeneralUtils.playSoundForGroup(capturedTeam, Sound.BLOCK_BELL_USE, 3F, 2F);
     }
-
-
 }
