@@ -45,7 +45,7 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         Item itemEntity = event.getItemDrop();
-        ItemStack item = event.getItemDrop().getItemStack(); // TODO: After 30 seconds revive flag if left on the ground for too long
+        ItemStack item = event.getItemDrop().getItemStack();
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
@@ -89,6 +89,7 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
+        if (Team.getTeam(event.getPlayer()) == Team.NONE) return;
         if (clickedBlock == null) return;
         if (clickedBlock.getType() == Team.BLUE.getBannerItem()) {
             handleFlag(event, Team.BLUE);
@@ -132,6 +133,7 @@ public class FlagInteractionListener implements Listener {
         if (match == null) return;
         Player player = event.getPlayer();
         Team playerColor = Team.getTeam(player);
+        if (playerColor == Team.NONE) return;
         Team opponent = Team.getOpposite(playerColor);
 
         if (flagColor != opponent) {

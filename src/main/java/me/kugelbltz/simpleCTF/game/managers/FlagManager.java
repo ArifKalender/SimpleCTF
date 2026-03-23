@@ -76,11 +76,9 @@ public class FlagManager {
 
     /**
      * Handles the given flag and nearby entities to it. Saving your own flag or returning the enemy's flag to your base is handled here.
-     *
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void handleFlag(Team flag) {
-        if (flag == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        if (flag == Team.NONE) return;
         for (LivingEntity lEntity : this.getFlagLocation(flag).getNearbyLivingEntities(3)) {
             if (!(lEntity instanceof Player player)) continue;
             Team loopPlayerTeam = Team.getTeam(player);
