@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Locale;
 
@@ -70,12 +69,11 @@ public class FlagInteractionListener implements Listener {
         if (match == null) return;
         Player player = event.getPlayer();
         if (!getBannerItems().isFlag(item)) return;
-        if (!match.isPlayerInMatch(player)) {
-            event.setCancelled(true);
-            return;
-        }
         Team itemTeam = Team.getTeamFromFlag(item);
+        if (!match.isPlayerInMatch(player)) return;
         if (itemTeam == Team.NONE) return;
+        event.setCancelled(true);
+        addItem(player, item);
         match.getFlagManager().setFlagCarrier(player, itemTeam);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
                 Message.PLAYER_CAUGHT_FLAG.get()

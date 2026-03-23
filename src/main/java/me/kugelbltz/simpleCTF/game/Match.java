@@ -77,6 +77,7 @@ public class Match {
      */
     public void initPlayers(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        getFlagManager().setFlagCarrier(null, team);
         getPlayers(team).forEach(player -> {
             player.teleport(getFlagManager().getFlagLocation(team));
             resetPlayerState(player);

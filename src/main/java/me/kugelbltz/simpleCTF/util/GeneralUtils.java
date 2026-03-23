@@ -47,8 +47,8 @@ public class GeneralUtils {
             }
         }
         if (target == null) return false;
+        match.getFlagManager().setFlagCarrier(null, teamColor);
         player.getInventory().removeItem(target);
-        match.getFlagManager().setFlagCarrier(null, Team.getTeamFromFlag(target));
         return true;
     }
 

@@ -14,6 +14,7 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class QueueHandler {
 
+    // TODO: Map<Team, Collection<UUID>>
     private final Collection<UUID> redUuidQueue = new HashSet<>();
     private final Collection<UUID> blueUuidQueue = new HashSet<>();
 

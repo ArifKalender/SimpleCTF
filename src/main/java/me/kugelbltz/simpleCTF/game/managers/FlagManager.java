@@ -131,7 +131,6 @@ public class FlagManager {
         match.initPlayers(Team.RED);
         match.initPlayers(Team.BLUE);
         match.getFlagManager().loadFlags(true);
-        removeFlag(player, capturedTeam);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
                 Message.PLAYER_RETURN_FLAG.get()
                         .replace("%player%", player.getName())
