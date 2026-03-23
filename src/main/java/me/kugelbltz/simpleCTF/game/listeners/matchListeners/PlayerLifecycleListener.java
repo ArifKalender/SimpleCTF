@@ -34,7 +34,6 @@ public class PlayerLifecycleListener implements Listener {
         quitDuringMatch.add(player.getUniqueId());
 
         // --- Drop the flag item ---
-        GeneralUtils.dropAllFlags(player);
         match.removePlayerFromMatch(player);
         match.getMessageManager().broadcastMessage(getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName())));
         player.getInventory().clear();

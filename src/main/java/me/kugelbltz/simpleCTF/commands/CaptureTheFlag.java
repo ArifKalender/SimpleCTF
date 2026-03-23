@@ -30,6 +30,7 @@ public class CaptureTheFlag implements CommandExecutor {
             "STOP", new CTFStop()
     );
 
+    // TODO: Add tab completion!
     /**
      * The main command for the plugin
      */

@@ -9,9 +9,9 @@ import me.kugelbltz.simpleCTF.game.managers.ScoreManager;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
 
+import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -176,6 +176,7 @@ public class Match {
      * Removes the given player from the match.
      */
     public void removePlayerFromMatch(Player player) {
+        GeneralUtils.dropAllFlags(player);
         resetPlayerState(player);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
