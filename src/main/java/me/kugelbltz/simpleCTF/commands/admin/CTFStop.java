@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;

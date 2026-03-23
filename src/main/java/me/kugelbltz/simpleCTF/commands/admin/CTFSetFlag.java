@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 

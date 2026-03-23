@@ -1,4 +1,4 @@
-package me.kugelbltz.simpleCTF.configuration;
+package me.kugelbltz.simpleCTF.model;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 
@@ -26,7 +26,8 @@ public enum Message {
     PLAYER_PLACE_FLAG("SimpleCTF.Strings.Match.PlayerPlaceFlag", "%player% placed back their flag!"),
     MATCH_OCCUPIED("SimpleCTF.Strings.Match.MatchOccupied", "There already is a match going on in this server, sorry!"),
     CURRENT_SCORE("SimpleCTF.Strings.Match.CurrentScore", "Blue score: %blue_score% | Red score: %red_score%"),
-    FLAG_DROPPED_AT("SimpleCTF.Strings.Match.FlagDroppedAt", "%player% dropped %color% flag at %coordinates%!");
+    FLAG_DROPPED_AT("SimpleCTF.Strings.Match.FlagDroppedAt", "%player% dropped %color% flag at %coordinates%!"),
+    FLAG_WAS_SAVED("SimpleCTF.Strings.Match.FlagWasSaved", "%color% flag was saved!");
 
     private final String configPath;
     private final String defaultMessage;

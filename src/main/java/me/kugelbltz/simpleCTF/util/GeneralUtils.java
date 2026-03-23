@@ -8,9 +8,12 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
@@ -58,17 +61,20 @@ public class GeneralUtils {
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return false;
         boolean found = false;
+        List<ItemStack> toRemove = new ArrayList<>(); // Prevent ConcurrentModificationException
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
             else if (getBannerItems().isFlag(item)) {
-                player.getInventory().removeItem(item);
+                toRemove.add(item);
                 Item drop = player.getWorld().dropItem(player.getLocation(), item);
                 Team flagTeam = Team.getTeamFromFlag(item);
+                match.getFlagManager().protectFlagItemEntity(drop);
                 match.getFlagManager().setFlagCarrier(drop, flagTeam);
                 match.getFlagManager().broadcastFlagDropLocation(flagTeam, player, player.getLocation());
                 found = true;
             }
         }
+        toRemove.forEach(itemStack -> player.getInventory().remove(itemStack));
         return found;
     }
 

@@ -29,6 +29,7 @@ SimpleCTF:
       PlayerCaughtFlag: "%player% CAUGHT THE %color% FLAG!"
       PlayerReturnFlag: "SCORE! %player% returned with %opposite_color% team's flag to their base!"
       PlayerPlaceFlag: "%player% placed back their flag!"
+      FlagWasSaved: "%color% flag was saved!"
       MatchOccupied: "There already is a match going on in this server, sorry!"
       CurrentScore: "Blue score: %blue_score% | Red score: %red_score%"
       FlagDroppedAt: "%player% dropped %color% flag at %coordinates%!"

@@ -2,15 +2,24 @@ package me.kugelbltz.simpleCTF.model;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.game.Match;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
 public enum Team {
-    RED,
-    BLUE,
-    NONE;
+
+
+    RED(Material.RED_BANNER, Material.RED_CONCRETE),
+    BLUE(Material.BLUE_BANNER, Material.BLUE_CONCRETE),
+    NONE(Material.GRAY_BANNER, Material.GRAY_CONCRETE);
+
+    private final Material bannerItem, particleSource;
+    Team(Material bannerItem, Material particleSource) {
+        this.bannerItem = bannerItem;
+        this.particleSource = particleSource;
+    }
 
     /**
      * @return The team of the given player
@@ -50,5 +59,13 @@ public enum Team {
         if (getBannerItems().isBlueFlag(itemStack)) return BLUE;
         else if (getBannerItems().isRedFlag(itemStack)) return RED;
         else return NONE;
+    }
+
+    public Material getBannerItem() {
+        return bannerItem;
+    }
+
+    public Material getParticleSource() {
+        return particleSource;
     }
 }

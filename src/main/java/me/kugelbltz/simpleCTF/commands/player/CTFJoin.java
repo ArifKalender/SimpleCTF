@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;

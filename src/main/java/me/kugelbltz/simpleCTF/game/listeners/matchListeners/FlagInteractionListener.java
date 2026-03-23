@@ -1,21 +1,25 @@
 package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Locale;
 
@@ -41,15 +45,20 @@ public class FlagInteractionListener implements Listener {
      */
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
-        ItemStack item = event.getItemDrop().getItemStack();
+        Item itemEntity = event.getItemDrop();
+        ItemStack item = event.getItemDrop().getItemStack(); // TODO: After 30 seconds revive flag if left on the ground for too long
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
         if (getBannerItems().isFlag(item)) {
-            match.getFlagManager().setFlagCarrier(event.getItemDrop(), Team.getTeamFromFlag(event.getItemDrop().getItemStack()));
-            match.getFlagManager().broadcastFlagDropLocation(Team.getTeamFromFlag(item), player, player.getLocation());
+            Team itemTeam = Team.getTeamFromFlag(item);
+            match.getFlagManager().protectFlagItemEntity(itemEntity);
+            match.getFlagManager().setFlagCarrier(itemEntity, itemTeam);
+            match.getFlagManager().broadcastFlagDropLocation(itemTeam, player, player.getLocation());
+            itemEntity.setUnlimitedLifetime(true);
         }
     }
+
 
     /**
      * Handle flag pickups
@@ -82,18 +91,16 @@ public class FlagInteractionListener implements Listener {
     public void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
         if (clickedBlock == null) return;
-        switch (clickedBlock.getType()) {
-            case Material.BLUE_BANNER -> {
-                handleFlag(event, Team.BLUE);
-                event.setCancelled(true);
-                return;
-            }
-            case Material.RED_BANNER -> {
-                handleFlag(event, Team.RED);
-                event.setCancelled(true);
-                return;
-            }
+        if (clickedBlock.getType() == Team.BLUE.getBannerItem()) {
+            handleFlag(event, Team.BLUE);
+            event.setCancelled(true);
+            return;
+        } else if (clickedBlock.getType() == Team.RED.getBannerItem()) {
+            handleFlag(event, Team.RED);
+            event.setCancelled(true);
+            return;
         }
+
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));
@@ -101,6 +108,22 @@ public class FlagInteractionListener implements Listener {
         if (blueDistance < StaticVariables.getFlagBaseRadius() || redDistance < StaticVariables.getFlagBaseRadius()) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onCombust(EntityCombustEvent event) {
+        if (!(event.getEntity() instanceof Item item)) return;
+        ItemStack itemStack = item.getItemStack();
+        if (Team.getTeamFromFlag(itemStack) == Team.NONE) return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onItemDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Item item)) return;
+        ItemStack itemStack = item.getItemStack();
+        if (Team.getTeamFromFlag(itemStack) == Team.NONE) return;
+        event.setCancelled(true);
     }
 
 
@@ -114,6 +137,7 @@ public class FlagInteractionListener implements Listener {
 
         if (flagColor != opponent) {
             player.sendMessage(getMM().deserialize(Message.WRONG_BANNER_TEAM.get()));
+            event.setCancelled(true);
             return;
         }
         event.getClickedBlock().setType(Material.AIR);

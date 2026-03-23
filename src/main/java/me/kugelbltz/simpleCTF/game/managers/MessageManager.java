@@ -25,13 +25,20 @@ public class MessageManager {
      * @param timeLeft To update the health left of the boss bar
      */
     public void updateBossBar(int timeLeft) {
+        if (this.bossBar == null) return;
         String title = "Red score: " + match.getScoreManager().getScore(Team.RED) + " | Blue score: " + match.getScoreManager().getScore(Team.BLUE);
         double timeLeftNormalized = timeLeft / (double) StaticVariables.getMatchTime();
-        if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
-        else this.bossBar.setTitle(title);
         this.bossBar.setProgress(timeLeftNormalized);
-        match.getPlayers(Team.RED).forEach(this.bossBar::addPlayer);
-        match.getPlayers(Team.BLUE).forEach(this.bossBar::addPlayer);
+        this.bossBar.setTitle(title);
+    }
+
+    public void createBossBar() {
+        String title = "Red score: " + match.getScoreManager().getScore(Team.RED) + " | Blue score: " + match.getScoreManager().getScore(Team.BLUE);
+        if (this.bossBar == null) {
+            this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
+            match.getPlayers(Team.RED).forEach(this.bossBar::addPlayer);
+            match.getPlayers(Team.BLUE).forEach(this.bossBar::addPlayer);
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 package me.kugelbltz.simpleCTF.util;
 
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;

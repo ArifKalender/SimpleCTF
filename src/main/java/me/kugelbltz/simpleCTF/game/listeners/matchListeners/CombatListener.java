@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent;
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import me.kugelbltz.simpleCTF.util.GeneralUtils;

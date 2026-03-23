@@ -1,13 +1,14 @@
 package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.game.managers.FlagManager;
 import me.kugelbltz.simpleCTF.game.managers.MessageManager;
 import me.kugelbltz.simpleCTF.game.managers.ScoreManager;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -37,7 +38,7 @@ public class Match {
     }
 
     private void initManagers() {
-        this.scoreManager = new ScoreManager(this);
+        this.scoreManager = new ScoreManager();
         this.messageManager = new MessageManager(this);
         this.flagManager = new FlagManager(this);
     }
@@ -58,12 +59,13 @@ public class Match {
         players.put(Team.RED, redPlayers);
         players.put(Team.BLUE, bluePlayers);
         getFlagManager().loadFlags(true);
-        SimpleCTF.getInstance().setCurrentMatch(this);
         getScoreManager().setScore(Team.RED, 0);
         getScoreManager().setScore(Team.BLUE, 0);
-        initPlayers(Team.RED, true);
-        initPlayers(Team.BLUE, true);
+        getMessageManager().createBossBar();
+        initPlayers(Team.RED);
+        initPlayers(Team.BLUE);
         getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
+        SimpleCTF.getInstance().setCurrentMatch(this);
         return true;
     }
 
@@ -73,13 +75,11 @@ public class Match {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void initPlayers(Team team, boolean firstTime) {
+    public void initPlayers(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         getPlayers(team).forEach(player -> {
             player.teleport(getFlagManager().getFlagLocation(team));
-            if (firstTime) {
-                resetPlayerState(player);
-            }
+            resetPlayerState(player);
         });
     }
 
@@ -95,11 +95,12 @@ public class Match {
                 timeLeft--;
                 if (timeLeft <= 0 || SimpleCTF.getCurrentMatch() == null) {
                     unloadMatch(Message.MATCH_TIME_OUT.get());
+                    return;
                 }
-                getFlagManager().handleFlag(Team.RED, Material.RED_BANNER);
-                getFlagManager().handleFlag(Team.BLUE, Material.BLUE_BANNER);
-                getFlagManager().playFlagAnimation(Team.RED, Material.RED_BANNER, Material.RED_CONCRETE);
-                getFlagManager().playFlagAnimation(Team.BLUE, Material.BLUE_BANNER, Material.BLUE_CONCRETE);
+                getFlagManager().handleFlag(Team.RED);
+                getFlagManager().handleFlag(Team.BLUE);
+                getFlagManager().playFlagAnimation(Team.RED);
+                getFlagManager().playFlagAnimation(Team.BLUE);
 
                 if (getScoreManager().getScore(Team.BLUE) >= getWinScore()) winMatch(Team.BLUE);
                 else if (getScoreManager().getScore(Team.RED) >= getWinScore()) winMatch(Team.RED);

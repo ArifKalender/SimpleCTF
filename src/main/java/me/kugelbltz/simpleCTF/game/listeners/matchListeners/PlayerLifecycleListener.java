@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.game.Match;
