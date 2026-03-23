@@ -11,29 +11,28 @@ import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
-
 public class QueueHandler {
 
-    // TODO: Map<Team, Collection<UUID>>
-    private final Collection<UUID> redUuidQueue = new HashSet<>();
-    private final Collection<UUID> blueUuidQueue = new HashSet<>();
+    private final static Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
+    static {
+        teamQueues.put(Team.RED, new HashSet<>());
+        teamQueues.put(Team.BLUE, new HashSet<>());
+    }
 
     /**
      * @param team To get the list of
-     * @return The list of UUID's of players in a team's queue
+     * @return The unmodifiable list of UUID's of players in a team's queue
      */
     private Collection<UUID> getUUIDQueue(Team team) {
-        if (team == Team.RED) return redUuidQueue;
-        else if (team == Team.BLUE) return blueUuidQueue;
-        else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        return Collections.unmodifiableCollection(teamQueues.get(team));
     }
 
     /**
      * @return A copy of the list of players in a teams queue, pulls from {@link QueueHandler#getUUIDQueue(Team)}
-     * @apiNote
      */
-    public Set<Player> getPlayerQueue(Team team) {
-        Set<Player> toReturn = new HashSet<>();
+    public Collection<Player> getPlayerQueue(Team team) {
+        Collection<Player> toReturn = new HashSet<>();
         getUUIDQueue(team).forEach(uuid -> {
             Player toAdd = Bukkit.getPlayer(uuid);
             if (toAdd != null) toReturn.add(toAdd);
@@ -77,10 +76,9 @@ public class QueueHandler {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void addPlayerToQueue(Player player, Team team) {
+        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         UUID uuid = player.getUniqueId();
-        if (team == Team.RED) redUuidQueue.add(uuid);
-        else if (team == Team.BLUE) blueUuidQueue.add(uuid);
-        else throw new IllegalArgumentException("Team NONE is not allowed");
+        teamQueues.get(team).add(uuid);
     }
 
     public void removePlayerFromQueue(Player player) {
@@ -88,36 +86,45 @@ public class QueueHandler {
     }
 
     public void removePlayerFromQueue(UUID uuid) {
-        getUUIDQueue(Team.RED).remove(uuid);
-        getUUIDQueue(Team.BLUE).remove(uuid);
+        for (Collection<UUID> value : teamQueues.values()) {
+            value.remove(uuid);
+        }
     }
 
     /**
      * @return Whether the given player is in a queue or not.
      */
     public boolean alreadyInQueue(Player player) {
-        return redUuidQueue.contains(player.getUniqueId()) || blueUuidQueue.contains(player.getUniqueId());
+        for (Collection<UUID> value : teamQueues.values()) {
+            if (value.contains(player.getUniqueId())) return true;
+        }
+        return false;
     }
 
     /**
      * @return Whether anyone is in either of the queues
      */
     public boolean anyoneInQueue() {
-        return !getUUIDQueue(Team.BLUE).isEmpty() || !getUUIDQueue(Team.RED).isEmpty();
+        for (Collection<UUID> value : teamQueues.values()) {
+            if (!value.isEmpty()) return true;
+        }
+        return false;
     }
 
     /**
      * @return The queue {@link Team} of the given player
      */
     public Team getQueueTeam(Player player) {
-        if (redUuidQueue.contains(player.getUniqueId())) return Team.RED;
-        else if (blueUuidQueue.contains(player.getUniqueId())) return Team.BLUE;
-        else return Team.NONE;
+        for (Team team : teamQueues.keySet()) {
+            if (teamQueues.get(team).contains(player.getUniqueId())) return team;
+        }
+        return Team.NONE;
     }
 
     public void clearQueue() {
-        getUUIDQueue(Team.RED).clear();
-        getUUIDQueue(Team.BLUE).clear();
+        for (Team team : teamQueues.keySet()) {
+            teamQueues.get(team).clear();
+        }
     }
 
     /**
@@ -140,5 +147,4 @@ public class QueueHandler {
         if (sendMessageToPlayer)
             player.sendMessage(getMM().deserialize(Message.TEAM_LEAVE.get()));
     }
-
 }
