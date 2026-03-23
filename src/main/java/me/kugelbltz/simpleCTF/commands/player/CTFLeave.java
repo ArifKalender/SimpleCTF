@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.configuration.StaticVariables;
+import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.entity.Player;
 
@@ -19,14 +19,13 @@ public class CTFLeave implements CTFCommand {
         // Remove player from queue
         if (getQueueHandler().alreadyInQueue(player)) {
             getQueueHandler().removePlayer(player, true);
-            return;
         } else {
             Match match = SimpleCTF.getInstance().getCurrentMatch();
             if (match != null && match.isPlayerInMatch(player)) {
                 match.removePlayerFromMatch(player);
-                player.sendMessage(getMM().deserialize(StaticVariables.TEAM_LEAVE));
+                player.sendMessage(getMM().deserialize(Message.TEAM_LEAVE.get()));
             } else {
-                player.sendMessage(getMM().deserialize(StaticVariables.NOT_IN_TEAM));
+                player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
             }
         }
     }

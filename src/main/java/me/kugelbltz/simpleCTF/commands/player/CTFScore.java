@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
+import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
@@ -17,7 +18,7 @@ public class CTFScore implements CTFCommand {
     @Override
     public void execute(Player player, String[] args) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
-        String msg = StaticVariables.CURRENT_SCORE;
+        String msg = Message.CURRENT_SCORE.get();
         if (match == null) {
             msg = msg.replace("%blue_score%", "0").replace("%red_score%", "0");
         } else {

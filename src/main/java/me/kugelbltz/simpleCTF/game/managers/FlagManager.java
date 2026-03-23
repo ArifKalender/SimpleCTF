@@ -1,6 +1,6 @@
 package me.kugelbltz.simpleCTF.game.managers;
 
-import me.kugelbltz.simpleCTF.configuration.StaticVariables;
+import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.util.UtilizationMethods.removeFlag;
+import static me.kugelbltz.simpleCTF.util.GeneralUtils.removeFlag;
 
 public class FlagManager {
 
@@ -103,7 +103,7 @@ public class FlagManager {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         flagLoc.getBlock().setType(bannerType);
         removeFlag(player, team);
-        match.getMessageManager().broadcastMessage(getMM().deserialize(StaticVariables.PLAYER_PLACE_FLAG.replace("%player%", player.getName())));
+        match.getMessageManager().broadcastMessage(getMM().deserialize(Message.PLAYER_PLACE_FLAG.get().replace("%player%", player.getName())));
     }
 
     /**
@@ -123,7 +123,7 @@ public class FlagManager {
         match.getFlagManager().loadFlags(true);
         removeFlag(player, capturedTeam);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
-                StaticVariables.PLAYER_RETURN_FLAG
+                Message.PLAYER_RETURN_FLAG.get()
                         .replace("%player%", player.getName())
                         .replace("%opposite_color%", capturedTeam.name())
         ));
@@ -142,7 +142,7 @@ public class FlagManager {
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
-        Component component = getMM().deserialize(StaticVariables.FLAG_DROPPED_AT
+        Component component = getMM().deserialize(Message.FLAG_DROPPED_AT.get()
                 .replace("%player%", dropper.getName())
                 .replace("%color%", team.name().toUpperCase(Locale.ENGLISH))
                 .replace("%coordinates%", locString));

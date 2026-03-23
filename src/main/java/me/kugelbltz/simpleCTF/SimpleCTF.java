@@ -3,8 +3,8 @@ package me.kugelbltz.simpleCTF;
 import me.kugelbltz.simpleCTF.commands.CaptureTheFlag;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
-import me.kugelbltz.simpleCTF.game.listeners.MatchListener;
 import me.kugelbltz.simpleCTF.game.listeners.QueueListener;
+import me.kugelbltz.simpleCTF.game.listeners.matchListeners.*;
 import me.kugelbltz.simpleCTF.model.BannerItems;
 import me.kugelbltz.simpleCTF.util.QueueHandler;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -42,7 +42,9 @@ public final class SimpleCTF extends JavaPlugin {
     }
 
     private void registerListeners() {
-        this.getServer().getPluginManager().registerEvents(new MatchListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerLifecycleListener(), this);
+        this.getServer().getPluginManager().registerEvents(new FlagInteractionListener(), this);
+        this.getServer().getPluginManager().registerEvents(new CombatListener(), this);
         this.getServer().getPluginManager().registerEvents(new QueueListener(), this);
     }
 

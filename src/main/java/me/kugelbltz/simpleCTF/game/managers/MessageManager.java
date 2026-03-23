@@ -26,7 +26,7 @@ public class MessageManager {
      */
     public void updateBossBar(int timeLeft) {
         String title = "Red score: " + match.getScoreManager().getScore(Team.RED) + " | Blue score: " + match.getScoreManager().getScore(Team.BLUE);
-        double timeLeftNormalized = timeLeft / (double) StaticVariables.MATCH_TIME;
+        double timeLeftNormalized = timeLeft / (double) StaticVariables.getMatchTime();
         if (this.bossBar == null) this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
         else this.bossBar.setTitle(title);
         this.bossBar.setProgress(timeLeftNormalized);

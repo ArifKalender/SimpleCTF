@@ -14,7 +14,7 @@ import java.util.Collection;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
-public class UtilizationMethods {
+public class GeneralUtils {
 
     /**
      * Safely adds or drops the given item to a player's inventory
@@ -29,6 +29,7 @@ public class UtilizationMethods {
 
     /**
      * Removes the given flag once from the player's inventory
+     *
      * @return true if a flag is found, false otherwise
      */
     public static boolean removeFlag(Player player, Team teamColor) {
@@ -50,6 +51,7 @@ public class UtilizationMethods {
 
     /**
      * Drops all the flags from the player's inventory
+     *
      * @return true if a flag is found, false otherwise
      */
     public static boolean dropAllFlags(Player player) {

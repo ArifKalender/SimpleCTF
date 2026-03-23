@@ -25,20 +25,22 @@ public enum Team {
 
     /**
      * @return The enemy team of the given team
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public static Team getOpposite(Team team) {
         if (team == RED) return BLUE;
         else if (team == BLUE) return RED;
-        else return NONE;
+        else throw new IllegalArgumentException("Team NONE is not allowed");
     }
 
     /**
      * @return The {@code ItemStack} item of the given team, refer to {@code BannerItems}
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public static ItemStack getTeamFlag(Team team) {
         if (team == RED) return getBannerItems().getRedFlag();
         else if (team == BLUE) return getBannerItems().getBlueFlag();
-        else throw new IllegalArgumentException("team can only be Team.RED or Team.BLUE");
+        else throw new IllegalArgumentException("Team NONE is not allowed");
     }
 
     /**

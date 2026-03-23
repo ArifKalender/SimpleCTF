@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.admin;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.configuration.StaticVariables;
+import me.kugelbltz.simpleCTF.configuration.Message;
 import org.bukkit.entity.Player;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
@@ -15,17 +15,17 @@ public class CTFStop implements CTFCommand {
     @Override
     public void execute(Player player, String[] args) {
         if (!player.hasPermission("simplectf.admin.stop")) {
-            player.sendMessage(getMM().deserialize(StaticVariables.NO_PERMISSION));
+            player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
             return;
         }
         boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
         if (!isMatchRunning) {
-            player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<red>Cleaning current queue..."));
-            getQueueHandler().broadcastMessageToQueue(getMM().deserialize(StaticVariables.PREFIX + "<red>Queue interrupted by an admin!"));
+            player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Cleaning current queue..."));
+            getQueueHandler().broadcastMessageToQueue(getMM().deserialize(Message.PREFIX.get() + "<red>Queue interrupted by an admin!"));
             getQueueHandler().clearQueue();
             return;
         }
-        player.sendMessage(getMM().deserialize(StaticVariables.PREFIX + "<red>Interrupting current match..."));
-        SimpleCTF.getInstance().getCurrentMatch().unloadMatch(StaticVariables.PREFIX + "<red>Match interrupted by an admin!");
+        player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Interrupting current match..."));
+        SimpleCTF.getInstance().getCurrentMatch().unloadMatch(Message.PREFIX.get() + "<red>Match interrupted by an admin!");
     }
 }

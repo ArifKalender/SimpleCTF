@@ -18,6 +18,10 @@ public class MatchWinEvent extends Event {
         this.losers = losers;
     }
 
+    public static HandlerList getHandlerList() {
+        return HANDLER_LIST;
+    }
+
     public Collection<Player> getWinners() {
         return winners;
     }
@@ -28,10 +32,6 @@ public class MatchWinEvent extends Event {
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return HANDLER_LIST;
-    }
-
-    public static HandlerList getHandlerList() {
         return HANDLER_LIST;
     }
 }

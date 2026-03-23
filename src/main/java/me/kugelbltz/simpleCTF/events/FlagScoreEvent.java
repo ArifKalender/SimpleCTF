@@ -19,6 +19,10 @@ public class FlagScoreEvent extends Event {
         this.capturedTeam = capturedTeam;
     }
 
+    public static HandlerList getHandlerList() {
+        return HANDLER_LIST;
+    }
+
     public Player getScoringPlayer() {
         return scoringPlayer;
     }
@@ -33,10 +37,6 @@ public class FlagScoreEvent extends Event {
 
     @Override
     public @NotNull HandlerList getHandlers() {
-        return HANDLER_LIST;
-    }
-
-    public static HandlerList getHandlerList() {
         return HANDLER_LIST;
     }
 }

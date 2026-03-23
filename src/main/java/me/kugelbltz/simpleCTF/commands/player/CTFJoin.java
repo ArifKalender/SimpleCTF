@@ -2,7 +2,7 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.configuration.StaticVariables;
+import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
@@ -32,11 +32,11 @@ public class CTFJoin implements CTFCommand {
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
             if (team == Team.NONE) {
-                player.sendMessage(getMM().deserialize(StaticVariables.INCORRECT_SYNTAX));
+                player.sendMessage(getMM().deserialize(Message.INCORRECT_SYNTAX.get()));
                 return;
             }
         } catch (IllegalArgumentException ignored) {
-            player.sendMessage(getMM().deserialize(StaticVariables.INCORRECT_SYNTAX));
+            player.sendMessage(getMM().deserialize(Message.INCORRECT_SYNTAX.get()));
             return;
         }
 
@@ -44,11 +44,11 @@ public class CTFJoin implements CTFCommand {
         boolean matchOccupied = match != null;
 
         if (getQueueHandler().alreadyInQueue(player)) {
-            player.sendMessage(getMM().deserialize(StaticVariables.ALREADY_IN_QUEUE));
+            player.sendMessage(getMM().deserialize(Message.ALREADY_IN_QUEUE.get()));
             return;
         }
         if (matchOccupied) {
-            player.sendMessage(getMM().deserialize(StaticVariables.MATCH_OCCUPIED));
+            player.sendMessage(getMM().deserialize(Message.MATCH_OCCUPIED.get()));
             return;
         }
 

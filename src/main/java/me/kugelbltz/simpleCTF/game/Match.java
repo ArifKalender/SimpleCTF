@@ -1,6 +1,7 @@
 package me.kugelbltz.simpleCTF.game;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.game.managers.FlagManager;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.configuration.StaticVariables.WIN_SCORE;
+import static me.kugelbltz.simpleCTF.configuration.StaticVariables.getWinScore;
 
 public class Match {
     private final Map<Team, Collection<Player>> players = new HashMap<>();
@@ -60,13 +61,14 @@ public class Match {
         getScoreManager().setScore(Team.BLUE, 0);
         initPlayers(Team.RED, true);
         initPlayers(Team.BLUE, true);
-        getMessageManager().broadcastMessage(getMM().deserialize(StaticVariables.MATCH_START));
+        getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
         return true;
     }
 
     /**
      * Teleport players to their spawn locations and
      * reset their state if {@code resetState} is true
+     *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void initPlayers(Team team, boolean resetState) {
@@ -82,13 +84,13 @@ public class Match {
      */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
-            int timeLeft = StaticVariables.MATCH_TIME;
+            int timeLeft = StaticVariables.getMatchTime();
 
             @Override
             public void run() {
                 timeLeft--;
                 if (timeLeft <= 0) {
-                    unloadMatch(StaticVariables.MATCH_TIME_OUT);
+                    unloadMatch(Message.MATCH_TIME_OUT.get());
                     this.cancel();
                 }
                 getFlagManager().handleFlag(Team.RED, Material.RED_BANNER);
@@ -96,8 +98,8 @@ public class Match {
                 getFlagManager().playFlagAnimation(Team.RED, Material.RED_BANNER, Material.RED_CONCRETE);
                 getFlagManager().playFlagAnimation(Team.BLUE, Material.BLUE_BANNER, Material.BLUE_CONCRETE);
 
-                if (getScoreManager().getScore(Team.BLUE) >= WIN_SCORE) winMatch(Team.BLUE);
-                else if (getScoreManager().getScore(Team.RED) >= WIN_SCORE) winMatch(Team.RED);
+                if (getScoreManager().getScore(Team.BLUE) >= getWinScore()) winMatch(Team.BLUE);
+                else if (getScoreManager().getScore(Team.RED) >= getWinScore()) winMatch(Team.RED);
 
                 getMessageManager().updateBossBar(timeLeft);
                 int playersInMatch = getPlayers(Team.RED).size() + getPlayers(Team.BLUE).size();
@@ -107,9 +109,9 @@ public class Match {
     }
 
 
-
     /**
      * Unloads match for the given reason
+     *
      * @param reason The message to send the players, internally handled via {@code MiniMessage} API
      */
     public void unloadMatch(@Nullable String reason) {
@@ -142,9 +144,8 @@ public class Match {
     public void winMatch(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
-        unloadMatch(StaticVariables.MATCH_WIN.replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
+        unloadMatch(Message.MATCH_WIN.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
-
 
 
     /**
@@ -157,19 +158,20 @@ public class Match {
 
     /**
      * Returns the list of players for the given team.
-     * @return A copy of the players for the given team.
+     *
+     * @return An unmodifiable Collection of the players for the given team.
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Collection<Player> getPlayers(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        return new HashSet<>(players.get(team));
+        return Collections.unmodifiableCollection(players.get(team));
     }
 
     /**
      * Removes the given player from the match.
      */
     public void removePlayerFromMatch(Player player) {
-        players.get(Team.RED).remove(player); //Not using getPlayers() because it returns a copy where we want to remove the players from the actual list
+        players.get(Team.RED).remove(player); //Not using getPlayers() because it returns an unmodifiable collection
         players.get(Team.BLUE).remove(player);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());

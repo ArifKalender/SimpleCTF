@@ -1,5 +1,6 @@
 package me.kugelbltz.simpleCTF.util;
 
+import me.kugelbltz.simpleCTF.configuration.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
@@ -27,8 +28,8 @@ public class QueueHandler {
     }
 
     /**
-     * @apiNote
      * @return A copy of the list of players in a teams queue, pulls from {@link QueueHandler#getUUIDQueue(Team)}
+     * @apiNote
      */
     public Set<Player> getPlayerQueue(Team team) {
         Set<Player> toReturn = new HashSet<>();
@@ -53,29 +54,32 @@ public class QueueHandler {
 
     /**
      * Properly adds the given player to the queue for the given team
+     *
      * @return true if successful, false if else
      */
     public boolean addToQueue(Player player, Team team) {
-        if (getPlayerQueue(team).size() < StaticVariables.MAX_PLAYERS_PER_TEAM) {
+        if (getPlayerQueue(team).size() < StaticVariables.getMaxPlayersPerTeam()) {
             addPlayerToQueue(player, team);
         } else {
-            player.sendMessage(getMM().deserialize(StaticVariables.TEAM_ALREADY_FULL));
+            player.sendMessage(getMM().deserialize(Message.TEAM_ALREADY_FULL.get()));
             return false;
         }
 
-        broadcastMessageToQueue(getMM().deserialize(StaticVariables.PLAYER_JOINED_TEAM.replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
-        player.sendMessage(getMM().deserialize(StaticVariables.TEAM_JOIN.replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
+        broadcastMessageToQueue(getMM().deserialize(Message.PLAYER_JOINED_TEAM.get().replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
+        player.sendMessage(getMM().deserialize(Message.TEAM_JOIN.get().replace("%color%", team.name().toLowerCase(Locale.ENGLISH))));
         return true;
     }
 
     /**
      * Adds the given player to the given team's queue directly
+     *
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void addPlayerToQueue(Player player, Team team) {
         UUID uuid = player.getUniqueId();
         if (team == Team.RED) redUuidQueue.add(uuid);
         else if (team == Team.BLUE) blueUuidQueue.add(uuid);
-        else return;
+        else throw new IllegalArgumentException("Team NONE is not allowed");
     }
 
     public void removePlayerFromQueue(Player player) {
@@ -94,7 +98,9 @@ public class QueueHandler {
         return redUuidQueue.contains(player.getUniqueId()) || blueUuidQueue.contains(player.getUniqueId());
     }
 
-    /** @return Whether anyone is in either of the queues */
+    /**
+     * @return Whether anyone is in either of the queues
+     */
     public boolean anyoneInQueue() {
         return !getUUIDQueue(Team.BLUE).isEmpty() || !getUUIDQueue(Team.RED).isEmpty();
     }
@@ -115,22 +121,23 @@ public class QueueHandler {
 
     /**
      * Removes the player from the queue.
-     * @param player to remove
+     *
+     * @param player              to remove
      * @param sendMessageToPlayer Whether to try to send the player the leaving message
      */
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
         if (!this.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
             if (sendMessageToPlayer)
-                player.sendMessage(getMM().deserialize(StaticVariables.NOT_IN_TEAM));
+                player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
             return;
         }
         Team team = this.getQueueTeam(player);
         if (team == Team.NONE) return;
         this.removePlayerFromQueue(player);
         this.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
-                .sendMessage(getMM().deserialize(StaticVariables.PLAYER_LEFT_TEAM.replace("%player%", player.getName()))));
+                .sendMessage(getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName()))));
         if (sendMessageToPlayer)
-            player.sendMessage(getMM().deserialize(StaticVariables.TEAM_LEAVE));
+            player.sendMessage(getMM().deserialize(Message.TEAM_LEAVE.get()));
     }
 
 }
