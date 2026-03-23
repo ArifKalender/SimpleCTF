@@ -16,10 +16,10 @@ public enum Team {
      * @return The team of the given player
      */
     public static Team getTeam(Player player) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return NONE;
-        if (match.getPlayers(BLUE).contains(player)) return BLUE;
         if (match.getPlayers(RED).contains(player)) return RED;
+        if (match.getPlayers(BLUE).contains(player)) return BLUE;
         return NONE;
     }
 

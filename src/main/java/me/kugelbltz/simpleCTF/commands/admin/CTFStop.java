@@ -18,7 +18,7 @@ public class CTFStop implements CTFCommand {
             player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
             return;
         }
-        boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
+        boolean isMatchRunning = SimpleCTF.getCurrentMatch() != null;
         if (!isMatchRunning) {
             player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Cleaning current queue..."));
             getQueueHandler().broadcastMessageToQueue(getMM().deserialize(Message.PREFIX.get() + "<red>Queue interrupted by an admin!"));
@@ -26,6 +26,6 @@ public class CTFStop implements CTFCommand {
             return;
         }
         player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Interrupting current match..."));
-        SimpleCTF.getInstance().getCurrentMatch().unloadMatch(Message.PREFIX.get() + "<red>Match interrupted by an admin!");
+        SimpleCTF.getCurrentMatch().unloadMatch(Message.PREFIX.get() + "<red>Match interrupted by an admin!");
     }
 }

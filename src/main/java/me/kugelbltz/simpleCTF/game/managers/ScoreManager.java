@@ -21,7 +21,7 @@ public class ScoreManager {
      */
     public int getScore(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
-        return teamScores.get(team);
+        return teamScores.getOrDefault(team, 0);
     }
 
     /**

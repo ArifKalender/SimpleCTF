@@ -42,7 +42,7 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     private void onDrop(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
         if (getBannerItems().isFlag(item)) {
@@ -57,7 +57,7 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     private void onPickup(PlayerAttemptPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
         if (!getBannerItems().isFlag(item)) return;
@@ -94,7 +94,7 @@ public class FlagInteractionListener implements Listener {
                 return;
             }
         }
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));
         double redDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.RED));
@@ -105,7 +105,8 @@ public class FlagInteractionListener implements Listener {
 
 
     private void handleFlag(PlayerInteractEvent event, Team flagColor) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
+        if (flagColor == Team.NONE || flagColor == null) return;
         if (match == null) return;
         Player player = event.getPlayer();
         Team playerColor = Team.getTeam(player);

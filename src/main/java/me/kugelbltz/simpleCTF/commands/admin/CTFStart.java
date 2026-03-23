@@ -21,7 +21,7 @@ public class CTFStart implements CTFCommand {
             return;
         }
 
-        boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
+        boolean isMatchRunning = SimpleCTF.getCurrentMatch() != null;
         if (isMatchRunning) { //Cannot start a match if a match is already going on
             player.sendMessage(getMM().deserialize(Message.MATCH_OCCUPIED.get()));
             return;

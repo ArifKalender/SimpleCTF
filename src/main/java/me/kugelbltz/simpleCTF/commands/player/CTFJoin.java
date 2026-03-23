@@ -40,7 +40,7 @@ public class CTFJoin implements CTFCommand {
             return;
         }
 
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         boolean matchOccupied = match != null;
 
         if (getQueueHandler().alreadyInQueue(player)) {

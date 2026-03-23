@@ -73,8 +73,11 @@ public class FlagManager {
 
     /**
      * Handles the given flag and nearby entities to it. Saving your own flag or returning the enemy's flag to your base is handled here.
+     *
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void handleFlag(Team flag, Material bannerType) {
+        if (flag == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         for (LivingEntity lEntity : this.getFlagLocation(flag).getNearbyLivingEntities(3)) {
             if (!(lEntity instanceof Player player)) continue;
             Team loopPlayerTeam = Team.getTeam(player);
@@ -164,7 +167,7 @@ public class FlagManager {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void setFlagLocation(Team team, Location newLocation) {
+    public void setFlagLocation(Team team, @NotNull Location newLocation) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         flagLocations.put(team, newLocation);
     }

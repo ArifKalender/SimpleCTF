@@ -28,14 +28,14 @@ public class PlayerLifecycleListener implements Listener {
     private void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         // --- Remove player from the ongoing match ---
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         if (!match.isPlayerInMatch(player)) return;
         quitDuringMatch.add(player.getUniqueId());
-        match.removePlayerFromMatch(player);
 
         // --- Drop the flag item ---
         GeneralUtils.dropAllFlags(player);
+        match.removePlayerFromMatch(player);
         match.getMessageManager().broadcastMessage(getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName())));
         player.getInventory().clear();
     }
@@ -68,7 +68,7 @@ public class PlayerLifecycleListener implements Listener {
      */
     @EventHandler
     private void onScore(FlagScoreEvent event) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Collection<Player> capturingTeam = match.getPlayers(event.getCapturingTeam());
         Collection<Player> capturedTeam = match.getPlayers(event.getCapturedTeam());

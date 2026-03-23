@@ -9,6 +9,7 @@ import me.kugelbltz.simpleCTF.game.managers.MessageManager;
 import me.kugelbltz.simpleCTF.game.managers.ScoreManager;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -41,17 +42,21 @@ public class Match {
         this.flagManager = new FlagManager(this);
     }
 
-    /** Initialize and reset match state, returns true if successful, false if not */
+    /**
+     * Initialize and reset match state, returns true if successful, false if not
+     */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
-        getFlagManager().setFlagLocation(Team.RED, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag"));
-        getFlagManager().setFlagLocation(Team.BLUE, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag"));
-        players.put(Team.RED, redPlayers);
-        players.put(Team.BLUE, bluePlayers);
-        if (getFlagManager().getFlagLocation(Team.RED) == null || getFlagManager().getFlagLocation(Team.BLUE) == null) {
+        Location configRed = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag");
+        Location configBlue = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
+        if (configRed == null || configBlue == null) {
             SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
             getMessageManager().broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
             return false;
         }
+        getFlagManager().setFlagLocation(Team.RED, configRed);
+        getFlagManager().setFlagLocation(Team.BLUE, configBlue);
+        players.put(Team.RED, redPlayers);
+        players.put(Team.BLUE, bluePlayers);
         getFlagManager().loadFlags(true);
         SimpleCTF.getInstance().setCurrentMatch(this);
         getScoreManager().setScore(Team.RED, 0);
@@ -78,7 +83,9 @@ public class Match {
         });
     }
 
-    /** Handle game loop, 20 tick intervals */
+    /**
+     * Handle game loop, 20 tick intervals
+     */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
             int timeLeft = StaticVariables.getMatchTime();
@@ -86,9 +93,8 @@ public class Match {
             @Override
             public void run() {
                 timeLeft--;
-                if (timeLeft <= 0) {
+                if (timeLeft <= 0 || SimpleCTF.getCurrentMatch() == null) {
                     unloadMatch(Message.MATCH_TIME_OUT.get());
-                    this.cancel();
                 }
                 getFlagManager().handleFlag(Team.RED, Material.RED_BANNER);
                 getFlagManager().handleFlag(Team.BLUE, Material.BLUE_BANNER);
@@ -113,8 +119,8 @@ public class Match {
      */
     public void unloadMatch(@Nullable String reason) {
         if (reason != null) getMessageManager().broadcastMessage(getMM().deserialize(reason));
-        getPlayers(Team.RED).forEach(this::removePlayerFromMatch);
-        getPlayers(Team.BLUE).forEach(this::removePlayerFromMatch);
+        new ArrayList<>(getPlayers(Team.RED)).forEach(this::removePlayerFromMatch); // Copy to prevent ConcurrentModificationException
+        new ArrayList<>(getPlayers(Team.BLUE)).forEach(this::removePlayerFromMatch); // Copy to prevent ConcurrentModificationException
         getScoreManager().setScore(Team.RED, 0);
         getScoreManager().setScore(Team.BLUE, 0);
         getFlagManager().loadFlags(false);
@@ -123,7 +129,9 @@ public class Match {
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
-    /** Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions */
+    /**
+     * Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions
+     */
     public void resetPlayerState(Player player) {
         player.setExp(0);
         player.setLevel(0);
@@ -133,7 +141,9 @@ public class Match {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
     }
 
-    /** @throws IllegalArgumentException if team is {@link Team#NONE} */
+    /**
+     * @throws IllegalArgumentException if team is {@link Team#NONE}
+     */
     public void winMatch(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
@@ -141,7 +151,9 @@ public class Match {
     }
 
 
-    /** @return Whether the given player is in a match or not */
+    /**
+     * @return Whether the given player is in a match or not
+     */
     public boolean isPlayerInMatch(Player player) {
         return getPlayers(Team.RED).contains(player) || getPlayers(Team.BLUE).contains(player);
     }
@@ -158,7 +170,9 @@ public class Match {
         return Collections.unmodifiableCollection(players.get(team));
     }
 
-    /** Removes the given player from the match. */
+    /**
+     * Removes the given player from the match.
+     */
     public void removePlayerFromMatch(Player player) {
         resetPlayerState(player);
         getMessageManager().removePlayerFromBossBar(player);
@@ -167,17 +181,23 @@ public class Match {
         players.get(Team.BLUE).remove(player);
     }
 
-    /** Managers team scores */
+    /**
+     * Managers team scores
+     */
     public ScoreManager getScoreManager() {
         return scoreManager;
     }
 
-    /** Manages bossbar and broadcasts */
+    /**
+     * Manages bossbar and broadcasts
+     */
     public MessageManager getMessageManager() {
         return messageManager;
     }
 
-    /** Manages flags, banner blocks, returning logic */
+    /**
+     * Manages flags, banner blocks, returning logic
+     */
     public FlagManager getFlagManager() {
         return flagManager;
     }

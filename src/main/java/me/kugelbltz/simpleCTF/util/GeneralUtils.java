@@ -33,7 +33,7 @@ public class GeneralUtils {
      * @return true if a flag is found, false otherwise
      */
     public static boolean removeFlag(Player player, Team teamColor) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return false;
         ItemStack target = null;
         for (ItemStack item : player.getInventory()) {
@@ -55,7 +55,7 @@ public class GeneralUtils {
      * @return true if a flag is found, false otherwise
      */
     public static boolean dropAllFlags(Player player) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return false;
         boolean found = false;
         for (ItemStack item : player.getInventory()) {

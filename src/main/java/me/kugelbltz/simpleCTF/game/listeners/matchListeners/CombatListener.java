@@ -23,7 +23,7 @@ public class CombatListener implements Listener {
      */
     @EventHandler
     private void onDeath(PlayerDeathEvent event) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
         if (!match.isPlayerInMatch(player)) return;
@@ -35,7 +35,7 @@ public class CombatListener implements Listener {
      */
     @EventHandler
     private void onRespawn(PlayerPostRespawnEvent event) {
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
         Team team = Team.getTeam(player);
@@ -49,8 +49,10 @@ public class CombatListener implements Listener {
      */
     @EventHandler
     private void onDamage(EntityDamageByEntityEvent event) {
-        if (SimpleCTF.getInstance().getCurrentMatch() == null) return;
+        Match match = SimpleCTF.getCurrentMatch();
+        if (match == null) return;
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player victim)) return;
+        if (!match.isPlayerInMatch(victim) || !match.isPlayerInMatch(attacker)) return;
         boolean sameTeam = Team.getTeam(victim) == Team.getTeam(attacker);
         if (sameTeam) {
             event.setCancelled(true);
