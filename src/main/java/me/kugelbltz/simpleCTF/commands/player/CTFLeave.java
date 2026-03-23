@@ -2,12 +2,13 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.entity.Player;
 
+import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
-// FIXME: SimpleCTF » You are not in a team. when in a match (because list resets when /ctf start is used)
 public class CTFLeave implements CTFCommand {
 
     /**
@@ -16,9 +17,17 @@ public class CTFLeave implements CTFCommand {
     @Override
     public void execute(Player player, String[] args) {
         // Remove player from queue
-        if (getQueueHandler().alreadyInQueue(player)) getQueueHandler().removePlayer(player, true);
-        Match match = SimpleCTF.getInstance().getCurrentMatch();
-        // Remove player from match
-        if (match != null) match.removePlayerFromMatch(player);
+        if (getQueueHandler().alreadyInQueue(player)) {
+            getQueueHandler().removePlayer(player, true);
+            return;
+        } else {
+            Match match = SimpleCTF.getInstance().getCurrentMatch();
+            if (match != null && match.isPlayerInMatch(player)) {
+                match.removePlayerFromMatch(player);
+                player.sendMessage(getMM().deserialize(StaticVariables.TEAM_LEAVE));
+            } else {
+                player.sendMessage(getMM().deserialize(StaticVariables.NOT_IN_TEAM));
+            }
+        }
     }
 }
