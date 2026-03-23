@@ -6,6 +6,7 @@ SimpleCTF:
     Match:
       MatchTime: 600
       WinScore: 3
+      FlagBaseRadius: 4
   Strings:
     Prefix: "<bold><#eb6434>SimpleCTF <reset><#e8cd33>» "
     Warnings:

@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.Message;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Material;
@@ -97,7 +98,7 @@ public class FlagInteractionListener implements Listener {
         if (match == null) return;
         double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));
         double redDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.RED));
-        if (blueDistance < 3 || redDistance < 3) {
+        if (blueDistance < StaticVariables.getFlagBaseRadius() || redDistance < StaticVariables.getFlagBaseRadius()) {
             event.setCancelled(true);
         }
     }

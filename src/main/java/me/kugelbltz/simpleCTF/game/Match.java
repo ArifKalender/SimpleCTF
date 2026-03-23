@@ -41,10 +41,7 @@ public class Match {
         this.flagManager = new FlagManager(this);
     }
 
-    /**
-     * Initialize and reset match state
-     * Returns true if successful, false if not
-     */
+    /** Initialize and reset match state, returns true if successful, false if not */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         getFlagManager().setFlagLocation(Team.RED, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag"));
         getFlagManager().setFlagLocation(Team.BLUE, SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag"));
@@ -71,17 +68,17 @@ public class Match {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void initPlayers(Team team, boolean resetState) {
+    public void initPlayers(Team team, boolean firstTime) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         getPlayers(team).forEach(player -> {
             player.teleport(getFlagManager().getFlagLocation(team));
-            if (resetState) resetPlayerState(player);
+            if (firstTime) {
+                resetPlayerState(player);
+            }
         });
     }
 
-    /**
-     * Handle game loop, 20 tick intervals
-     */
+    /** Handle game loop, 20 tick intervals */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {
             int timeLeft = StaticVariables.getMatchTime();
@@ -126,9 +123,7 @@ public class Match {
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
-    /**
-     * Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions
-     */
+    /** Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions */
     public void resetPlayerState(Player player) {
         player.setExp(0);
         player.setLevel(0);
@@ -138,9 +133,7 @@ public class Match {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
     }
 
-    /**
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
+    /** @throws IllegalArgumentException if team is {@link Team#NONE} */
     public void winMatch(Team team) {
         if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
@@ -148,9 +141,7 @@ public class Match {
     }
 
 
-    /**
-     * @return Whether the given player is in a match or not
-     */
+    /** @return Whether the given player is in a match or not */
     public boolean isPlayerInMatch(Player player) {
         return getPlayers(Team.RED).contains(player) || getPlayers(Team.BLUE).contains(player);
     }
@@ -167,34 +158,26 @@ public class Match {
         return Collections.unmodifiableCollection(players.get(team));
     }
 
-    /**
-     * Removes the given player from the match.
-     */
+    /** Removes the given player from the match. */
     public void removePlayerFromMatch(Player player) {
-        players.get(Team.RED).remove(player); //Not using getPlayers() because it returns an unmodifiable collection
-        players.get(Team.BLUE).remove(player);
+        resetPlayerState(player);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
-        resetPlayerState(player);
+        players.get(Team.RED).remove(player); //Not using getPlayers() because it returns an unmodifiable collection
+        players.get(Team.BLUE).remove(player);
     }
 
-    /**
-     * Managers team scores
-     */
+    /** Managers team scores */
     public ScoreManager getScoreManager() {
         return scoreManager;
     }
 
-    /**
-     * Manages bossbar and broadcasts
-     */
+    /** Manages bossbar and broadcasts */
     public MessageManager getMessageManager() {
         return messageManager;
     }
 
-    /**
-     * Manages flags, banner blocks, returning logic
-     */
+    /** Manages flags, banner blocks, returning logic */
     public FlagManager getFlagManager() {
         return flagManager;
     }
