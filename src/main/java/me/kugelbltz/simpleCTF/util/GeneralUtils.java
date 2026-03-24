@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.util;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.BannerItems;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -67,7 +68,7 @@ public class GeneralUtils {
             else if (getBannerItems().isFlag(item)) {
                 toRemove.add(item);
                 Item drop = player.getWorld().dropItem(player.getLocation(), item);
-                Team flagTeam = Team.getTeamFromFlag(item);
+                Team flagTeam = BannerItems.getTeamFromFlag(item);
                 match.getFlagManager().protectFlagItemEntity(drop);
                 match.getFlagManager().setFlagCarrier(drop, flagTeam);
                 match.getFlagManager().broadcastFlagDropLocation(flagTeam, player, player.getLocation());

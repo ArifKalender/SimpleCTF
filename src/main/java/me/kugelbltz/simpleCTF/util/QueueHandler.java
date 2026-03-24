@@ -13,11 +13,9 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class QueueHandler {
 
-    private final static Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
-    static {
-        for (Team team : Team.playableTeams()) {
-            teamQueues.put(team, new HashSet<>());
-        }
+    private final Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
+    public QueueHandler() {
+        for (Team team : Team.playableTeams()) teamQueues.put(team, new HashSet<>());
     }
 
     /**
@@ -87,18 +85,16 @@ public class QueueHandler {
     }
 
     public void removePlayerFromQueue(UUID uuid) {
-        for (Collection<UUID> value : teamQueues.values()) {
-            value.remove(uuid);
-        }
+        for (Collection<UUID> value : teamQueues.values()) value.remove(uuid);
+
     }
 
     /**
      * @return Whether the given player is in a queue or not.
      */
     public boolean alreadyInQueue(Player player) {
-        for (Collection<UUID> value : teamQueues.values()) {
-            if (value.contains(player.getUniqueId())) return true;
-        }
+        for (Collection<UUID> value : teamQueues.values()) if (value.contains(player.getUniqueId())) return true;
+
         return false;
     }
 
@@ -106,9 +102,8 @@ public class QueueHandler {
      * @return Whether anyone is in either of the queues
      */
     public boolean anyoneInQueue() {
-        for (Collection<UUID> value : teamQueues.values()) {
-            if (!value.isEmpty()) return true;
-        }
+        for (Collection<UUID> value : teamQueues.values()) if (!value.isEmpty()) return true;
+
         return false;
     }
 
@@ -116,16 +111,13 @@ public class QueueHandler {
      * @return The queue {@link Team} of the given player
      */
     public Team getQueueTeam(Player player) {
-        for (Team team : teamQueues.keySet()) {
-            if (teamQueues.get(team).contains(player.getUniqueId())) return team;
-        }
+        for (Team team : teamQueues.keySet()) if (teamQueues.get(team).contains(player.getUniqueId())) return team;
         return Team.NONE;
     }
 
     public void clearQueue() {
-        for (Team team : teamQueues.keySet()) {
-            teamQueues.get(team).clear();
-        }
+        for (Team team : teamQueues.keySet()) teamQueues.get(team).clear();
+
     }
 
     /**

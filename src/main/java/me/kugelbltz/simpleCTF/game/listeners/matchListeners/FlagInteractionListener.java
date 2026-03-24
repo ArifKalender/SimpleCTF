@@ -1,6 +1,7 @@
 package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.model.BannerItems;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
@@ -50,7 +51,7 @@ public class FlagInteractionListener implements Listener {
         if (match == null) return;
         Player player = event.getPlayer();
         if (getBannerItems().isFlag(item)) {
-            Team itemTeam = Team.getTeamFromFlag(item);
+            Team itemTeam = BannerItems.getTeamFromFlag(item);
             match.getFlagManager().protectFlagItemEntity(itemEntity);
             match.getFlagManager().setFlagCarrier(itemEntity, itemTeam);
             match.getFlagManager().broadcastFlagDropLocation(itemTeam, player, player.getLocation());
@@ -73,7 +74,7 @@ public class FlagInteractionListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        Team itemTeam = Team.getTeamFromFlag(item);
+        Team itemTeam = BannerItems.getTeamFromFlag(item);
         if (!Team.playableTeams().contains(itemTeam)) return;
         match.getFlagManager().setFlagCarrier(player, itemTeam);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
@@ -113,7 +114,7 @@ public class FlagInteractionListener implements Listener {
     public void onCombust(EntityCombustEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
         ItemStack itemStack = item.getItemStack();
-        Team team = Team.getTeamFromFlag(itemStack);
+        Team team = BannerItems.getTeamFromFlag(itemStack);
         if (!Team.playableTeams().contains(team)) return;
         event.setCancelled(true);
     }
@@ -122,7 +123,7 @@ public class FlagInteractionListener implements Listener {
     public void onItemDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
         ItemStack itemStack = item.getItemStack();
-        Team team = Team.getTeamFromFlag(itemStack);
+        Team team = BannerItems.getTeamFromFlag(itemStack);
         if (!Team.playableTeams().contains(team)) return;
         event.setCancelled(true);
     }

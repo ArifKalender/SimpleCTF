@@ -52,18 +52,7 @@ public enum Team {
      */
     public static ItemStack getTeamFlag(Team team) {
         requirePlayableTeam(team);
-        if (team == RED) return getBannerItems().getRedFlag();
-        else if (team == BLUE) return getBannerItems().getBlueFlag();
-        else return null; // Unreachable in practice
-    }
-
-    /**
-     * @return The Team of the given {@code ItemStack}, if given item is invalid returns {@code Team.NONE}
-     */
-    public static Team getTeamFromFlag(ItemStack itemStack) {
-        if (getBannerItems().isBlueFlag(itemStack)) return BLUE;
-        else if (getBannerItems().isRedFlag(itemStack)) return RED;
-        else return NONE;
+        return getBannerItems().getFlag(team);
     }
 
     public Material getBannerItem() {

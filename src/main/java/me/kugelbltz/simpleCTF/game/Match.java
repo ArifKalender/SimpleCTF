@@ -179,8 +179,7 @@ public class Match {
         resetPlayerState(player);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
-        players.get(Team.RED).remove(player); //Not using getPlayers() because it returns an unmodifiable collection
-        players.get(Team.BLUE).remove(player);
+        players.get(Team.getTeam(player)).remove(player);
     }
 
     /**

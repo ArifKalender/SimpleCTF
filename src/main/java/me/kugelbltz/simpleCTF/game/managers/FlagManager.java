@@ -3,6 +3,7 @@ package me.kugelbltz.simpleCTF.game.managers;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.BannerItems;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
@@ -191,7 +192,7 @@ public class FlagManager {
     }
 
     public void protectFlagItemEntity(Item item) {
-        Team itemTeam = Team.getTeamFromFlag(item.getItemStack());
+        Team itemTeam = BannerItems.getTeamFromFlag(item.getItemStack());
         if (!Team.playableTeams().contains(itemTeam)) return;
         new BukkitRunnable() {
             @Override

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class BannerItems {
@@ -20,35 +21,36 @@ public class BannerItems {
         blueFlag.setItemMeta(blueMeta);
     }
 
-    public boolean isRedFlag(ItemStack itemStack) {
-        if (itemStack.getItemMeta() == null) return false;
-        Component displayName = itemStack.getItemMeta().displayName();
-        if (displayName == null) return false;
-        return itemStack.getType() == Team.RED.getBannerItem() && displayName.equals(this.redFlag.getItemMeta().displayName());
+    /** @return A copy of the flag item of the given team */
+    public ItemStack  getFlag(Team team) {
+        Team.requirePlayableTeam(team);
+        if (team == Team.RED) return redFlag.clone();
+        else if (team == Team.BLUE) return blueFlag.clone();
+        else return null; // Unreachable
     }
 
-    public boolean isBlueFlag(ItemStack itemStack) {
-        if (itemStack.getItemMeta() == null) return false;
-        Component displayName = itemStack.getItemMeta().displayName();
-        if (displayName == null) return false;
-        return itemStack.getType() == Team.BLUE.getBannerItem() && displayName.equals(this.blueFlag.getItemMeta().displayName());
-    }
 
+    /** @return whether the given ItemStack belongs to any team */
     public boolean isFlag(ItemStack itemStack) {
-        return isRedFlag(itemStack) || isBlueFlag(itemStack);
+        return isFlag(itemStack, Team.RED) || isFlag(itemStack, Team.BLUE);
     }
 
-    public boolean isFlag(ItemStack itemStack, Team targetTeam) {
-        if (targetTeam == Team.BLUE) return isBlueFlag(itemStack);
-        else if (targetTeam == Team.RED) return isRedFlag(itemStack);
+    /** @return whether the given ItemStack belongs to the given Team */
+    public boolean isFlag(ItemStack itemStack, Team team) {
+        if (itemStack.getItemMeta() == null) return false;
+        Component displayName = itemStack.getItemMeta().displayName();
+        if (displayName == null) return false;
+        if (team == Team.BLUE && displayName.equals(this.blueFlag.displayName())) return true;
+        if (team == Team.RED && displayName.equals(this.redFlag.displayName())) return true;
         else return false;
     }
 
-    public ItemStack getBlueFlag() {
-        return blueFlag.clone();
-    }
-
-    public ItemStack getRedFlag() {
-        return redFlag.clone();
+    /**
+     * @return The Team of the given {@code ItemStack}, if given item is invalid returns {@code Team.NONE}
+     */
+    public static Team getTeamFromFlag(ItemStack itemStack) {
+        if (getBannerItems().isFlag(itemStack, Team.BLUE)) return Team.BLUE;
+        else if (getBannerItems().isFlag(itemStack, Team.RED)) return Team.RED;
+        else return Team.NONE;
     }
 }
