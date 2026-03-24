@@ -6,12 +6,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class BannerItems {
     private final ItemStack blueFlag = new ItemStack(Team.BLUE.getBannerItem(), 1);
     private final ItemStack redFlag = new ItemStack(Team.RED.getBannerItem(), 1);
+    private final static Map<Team, ItemStack> teamFlags = new HashMap<>();
+
     NamespacedKey key = new NamespacedKey(SimpleCTF.getInstance(), "team_flag");
 
     public BannerItems() {
@@ -24,14 +29,14 @@ public class BannerItems {
 
         redFlag.setItemMeta(redMeta);
         blueFlag.setItemMeta(blueMeta);
+        teamFlags.put(Team.RED, redFlag);
+        teamFlags.put(Team.BLUE, blueFlag);
     }
 
     /** @return A copy of the flag item of the given team */
     public ItemStack  getFlag(Team team) {
         Team.requirePlayableTeam(team);
-        if (team == Team.RED) return redFlag.clone();
-        else if (team == Team.BLUE) return blueFlag.clone();
-        else return null; // Unreachable
+        return teamFlags.get(team);
     }
 
 
@@ -44,10 +49,7 @@ public class BannerItems {
     public boolean isFlag(ItemStack itemStack, Team team) {
         if (itemStack.getItemMeta() == null) return false;
         String itemTeam = itemStack.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.STRING);
-        if (itemTeam == null) return false;
-        if (itemTeam.equals("RED") && team == Team.RED) return true;
-        if (itemTeam.equals("BLUE") && team == Team.BLUE) return true;
-        else return false;
+        return team.name().equalsIgnoreCase(itemTeam);
     }
 
     /**

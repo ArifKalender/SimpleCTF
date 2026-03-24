@@ -1,9 +1,9 @@
 package me.kugelbltz.simpleCTF.util;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Message;
-import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -16,6 +16,7 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 public class QueueHandler {
 
     private final Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
+
     public QueueHandler() {
         for (Team team : Team.playableTeams()) teamQueues.put(team, new HashSet<>());
     }
@@ -45,12 +46,9 @@ public class QueueHandler {
      * Broadcast the given message to all queued players
      */
     public void broadcastMessageToQueue(Component component) {
-        getPlayerQueue(Team.RED).forEach(player -> {
-            player.sendMessage(component);
-        });
-        getPlayerQueue(Team.BLUE).forEach(player -> {
-            player.sendMessage(component);
-        });
+        for (Team team : Team.playableTeams()) {
+            getPlayerQueue(team).forEach(player -> player.sendMessage(component));
+        }
     }
 
     /**

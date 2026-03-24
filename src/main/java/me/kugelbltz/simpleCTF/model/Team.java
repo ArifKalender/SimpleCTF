@@ -1,10 +1,7 @@
 package me.kugelbltz.simpleCTF.model;
 
-import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -15,14 +12,16 @@ import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
 public enum Team {
 
-    RED(Material.RED_BANNER, Material.RED_CONCRETE),
-    BLUE(Material.BLUE_BANNER, Material.BLUE_CONCRETE),
-    NONE(Material.GRAY_BANNER, Material.GRAY_CONCRETE);
+    RED(Material.RED_BANNER, Material.RED_CONCRETE, Color.RED),
+    BLUE(Material.BLUE_BANNER, Material.BLUE_CONCRETE, Color.BLUE),
+    NONE(Material.GRAY_BANNER, Material.GRAY_CONCRETE, Color.GRAY);
 
     private final Material bannerItem, particleSource;
-    Team(Material bannerItem, Material particleSource) {
+    private final Color rgbColor;
+    Team(Material bannerItem, Material particleSource, Color rgbColor) {
         this.bannerItem = bannerItem;
         this.particleSource = particleSource;
+        this.rgbColor = rgbColor;
     }
 
 
@@ -62,9 +61,7 @@ public enum Team {
         if (!playableTeams().contains(team)) throw new IllegalArgumentException("Illegal team: " + team.name().toUpperCase(Locale.ENGLISH));
     }
 
-    public static Color getTeamRGB(Team team) {
-        if (team == Team.RED) return Color.fromRGB(255, 0, 0);
-        else if (team == Team.BLUE) return Color.fromRGB(0, 0, 255);
-        else return Color.GRAY;
+    public Color getTeamRGB() {
+        return rgbColor;
     }
 }

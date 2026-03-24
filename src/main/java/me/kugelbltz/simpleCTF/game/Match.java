@@ -136,7 +136,10 @@ public class Match {
      * @return Whether the given player is in a match or not
      */
     public boolean isPlayerInMatch(Player player) {
-        return getPlayers(Team.RED).contains(player) || getPlayers(Team.BLUE).contains(player);
+        for (Team team : Team.playableTeams()) {
+            if (getPlayers(team).contains(player)) return true;
+        }
+        return false;
     }
 
 

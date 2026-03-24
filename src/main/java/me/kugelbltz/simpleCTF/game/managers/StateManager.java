@@ -28,7 +28,7 @@ public class StateManager {
         if (!StaticVariables.isStarterKitEnabled()) return;
         for (ItemStack itemStack : StaticVariables.getPlayerKit()) {
             if (itemStack.getItemMeta() instanceof LeatherArmorMeta armorMeta) {
-                armorMeta.setColor(Team.getTeamRGB(match.getTeam(player)));
+                armorMeta.setColor(match.getTeam(player).getTeamRGB());
                 itemStack.setItemMeta(armorMeta);
             }
             GeneralUtils.addItem(player, itemStack);

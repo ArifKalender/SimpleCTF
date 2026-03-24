@@ -47,12 +47,9 @@ public class MessageManager {
      * @param component Message to send
      */
     public void broadcastMessage(Component component) {
-        match.getPlayers(Team.RED).forEach(player -> {
-            player.sendMessage(component);
-        });
-        match.getPlayers(Team.BLUE).forEach(player -> {
-            player.sendMessage(component);
-        });
+        for (Team playableTeam : Team.playableTeams()) {
+            match.getPlayers(playableTeam).forEach(player -> player.sendMessage(component));
+        }
     }
 
     public BossBar getBossBar() {

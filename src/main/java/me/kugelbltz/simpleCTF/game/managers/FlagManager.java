@@ -67,12 +67,9 @@ public class FlagManager {
      * @param place Whether to place the banners
      */
     public void loadFlags(boolean place) {
-        if (place) {
-            this.getFlagLocation(Team.RED).getBlock().setType(Team.RED.getBannerItem());
-            this.getFlagLocation(Team.BLUE).getBlock().setType(Team.BLUE.getBannerItem());
-        } else {
-            this.getFlagLocation(Team.RED).getBlock().setType(Material.AIR);
-            this.getFlagLocation(Team.BLUE).getBlock().setType(Material.AIR);
+        for (Team playableTeam : Team.playableTeams()) {
+            if (place) this.getFlagLocation(playableTeam).getBlock().setType(Team.RED.getBannerItem());
+            else this.getFlagLocation(playableTeam).getBlock().setType(Material.AIR);
         }
     }
 
