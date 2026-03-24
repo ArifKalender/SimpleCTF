@@ -39,7 +39,7 @@ public class CombatListener implements Listener {
         if (match == null) return;
         Player player = event.getPlayer();
         Team team = Team.getTeam(player);
-        if (team == Team.NONE) return;
+        if (!Team.playableTeams().contains(team)) return;
         Bukkit.getScheduler().runTaskLater(SimpleCTF.getInstance(), () -> player.teleport(match.getFlagManager().getFlagLocation(team)), 1);
     }
 

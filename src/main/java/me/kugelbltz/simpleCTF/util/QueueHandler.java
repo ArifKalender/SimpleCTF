@@ -15,8 +15,9 @@ public class QueueHandler {
 
     private final static Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
     static {
-        teamQueues.put(Team.RED, new HashSet<>());
-        teamQueues.put(Team.BLUE, new HashSet<>());
+        for (Team team : Team.playableTeams()) {
+            teamQueues.put(team, new HashSet<>());
+        }
     }
 
     /**
@@ -24,7 +25,7 @@ public class QueueHandler {
      * @return The unmodifiable list of UUID's of players in a team's queue
      */
     private Collection<UUID> getUUIDQueue(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         return Collections.unmodifiableCollection(teamQueues.get(team));
     }
 
@@ -76,7 +77,7 @@ public class QueueHandler {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void addPlayerToQueue(Player player, Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         UUID uuid = player.getUniqueId();
         teamQueues.get(team).add(uuid);
     }
@@ -134,13 +135,13 @@ public class QueueHandler {
      * @param sendMessageToPlayer Whether to try to send the player the leaving message
      */
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
-        if (!this.alreadyInQueue(player) && Team.getTeam(player) == Team.NONE) {
+        if (!this.alreadyInQueue(player) && !Team.playableTeams().contains(Team.getTeam(player))) {
             if (sendMessageToPlayer)
                 player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
             return;
         }
         Team team = this.getQueueTeam(player);
-        if (team == Team.NONE) return;
+        if (!Team.playableTeams().contains(team)) return;
         this.removePlayerFromQueue(player);
         this.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
                 .sendMessage(getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName()))));

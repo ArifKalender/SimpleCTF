@@ -31,7 +31,7 @@ public class CTFJoin implements CTFCommand {
         Team team;
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
-            if (team == Team.NONE) {
+            if (!Team.playableTeams().contains(team)) {
                 player.sendMessage(getMM().deserialize(Message.INCORRECT_SYNTAX.get()));
                 return;
             }

@@ -74,7 +74,7 @@ public class FlagInteractionListener implements Listener {
             return;
         }
         Team itemTeam = Team.getTeamFromFlag(item);
-        if (itemTeam == Team.NONE) return;
+        if (!Team.playableTeams().contains(itemTeam)) return;
         match.getFlagManager().setFlagCarrier(player, itemTeam);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
                 Message.PLAYER_CAUGHT_FLAG.get()
@@ -89,7 +89,6 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
-        if (Team.getTeam(event.getPlayer()) == Team.NONE) return;
         if (clickedBlock == null) return;
         if (clickedBlock.getType() == Team.BLUE.getBannerItem()) {
             handleFlag(event, Team.BLUE);
@@ -114,7 +113,8 @@ public class FlagInteractionListener implements Listener {
     public void onCombust(EntityCombustEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
         ItemStack itemStack = item.getItemStack();
-        if (Team.getTeamFromFlag(itemStack) == Team.NONE) return;
+        Team team = Team.getTeamFromFlag(itemStack);
+        if (!Team.playableTeams().contains(team)) return;
         event.setCancelled(true);
     }
 
@@ -122,18 +122,22 @@ public class FlagInteractionListener implements Listener {
     public void onItemDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
         ItemStack itemStack = item.getItemStack();
-        if (Team.getTeamFromFlag(itemStack) == Team.NONE) return;
+        Team team = Team.getTeamFromFlag(itemStack);
+        if (!Team.playableTeams().contains(team)) return;
         event.setCancelled(true);
     }
 
 
     private void handleFlag(PlayerInteractEvent event, Team flagColor) {
         Match match = SimpleCTF.getCurrentMatch();
-        if (flagColor == Team.NONE || flagColor == null) return;
+        if (!Team.playableTeams().contains(flagColor) || flagColor == null) {
+            event.setCancelled(true);
+            return;
+        }
         if (match == null) return;
         Player player = event.getPlayer();
         Team playerColor = Team.getTeam(player);
-        if (playerColor == Team.NONE) return;
+        if (!Team.playableTeams().contains(playerColor)) return;
         Team opponent = Team.getOpposite(playerColor);
 
         if (flagColor != opponent) {

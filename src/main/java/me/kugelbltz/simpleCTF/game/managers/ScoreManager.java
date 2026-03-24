@@ -13,7 +13,7 @@ public class ScoreManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public int getScore(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         return teamScores.getOrDefault(team, 0);
     }
 
@@ -21,7 +21,7 @@ public class ScoreManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void setScore(Team team, int newScore) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         teamScores.put(team, newScore);
     }
 

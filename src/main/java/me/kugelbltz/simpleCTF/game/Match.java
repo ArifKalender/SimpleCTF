@@ -54,16 +54,17 @@ public class Match {
             getMessageManager().broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
             return false;
         }
+
         getFlagManager().setFlagLocation(Team.RED, configRed);
         getFlagManager().setFlagLocation(Team.BLUE, configBlue);
         players.put(Team.RED, redPlayers);
         players.put(Team.BLUE, bluePlayers);
         getFlagManager().loadFlags(true);
-        getScoreManager().setScore(Team.RED, 0);
-        getScoreManager().setScore(Team.BLUE, 0);
         getMessageManager().createBossBar();
-        initPlayers(Team.RED);
-        initPlayers(Team.BLUE);
+        for (Team team : Team.playableTeams()) {
+            getScoreManager().setScore(team, 0);
+            initPlayers(team);
+        }
         getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
         SimpleCTF.getInstance().setCurrentMatch(this);
         return true;
@@ -76,7 +77,7 @@ public class Match {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void initPlayers(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         getFlagManager().setFlagCarrier(null, team);
         getPlayers(team).forEach(player -> {
             player.teleport(getFlagManager().getFlagLocation(team));
@@ -98,13 +99,11 @@ public class Match {
                     unloadMatch(Message.MATCH_TIME_OUT.get());
                     return;
                 }
-                getFlagManager().handleFlag(Team.RED);
-                getFlagManager().handleFlag(Team.BLUE);
-                getFlagManager().playFlagAnimation(Team.RED);
-                getFlagManager().playFlagAnimation(Team.BLUE);
-
-                if (getScoreManager().getScore(Team.BLUE) >= getWinScore()) winMatch(Team.BLUE);
-                else if (getScoreManager().getScore(Team.RED) >= getWinScore()) winMatch(Team.RED);
+                for (Team team : Team.playableTeams()) {
+                    getFlagManager().handleFlag(team);
+                    getFlagManager().playFlagAnimation(team);
+                    if (getScoreManager().getScore(team) >= getWinScore()) winMatch(team);
+                }
 
                 getMessageManager().updateBossBar(timeLeft);
                 int playersInMatch = getPlayers(Team.RED).size() + getPlayers(Team.BLUE).size();
@@ -121,10 +120,10 @@ public class Match {
      */
     public void unloadMatch(@Nullable String reason) {
         if (reason != null) getMessageManager().broadcastMessage(getMM().deserialize(reason));
-        new ArrayList<>(getPlayers(Team.RED)).forEach(this::removePlayerFromMatch); // Copy to prevent ConcurrentModificationException
-        new ArrayList<>(getPlayers(Team.BLUE)).forEach(this::removePlayerFromMatch); // Copy to prevent ConcurrentModificationException
-        getScoreManager().setScore(Team.RED, 0);
-        getScoreManager().setScore(Team.BLUE, 0);
+        for (Team team : Team.playableTeams()) {
+            new ArrayList<>(getPlayers(team)).forEach(this::removePlayerFromMatch); // Copy to prevent ConcurrentModificationException
+            getScoreManager().setScore(team, 0);
+        }
         getFlagManager().loadFlags(false);
         getMessageManager().unloadBossBar();
         if (this.task != null) this.task.cancel();
@@ -147,7 +146,7 @@ public class Match {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void winMatch(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
         unloadMatch(Message.MATCH_WIN.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
@@ -168,7 +167,7 @@ public class Match {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Collection<Player> getPlayers(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         return Collections.unmodifiableCollection(players.get(team));
     }
 

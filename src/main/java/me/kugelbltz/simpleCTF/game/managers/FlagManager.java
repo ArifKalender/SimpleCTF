@@ -41,7 +41,7 @@ public class FlagManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void playFlagAnimation(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         // --- Block particles for flags ---
         Location flagLoc = this.getFlagLocation(team);
         boolean available = flagLoc.getBlock().getType() == team.getBannerItem();
@@ -78,7 +78,7 @@ public class FlagManager {
      * Handles the given flag and nearby entities to it. Saving your own flag or returning the enemy's flag to your base is handled here.
      */
     public void handleFlag(Team flag) {
-        if (flag == Team.NONE) return;
+        if (!Team.playableTeams().contains(flag)) return;
         for (LivingEntity lEntity : this.getFlagLocation(flag).getNearbyLivingEntities(3)) {
             if (!(lEntity instanceof Player player)) continue;
             Team loopPlayerTeam = Team.getTeam(player);
@@ -103,7 +103,7 @@ public class FlagManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void restoreFlag(Player player, Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         setFlagCarrier(null, team);
         getFlagLocation(team).getBlock().setType(team.getBannerItem());
         if (player != null) {
@@ -123,8 +123,8 @@ public class FlagManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void captureFlagAndScore(Player player, Team scoringTeam, Team capturedTeam) {
-        if (scoringTeam == Team.NONE || capturedTeam == Team.NONE)
-            throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(scoringTeam);
+        Team.requirePlayableTeam(capturedTeam);
         match.getScoreManager().setScore(scoringTeam, match.getScoreManager().getScore(scoringTeam) + 1);
         match.initPlayers(Team.RED);
         match.initPlayers(Team.BLUE);
@@ -147,7 +147,7 @@ public class FlagManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
         Component component = getMM().deserialize(Message.FLAG_DROPPED_AT.get()
                 .replace("%player%", dropper.getName())
@@ -162,7 +162,7 @@ public class FlagManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Location getFlagLocation(Team team) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         return flagLocations.get(team).clone();
     }
 
@@ -172,7 +172,7 @@ public class FlagManager {
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void setFlagLocation(Team team, @NotNull Location newLocation) {
-        if (team == Team.NONE) throw new IllegalArgumentException("Team NONE is not allowed");
+        Team.requirePlayableTeam(team);
         flagLocations.put(team, newLocation);
     }
 
@@ -192,7 +192,7 @@ public class FlagManager {
 
     public void protectFlagItemEntity(Item item) {
         Team itemTeam = Team.getTeamFromFlag(item.getItemStack());
-        if (itemTeam == Team.NONE) return;
+        if (!Team.playableTeams().contains(itemTeam)) return;
         new BukkitRunnable() {
             @Override
             public void run() {
