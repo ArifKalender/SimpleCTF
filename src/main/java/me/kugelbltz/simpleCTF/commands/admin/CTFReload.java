@@ -17,10 +17,6 @@ public class CTFReload implements CTFCommand {
 
     @Override
     public void execute(Player player, String[] ignored) {
-        if (!player.hasPermission("simplectf.admin.reload")) {
-            player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
-            return;
-        }
         sendConfigMsg(player, "config.yml");
         SimpleCTF.getInstance().reloadConfig();
         StaticVariables.init();
@@ -31,5 +27,8 @@ public class CTFReload implements CTFCommand {
         return List.of();
     }
 
-
+    @Override
+    public String getPermission() {
+        return "simplectf.admin.reload";
+    }
 }

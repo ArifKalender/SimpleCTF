@@ -36,4 +36,9 @@ public class CTFLeave implements CTFCommand {
     public List<String> getArguments() {
         return List.of();
     }
+
+    @Override
+    public String getPermission() {
+        return "simplectf.player.leave";
+    }
 }

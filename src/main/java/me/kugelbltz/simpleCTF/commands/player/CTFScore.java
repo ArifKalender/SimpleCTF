@@ -34,4 +34,9 @@ public class CTFScore implements CTFCommand {
     public List<String> getArguments() {
         return List.of();
     }
+
+    @Override
+    public String getPermission() {
+        return "simplectf.player.score";
+    }
 }

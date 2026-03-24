@@ -18,11 +18,6 @@ public class CTFStart implements CTFCommand {
      */
     @Override
     public void execute(Player player, String[] args) {
-        if (!player.hasPermission("simplectf.admin.start")) {
-            player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
-            return;
-        }
-
         boolean isMatchRunning = SimpleCTF.getCurrentMatch() != null;
         if (isMatchRunning) { //Cannot start a match if a match is already going on
             player.sendMessage(getMM().deserialize(Message.MATCH_OCCUPIED.get()));
@@ -39,5 +34,10 @@ public class CTFStart implements CTFCommand {
     @Override
     public List<String> getArguments() {
         return List.of();
+    }
+
+    @Override
+    public String getPermission() {
+        return "simplectf.admin.start";
     }
 }

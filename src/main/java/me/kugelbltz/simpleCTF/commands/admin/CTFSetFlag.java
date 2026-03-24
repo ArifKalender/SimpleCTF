@@ -3,6 +3,7 @@ package me.kugelbltz.simpleCTF.commands.admin;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
 import me.kugelbltz.simpleCTF.model.Message;
+import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -15,36 +16,23 @@ public class CTFSetFlag implements CTFCommand {
 
     @Override
     public void execute(Player player, String[] args) {
-        if (!player.hasPermission("simplectf.admin.setflag")) {
-            player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
-            return;
-        }
         if (args.length != 2) {
             player.sendMessage(getMM().deserialize("<red>Correct usage: /ctf setflag <red | blue>"));
             return;
         }
-        String color = args[1].toUpperCase(Locale.ENGLISH);
-        // Prepare location
-        Location location = player.getLocation();
-        location.setPitch(0);
-        location.setX(Math.floor(location.getX()));
-        location.setY(Math.floor(location.getY()));
-        location.setZ(Math.floor(location.getZ()));
+
+        Team team;
+        try {
+            team = Team.valueOf(args[1]);
+        } catch (IllegalArgumentException ignored){
+            player.sendMessage(getMM().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
+            return;
+        }
 
         // Sets config value for the team
-        switch (color) {
-            case "RED" -> {
-                SimpleCTF.getInstance().getConfig().set("Match.Locations.RedFlag", location);
-                SimpleCTF.getInstance().saveConfig();
-                player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "Set the location for the red flag!"));
-            }
-            case "BLUE" -> {
-                SimpleCTF.getInstance().getConfig().set("Match.Locations.BlueFlag", location);
-                SimpleCTF.getInstance().saveConfig();
-                player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "Set the location for the blue flag!"));
-            }
-            default -> player.sendMessage(getMM().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
-        }
+        SimpleCTF.getInstance().getConfig().set("Match.Locations." + team.name().toUpperCase(Locale.ENGLISH), prepareLocation(player.getLocation()));
+        player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "Set the location for " + team.name().toUpperCase(Locale.ENGLISH) + " flag!"));
+        SimpleCTF.getInstance().saveConfig();
     }
 
     @Override
@@ -52,5 +40,18 @@ public class CTFSetFlag implements CTFCommand {
         return List.of("RED", "BLUE");
     }
 
+    @Override
+    public String getPermission() {
+        return "simplectf.admin.setflag";
+    }
+
+    private Location prepareLocation(Location playerLocation) {
+        Location toReturn = playerLocation.clone();
+        toReturn.setPitch(0);
+        toReturn.setX(Math.floor(toReturn.getX()));
+        toReturn.setY(Math.floor(toReturn.getY()));
+        toReturn.setZ(Math.floor(toReturn.getZ()));
+        return toReturn;
+    }
 
 }

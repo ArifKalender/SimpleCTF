@@ -16,10 +16,6 @@ public class CTFStop implements CTFCommand {
      */
     @Override
     public void execute(Player player, String[] args) {
-        if (!player.hasPermission("simplectf.admin.stop")) {
-            player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
-            return;
-        }
         boolean isMatchRunning = SimpleCTF.getCurrentMatch() != null;
         if (!isMatchRunning) {
             player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Cleaning current queue..."));
@@ -34,5 +30,10 @@ public class CTFStop implements CTFCommand {
     @Override
     public List<String> getArguments() {
         return List.of();
+    }
+
+    @Override
+    public String getPermission() {
+        return "simplectf.admin.stop";
     }
 }

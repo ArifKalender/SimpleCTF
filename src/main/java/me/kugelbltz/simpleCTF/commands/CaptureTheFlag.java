@@ -7,6 +7,7 @@ import me.kugelbltz.simpleCTF.commands.admin.CTFStop;
 import me.kugelbltz.simpleCTF.commands.player.CTFJoin;
 import me.kugelbltz.simpleCTF.commands.player.CTFLeave;
 import me.kugelbltz.simpleCTF.commands.player.CTFScore;
+import me.kugelbltz.simpleCTF.model.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -50,6 +51,12 @@ public class CaptureTheFlag implements CommandExecutor {
             sendHelpMessage(player);
             return true;
         }
+        
+        if (!player.hasPermission(toExecute.getPermission()) && !toExecute.getPermission().startsWith("simplectf.player.")) {
+            player.sendMessage(getMM().deserialize(Message.NO_PERMISSION.get()));
+            return true;
+        }
+
         toExecute.execute(player, args);
         return true;
     }

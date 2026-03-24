@@ -62,4 +62,9 @@ public class CTFJoin implements CTFCommand {
         return List.of("RED", "BLUE");
     }
 
+    @Override
+    public String getPermission() {
+        return "simplectf.player.join";
+    }
+
 }
