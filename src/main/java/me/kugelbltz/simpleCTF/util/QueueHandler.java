@@ -1,5 +1,7 @@
 package me.kugelbltz.simpleCTF.util;
 
+import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.model.Team;
@@ -127,7 +129,9 @@ public class QueueHandler {
      * @param sendMessageToPlayer Whether to try to send the player the leaving message
      */
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
-        if (!this.alreadyInQueue(player) && !Team.playableTeams().contains(Team.getTeam(player))) {
+        Match match = SimpleCTF.getCurrentMatch();
+        if (match == null) return;
+        if (!this.alreadyInQueue(player) && !Team.playableTeams().contains(match.getTeam(player))) {
             if (sendMessageToPlayer)
                 player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
             return;

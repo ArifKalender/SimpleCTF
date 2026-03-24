@@ -84,7 +84,7 @@ public class FlagManager {
         if (!Team.playableTeams().contains(flag)) return;
         for (LivingEntity lEntity : this.getFlagLocation(flag).getNearbyLivingEntities(3)) {
             if (!(lEntity instanceof Player player)) continue;
-            Team loopPlayerTeam = Team.getTeam(player);
+            Team loopPlayerTeam = match.getTeam(player);
             Team enemyTeam = Team.getOpposite(flag);
             Entity carrierOfThisFlag = this.getFlagCarrier(flag);
             Entity carrierOfEnemyFlag = this.getFlagCarrier(enemyTeam);
@@ -130,7 +130,7 @@ public class FlagManager {
         Team.requirePlayableTeam(capturedTeam);
         match.getScoreManager().setScore(scoringTeam, match.getScoreManager().getScore(scoringTeam) + 1);
         GeneralUtils.removeFlag(player, capturedTeam);
-        for(Team team : Team.playableTeams()) match.initPlayers(team, StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore(), match.getPlayers(Team.RED), match.getPlayers(Team.BLUE));
+        for(Team team : Team.playableTeams()) match.initPlayers(team, StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore());
         match.getFlagManager().loadFlags(true);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
                 Message.PLAYER_RETURN_FLAG.get()

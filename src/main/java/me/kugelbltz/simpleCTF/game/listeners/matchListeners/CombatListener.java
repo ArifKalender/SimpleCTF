@@ -38,7 +38,7 @@ public class CombatListener implements Listener {
         Match match = SimpleCTF.getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
-        Team team = Team.getTeam(player);
+        Team team = match.getTeam(player);
         if (!Team.playableTeams().contains(team)) return;
         Bukkit.getScheduler().runTaskLater(SimpleCTF.getInstance(), () -> player.teleport(match.getFlagManager().getFlagLocation(team)), 1);
     }
@@ -53,7 +53,7 @@ public class CombatListener implements Listener {
         if (match == null) return;
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof Player victim)) return;
         if (!match.isPlayerInMatch(victim) || !match.isPlayerInMatch(attacker)) return;
-        boolean sameTeam = Team.getTeam(victim) == Team.getTeam(attacker);
+        boolean sameTeam = match.getTeam(victim) == match.getTeam(attacker);
         if (sameTeam) {
             event.setCancelled(true);
             attacker.sendMessage(getMM().deserialize(Message.NO_FRIENDLY_FIRE.get()));

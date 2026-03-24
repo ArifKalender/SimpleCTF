@@ -25,16 +25,6 @@ public enum Team {
         this.particleSource = particleSource;
     }
 
-    /**
-     * @return The team of the given player
-     */
-    public static Team getTeam(Player player) {
-        Match match = SimpleCTF.getCurrentMatch();
-        if (match == null) return NONE;
-        if (match.getPlayers(RED).contains(player)) return RED;
-        if (match.getPlayers(BLUE).contains(player)) return BLUE;
-        return NONE;
-    }
 
     /**
      * @return The enemy team of the given team

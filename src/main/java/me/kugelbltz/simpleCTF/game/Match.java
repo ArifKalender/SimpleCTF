@@ -54,7 +54,7 @@ public class Match {
         getMessageManager().createBossBar();
         for (Team team : Team.playableTeams()) {
             getScoreManager().setScore(team, 0);
-            initPlayers(team, true, true, redPlayers, bluePlayers);
+            initPlayers(team, true, true);
         }
         getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
         SimpleCTF.getInstance().setCurrentMatch(this);
@@ -67,19 +67,15 @@ public class Match {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void initPlayers(Team team, boolean teleport, boolean resetState, Collection<Player> redPlayers, Collection<Player> bluePlayers) {
+    public void initPlayers(Team team, boolean teleport, boolean resetState) {
         Team.requirePlayableTeam(team);
         getFlagManager().setFlagCarrier(null, team);
-        for (Player player : redPlayers) {
-            if(teleport) player.teleport(getFlagManager().getFlagLocation(Team.RED));
-            if(resetState) getStateManager().resetPlayerState(player, true, true, Team.RED);
-        }
-        for (Player player : bluePlayers) {
+        getPlayers(team).forEach(player -> {
+            player.teleport(getFlagManager().getFlagLocation(team));
             if(teleport) player.teleport(getFlagManager().getFlagLocation(Team.BLUE));
-            if(resetState) getStateManager().resetPlayerState(player, true, true, Team.BLUE);
-        }
+            if(resetState) getStateManager().resetPlayerState(player, true, true, this);
+        });
     }
-
     /**
      * Handle game loop, 20 tick intervals
      */
@@ -160,10 +156,10 @@ public class Match {
      */
     public void removePlayerFromMatch(Player player) {
         GeneralUtils.dropAllFlags(player);
-        getStateManager().resetPlayerState(player, false, true, null);
+        getStateManager().resetPlayerState(player, false, true, this);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
-        players.get(Team.getTeam(player)).remove(player);
+        players.get(getTeam(player)).remove(player);
     }
 
     /**
@@ -192,5 +188,14 @@ public class Match {
      */
     public StateManager getStateManager() {
         return stateManager;
+    }
+
+    /**
+     * @return The team of the given player
+     */
+    public Team getTeam(Player player) {
+        if (getPlayers(Team.RED).contains(player)) return Team.RED;
+        if (getPlayers(Team.BLUE).contains(player)) return Team.BLUE;
+        return Team.NONE;
     }
 }

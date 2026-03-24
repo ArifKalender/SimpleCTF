@@ -138,7 +138,7 @@ public class FlagInteractionListener implements Listener {
         }
         if (match == null) return;
         Player player = event.getPlayer();
-        Team playerColor = Team.getTeam(player);
+        Team playerColor = match.getTeam(player);
         if (!Team.playableTeams().contains(playerColor)) return;
         Team opponent = Team.getOpposite(playerColor);
 
