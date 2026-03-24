@@ -2,7 +2,6 @@ package me.kugelbltz.simpleCTF.game.managers;
 
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
-import me.kugelbltz.simpleCTF.model.Team;
 import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;

@@ -3,12 +3,10 @@ package me.kugelbltz.simpleCTF.commands.admin;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
 import me.kugelbltz.simpleCTF.model.Message;
+import me.kugelbltz.simpleCTF.util.QueueHandler;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 public class CTFStop implements CTFCommand {
     /**
@@ -16,15 +14,16 @@ public class CTFStop implements CTFCommand {
      */
     @Override
     public void execute(Player player, String[] args) {
-        boolean isMatchRunning = SimpleCTF.getCurrentMatch() != null;
+        boolean isMatchRunning = SimpleCTF.getInstance().getCurrentMatch() != null;
+        QueueHandler queueHandler = SimpleCTF.getInstance().getQueueHandler();
         if (!isMatchRunning) {
-            player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Cleaning current queue..."));
-            getQueueHandler().broadcastMessageToQueue(getMM().deserialize(Message.PREFIX.get() + "<red>Queue interrupted by an admin!"));
-            getQueueHandler().clearQueue();
+            player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PREFIX.get() + "<red>Cleaning current queue..."));
+            queueHandler.broadcastMessageToQueue(SimpleCTF.getInstance().getMM().deserialize(Message.PREFIX.get() + "<red>Queue interrupted by an admin!"));
+            queueHandler.clearQueue();
             return;
         }
-        player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Interrupting current match..."));
-        SimpleCTF.getCurrentMatch().unloadMatch(Message.PREFIX.get() + "<red>Match interrupted by an admin!");
+        player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PREFIX.get() + "<red>Interrupting current match..."));
+        SimpleCTF.getInstance().getCurrentMatch().unloadMatch(Message.PREFIX.get() + "<red>Match interrupted by an admin!");
     }
 
     @Override

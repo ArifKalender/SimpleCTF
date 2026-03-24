@@ -1,12 +1,12 @@
 package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.model.Message;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.util.GeneralUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class PlayerLifecycleListener implements Listener {
     Set<UUID> quitDuringMatch = new HashSet<>();
@@ -28,15 +27,14 @@ public class PlayerLifecycleListener implements Listener {
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         // --- Remove player from the ongoing match ---
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         if (!match.isPlayerInMatch(player)) return;
         quitDuringMatch.add(player.getUniqueId());
 
         // --- Drop the flag item ---
         match.removePlayerFromMatch(player);
-        match.getMessageManager().broadcastMessage(getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName())));
-        player.getInventory().clear();
+        match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName())));
     }
 
     /**
@@ -46,7 +44,7 @@ public class PlayerLifecycleListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (quitDuringMatch.contains(player.getUniqueId())) {
-            player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
+            player.teleport(StaticVariables.getSpawn());
             player.getInventory().clear();
             quitDuringMatch.remove(player.getUniqueId());
         }
@@ -67,7 +65,7 @@ public class PlayerLifecycleListener implements Listener {
      */
     @EventHandler
     public void onScore(FlagScoreEvent event) {
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         Collection<Player> capturingTeam = match.getPlayers(event.getCapturingTeam());
         Collection<Player> capturedTeam = match.getPlayers(event.getCapturedTeam());

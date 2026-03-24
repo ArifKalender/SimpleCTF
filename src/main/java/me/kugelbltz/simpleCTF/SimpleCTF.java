@@ -1,7 +1,7 @@
 package me.kugelbltz.simpleCTF;
 
+import me.kugelbltz.simpleCTF.commands.CTFTabCompleter;
 import me.kugelbltz.simpleCTF.commands.CaptureTheFlag;
-import me.kugelbltz.simpleCTF.commands.player.CTFTabCompleter;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.game.listeners.QueueListener;
@@ -15,13 +15,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Implement class-level javadocs.
 public final class SimpleCTF extends JavaPlugin {
 
-    private static BannerItems BANNER_ITEMS;
-    private static MiniMessage MINI_MESSAGE;
-    private static QueueHandler QUEUE_HANDLER;
     private static SimpleCTF plugin;
-    private static Match currentMatch = null;
+    private BannerItems BANNER_ITEMS;
+    private MiniMessage MINI_MESSAGE;
+    private QueueHandler QUEUE_HANDLER;
+    private Match currentMatch = null;
 
     public static SimpleCTF getInstance() {
         return plugin;
@@ -30,7 +31,7 @@ public final class SimpleCTF extends JavaPlugin {
     /**
      * @return The ongoing match, can return null if no match is going on.
      */
-    public static Match getCurrentMatch() {
+    public Match getCurrentMatch() {
         return currentMatch;
     }
 
@@ -43,21 +44,21 @@ public final class SimpleCTF extends JavaPlugin {
         currentMatch = match;
     }
 
-    public static BannerItems getBannerItems() {
+    public BannerItems getBannerItems() {
         return BANNER_ITEMS;
     }
 
     /**
      * @return MiniMessage instance for the plugin
      */
-    public static MiniMessage getMM() {
+    public MiniMessage getMM() {
         return MINI_MESSAGE;
     }
 
     /**
      * @return The queue management class
      */
-    public static QueueHandler getQueueHandler() {
+    public QueueHandler getQueueHandler() {
         return QUEUE_HANDLER;
     }
 
@@ -75,8 +76,8 @@ public final class SimpleCTF extends JavaPlugin {
         registerListeners();
         registerCommands();
         MINI_MESSAGE = MiniMessage.miniMessage();
-        BANNER_ITEMS = new BannerItems();
         QUEUE_HANDLER = new QueueHandler();
+        Bukkit.getScheduler().runTask(this, () -> BANNER_ITEMS = new BannerItems()); // Loaded in a task to make sure it loads after the server has fully loaded
     }
 
     private void registerListeners() {

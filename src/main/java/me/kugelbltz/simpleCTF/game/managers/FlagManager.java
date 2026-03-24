@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.removeFlag;
 
 public class FlagManager {
@@ -67,9 +66,9 @@ public class FlagManager {
      * @param place Whether to place the banners
      */
     public void loadFlags(boolean place) {
-        for (Team playableTeam : Team.playableTeams()) {
-            if (place) this.getFlagLocation(playableTeam).getBlock().setType(Team.RED.getBannerItem());
-            else this.getFlagLocation(playableTeam).getBlock().setType(Material.AIR);
+        for (Team team : Team.playableTeams()) {
+            if (place) this.getFlagLocation(team).getBlock().setType(team.getBannerItem());
+            else this.getFlagLocation(team).getBlock().setType(Material.AIR);
         }
     }
 
@@ -108,9 +107,9 @@ public class FlagManager {
         getFlagLocation(team).getBlock().setType(team.getBannerItem());
         if (player != null) {
             removeFlag(player, team);
-            match.getMessageManager().broadcastMessage(getMM().deserialize(Message.PLAYER_PLACE_FLAG.get().replace("%player%", player.getName())));
+            match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PLAYER_PLACE_FLAG.get().replace("%player%", player.getName())));
         } else {
-            match.getMessageManager().broadcastMessage(getMM().deserialize(Message.FLAG_WAS_SAVED.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
+            match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(Message.FLAG_WAS_SAVED.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
         }
     }
 
@@ -127,9 +126,9 @@ public class FlagManager {
         Team.requirePlayableTeam(capturedTeam);
         match.getScoreManager().setScore(scoringTeam, match.getScoreManager().getScore(scoringTeam) + 1);
         GeneralUtils.removeFlag(player, capturedTeam);
-        for(Team team : Team.playableTeams()) match.initPlayers(team, StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore());
+        match.initAllPlayers(StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore());
         match.getFlagManager().loadFlags(true);
-        match.getMessageManager().broadcastMessage(getMM().deserialize(
+        match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(
                 Message.PLAYER_RETURN_FLAG.get()
                         .replace("%player%", player.getName())
                         .replace("%opposite_color%", capturedTeam.name())
@@ -149,7 +148,7 @@ public class FlagManager {
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
         Team.requirePlayableTeam(team);
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
-        Component component = getMM().deserialize(Message.FLAG_DROPPED_AT.get()
+        Component component = SimpleCTF.getInstance().getMM().deserialize(Message.FLAG_DROPPED_AT.get()
                 .replace("%player%", dropper.getName())
                 .replace("%color%", team.name().toUpperCase(Locale.ENGLISH))
                 .replace("%coordinates%", locString));
@@ -176,14 +175,16 @@ public class FlagManager {
         flagLocations.put(team, newLocation);
     }
 
-    /** @return whether the preparation was successful */
+    /**
+     * @return whether the preparation was successful
+     */
     public boolean prepareLocations() {
         for (Team team : Team.playableTeams()) {
             String config = "Match.Locations." + team.name().toUpperCase(Locale.ENGLISH);
             Location configLoc = SimpleCTF.getInstance().getConfig().getLocation(config);
             if (configLoc == null) {
                 SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RED\" or \"Match.Locations.BLUE\" was improper or left empty. Use /ctf setflag <red | blue> to set locations.");
-                match.getMessageManager().broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
+                match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
                 return false;
             }
             setFlagLocation(team, configLoc);
@@ -211,7 +212,7 @@ public class FlagManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (SimpleCTF.getCurrentMatch() == null || item.isDead()) {
+                if (SimpleCTF.getInstance().getCurrentMatch() == null || item.isDead()) {
                     this.cancel();
                     item.remove();
                     return;

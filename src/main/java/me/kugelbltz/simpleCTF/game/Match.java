@@ -9,7 +9,6 @@ import me.kugelbltz.simpleCTF.game.managers.ScoreManager;
 import me.kugelbltz.simpleCTF.game.managers.StateManager;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
-
 import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.configuration.StaticVariables.getWinScore;
 
 public class Match {
@@ -52,11 +50,9 @@ public class Match {
         if (!getFlagManager().prepareLocations()) return false;
         getFlagManager().loadFlags(true);
         getMessageManager().createBossBar();
-        for (Team team : Team.playableTeams()) {
-            getScoreManager().setScore(team, 0);
-            initPlayers(team, true, true);
-        }
-        getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
+        getScoreManager().resetScores();
+        initAllPlayers(true, true);
+        getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(Message.MATCH_START.get()));
         SimpleCTF.getInstance().setCurrentMatch(this);
         return true;
     }
@@ -71,11 +67,20 @@ public class Match {
         Team.requirePlayableTeam(team);
         getFlagManager().setFlagCarrier(null, team);
         getPlayers(team).forEach(player -> {
-            player.teleport(getFlagManager().getFlagLocation(team));
-            if(teleport) player.teleport(getFlagManager().getFlagLocation(Team.BLUE));
-            if(resetState) getStateManager().resetPlayerState(player, true, true, this);
+            if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
+            if (resetState) getStateManager().resetPlayerState(player, true, true, this);
         });
     }
+
+    /**
+     * Initializes all players
+     */
+    public void initAllPlayers(boolean teleport, boolean resetState) {
+        for (Team team : Team.playableTeams()) {
+            initPlayers(team, teleport, resetState);
+        }
+    }
+
     /**
      * Handle game loop, 20 tick intervals
      */
@@ -86,7 +91,7 @@ public class Match {
             @Override
             public void run() {
                 timeLeft--;
-                if (timeLeft <= 0 || SimpleCTF.getCurrentMatch() == null) {
+                if (timeLeft <= 0 || SimpleCTF.getInstance().getCurrentMatch() == null) {
                     unloadMatch(Message.MATCH_TIME_OUT.get());
                     return;
                 }
@@ -110,11 +115,9 @@ public class Match {
      * @param reason The message to send the players, internally handled via {@code MiniMessage} API
      */
     public void unloadMatch(@Nullable String reason) {
-        if (reason != null) getMessageManager().broadcastMessage(getMM().deserialize(reason));
-        for (Team team : Team.playableTeams()) {
-            new ArrayList<>(getPlayers(team)).forEach(this::removePlayerFromMatch); // Copy to prevent ConcurrentModificationException
-            getScoreManager().setScore(team, 0);
-        }
+        if (reason != null) getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(reason));
+        removeAllPlayersFromMatch();
+        getScoreManager().resetScores();
         getFlagManager().loadFlags(false);
         getMessageManager().unloadBossBar();
         if (this.task != null) this.task.cancel();
@@ -161,8 +164,16 @@ public class Match {
         GeneralUtils.dropAllFlags(player);
         getStateManager().resetPlayerState(player, false, true, this);
         getMessageManager().removePlayerFromBossBar(player);
-        player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
+        player.teleport(StaticVariables.getSpawn());
+        if (getTeam(player) == Team.NONE) return;
         players.get(getTeam(player)).remove(player);
+    }
+
+    /**
+     * Removes all the players from the match
+     */
+    public void removeAllPlayersFromMatch() {
+        for (Team team : Team.playableTeams()) new ArrayList<>(players.get(team)).forEach(this::removePlayerFromMatch);
     }
 
     /**

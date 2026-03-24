@@ -25,4 +25,10 @@ public class ScoreManager {
         teamScores.put(team, newScore);
     }
 
+    public void resetScores() {
+        for (Team team : Team.playableTeams()) {
+            setScore(team, 0);
+        }
+    }
+
 }

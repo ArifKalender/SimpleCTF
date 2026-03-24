@@ -2,14 +2,13 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Message;
+import me.kugelbltz.simpleCTF.util.QueueHandler;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 public class CTFLeave implements CTFCommand {
 
@@ -19,15 +18,17 @@ public class CTFLeave implements CTFCommand {
     @Override
     public void execute(Player player, String[] args) {
         // Remove player from queue
-        if (getQueueHandler().alreadyInQueue(player)) {
-            getQueueHandler().removePlayer(player, true);
+        MiniMessage mm = SimpleCTF.getInstance().getMM();
+        QueueHandler queueHandler = SimpleCTF.getInstance().getQueueHandler();
+        if (queueHandler.alreadyInQueue(player)) {
+            queueHandler.removePlayer(player, true);
         } else {
-            Match match = SimpleCTF.getCurrentMatch();
+            Match match = SimpleCTF.getInstance().getCurrentMatch();
             if (match != null && match.isPlayerInMatch(player)) {
                 match.removePlayerFromMatch(player);
-                player.sendMessage(getMM().deserialize(Message.TEAM_LEAVE.get()));
+                player.sendMessage(mm.deserialize(Message.TEAM_LEAVE.get()));
             } else {
-                player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
+                player.sendMessage(mm.deserialize(Message.NOT_IN_TEAM.get()));
             }
         }
     }

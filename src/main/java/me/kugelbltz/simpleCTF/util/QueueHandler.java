@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-
 public class QueueHandler {
 
     private final Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
@@ -60,12 +58,12 @@ public class QueueHandler {
         if (getPlayerQueue(team).size() < StaticVariables.getMaxPlayersPerTeam()) {
             addPlayerToQueue(player, team);
         } else {
-            player.sendMessage(getMM().deserialize(Message.TEAM_ALREADY_FULL.get()));
+            player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.TEAM_ALREADY_FULL.get()));
             return false;
         }
 
-        broadcastMessageToQueue(getMM().deserialize(Message.PLAYER_JOINED_TEAM.get().replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
-        player.sendMessage(getMM().deserialize(Message.TEAM_JOIN.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
+        broadcastMessageToQueue(SimpleCTF.getInstance().getMM().deserialize(Message.PLAYER_JOINED_TEAM.get().replace("%player%", player.getName()).replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
+        player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.TEAM_JOIN.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH))));
         return true;
     }
 
@@ -127,19 +125,20 @@ public class QueueHandler {
      * @param sendMessageToPlayer Whether to try to send the player the leaving message
      */
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
-        Match match = SimpleCTF.getCurrentMatch();
-        if (match == null) return;
-        if (!this.alreadyInQueue(player) && !Team.playableTeams().contains(match.getTeam(player))) {
-            if (sendMessageToPlayer)
-                player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
-            return;
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
+        if (match != null) {
+            if (!this.alreadyInQueue(player) && !Team.playableTeams().contains(match.getTeam(player))) {
+                if (sendMessageToPlayer)
+                    player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.NOT_IN_TEAM.get()));
+                return;
+            }
         }
         Team team = this.getQueueTeam(player);
         if (!Team.playableTeams().contains(team)) return;
         this.removePlayerFromQueue(player);
         this.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
-                .sendMessage(getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName()))));
+                .sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName()))));
         if (sendMessageToPlayer)
-            player.sendMessage(getMM().deserialize(Message.TEAM_LEAVE.get()));
+            player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.TEAM_LEAVE.get()));
     }
 }

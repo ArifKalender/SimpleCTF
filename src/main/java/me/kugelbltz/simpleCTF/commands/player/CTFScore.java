@@ -2,14 +2,12 @@ package me.kugelbltz.simpleCTF.commands.player;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.commands.CTFCommand;
-import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class CTFScore implements CTFCommand {
 
@@ -18,7 +16,7 @@ public class CTFScore implements CTFCommand {
      */
     @Override
     public void execute(Player player, String[] args) {
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         String msg = Message.CURRENT_SCORE.get();
         if (match == null) {
             msg = msg.replace("%blue_score%", "0").replace("%red_score%", "0");
@@ -27,7 +25,7 @@ public class CTFScore implements CTFCommand {
             String redScore = String.valueOf(match.getScoreManager().getScore(Team.RED));
             msg = msg.replace("%blue_score%", blueScore).replace("%red_score%", redScore);
         }
-        player.sendMessage(getMM().deserialize(msg));
+        player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(msg));
     }
 
     @Override

@@ -10,34 +10,32 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.Locale;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
-
 public class CTFSetFlag implements CTFCommand {
 
     @Override
     public void execute(Player player, String[] args) {
         if (args.length != 2) {
-            player.sendMessage(getMM().deserialize("<red>Correct usage: /ctf setflag <red | blue>"));
+            player.sendMessage(SimpleCTF.getInstance().getMM().deserialize("<red>Correct usage: /ctf setflag <red | blue>"));
             return;
         }
 
         Team team;
         try {
             team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
-        } catch (IllegalArgumentException ignored){
-            player.sendMessage(getMM().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
+        } catch (IllegalArgumentException ignored) {
+            player.sendMessage(SimpleCTF.getInstance().getMM().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
             return;
         }
 
         // Sets config value for the team
         SimpleCTF.getInstance().getConfig().set("Match.Locations." + team.name().toUpperCase(Locale.ENGLISH), prepareLocation(player.getLocation()));
-        player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "Set the location for " + team.name().toUpperCase(Locale.ENGLISH) + " flag!"));
+        player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PREFIX.get() + "Set the location for " + team.name().toUpperCase(Locale.ENGLISH) + " flag!"));
         SimpleCTF.getInstance().saveConfig();
     }
 
     @Override
     public List<String> getArguments() {
-        return List.of("RED", "BLUE");
+        return List.of("red", "blue");
     }
 
     @Override

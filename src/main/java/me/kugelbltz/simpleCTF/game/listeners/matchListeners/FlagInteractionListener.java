@@ -1,10 +1,10 @@
 package me.kugelbltz.simpleCTF.game.listeners.matchListeners;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
-import me.kugelbltz.simpleCTF.model.BannerItems;
-import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.BannerItems;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -23,8 +23,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Locale;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
-import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.addItem;
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.playSoundForGroup;
 
@@ -36,7 +34,7 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onPlace(PlayerInteractEvent event) {
         ItemStack interactItem = event.getPlayer().getInventory().getItemInMainHand();
-        if (getBannerItems().isFlag(interactItem) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
+        if (SimpleCTF.getInstance().getBannerItems().isFlag(interactItem) && event.getAction() == Action.RIGHT_CLICK_BLOCK)
             event.setCancelled(true);
     }
 
@@ -47,10 +45,10 @@ public class FlagInteractionListener implements Listener {
     public void onDrop(PlayerDropItemEvent event) {
         Item itemEntity = event.getItemDrop();
         ItemStack item = event.getItemDrop().getItemStack();
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
-        if (getBannerItems().isFlag(item)) {
+        if (SimpleCTF.getInstance().getBannerItems().isFlag(item)) {
             Team itemTeam = BannerItems.getTeamFromFlag(item);
             match.getFlagManager().protectFlagItemEntity(itemEntity);
             match.getFlagManager().setFlagCarrier(itemEntity, itemTeam);
@@ -66,10 +64,10 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onPickup(PlayerAttemptPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         Player player = event.getPlayer();
-        if (!getBannerItems().isFlag(item)) return;
+        if (!SimpleCTF.getInstance().getBannerItems().isFlag(item)) return;
         if (!match.isPlayerInMatch(player)) {
             event.setCancelled(true);
             return;
@@ -77,7 +75,7 @@ public class FlagInteractionListener implements Listener {
         Team itemTeam = BannerItems.getTeamFromFlag(item);
         if (!Team.playableTeams().contains(itemTeam)) return;
         match.getFlagManager().setFlagCarrier(player, itemTeam);
-        match.getMessageManager().broadcastMessage(getMM().deserialize(
+        match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(
                 Message.PLAYER_CAUGHT_FLAG.get()
                         .replace("%player%", player.getName())
                         .replace("%color%", itemTeam.name().toUpperCase(Locale.ENGLISH))
@@ -90,19 +88,16 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
-        if (SimpleCTF.getCurrentMatch() == null) return;
+        if (SimpleCTF.getInstance().getCurrentMatch() == null) return;
         if (clickedBlock == null) return;
-        if (clickedBlock.getType() == Team.BLUE.getBannerItem()) {
-            handleFlag(event, Team.BLUE);
-            event.setCancelled(true);
-            return;
-        } else if (clickedBlock.getType() == Team.RED.getBannerItem()) {
-            handleFlag(event, Team.RED);
-            event.setCancelled(true);
-            return;
+        for (Team team : Team.playableTeams()) {
+            if (team.getBannerItem() == clickedBlock.getType()) {
+                handleFlag(event, team);
+                event.setCancelled(true);
+            }
         }
 
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));
         double redDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.RED));
@@ -131,7 +126,7 @@ public class FlagInteractionListener implements Listener {
 
 
     private void handleFlag(PlayerInteractEvent event, Team flagColor) {
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (flagColor == null || !Team.playableTeams().contains(flagColor)) {
             event.setCancelled(true);
             return;
@@ -143,7 +138,7 @@ public class FlagInteractionListener implements Listener {
         Team opponent = Team.getOpposite(playerColor);
 
         if (flagColor != opponent) {
-            player.sendMessage(getMM().deserialize(Message.WRONG_BANNER_TEAM.get()));
+            player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.WRONG_BANNER_TEAM.get()));
             event.setCancelled(true);
             return;
         }
@@ -163,6 +158,6 @@ public class FlagInteractionListener implements Listener {
         Team capturer = Team.getOpposite(capturedTeam);
         playSoundForGroup(match.getPlayers(capturedTeam), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 1F, 0F);
         playSoundForGroup(match.getPlayers(capturer), Sound.ENTITY_RAVAGER_CELEBRATE, 1F, 2F);
-        match.getMessageManager().broadcastMessage(getMM().deserialize(message));
+        match.getMessageManager().broadcastMessage(SimpleCTF.getInstance().getMM().deserialize(message));
     }
 }

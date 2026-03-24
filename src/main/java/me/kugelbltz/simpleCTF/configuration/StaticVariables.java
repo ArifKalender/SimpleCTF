@@ -1,6 +1,8 @@
 package me.kugelbltz.simpleCTF.configuration;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,6 +20,7 @@ public class StaticVariables {
     private static boolean RESET_MATCH_AFTER_SCORE;
     private static boolean STARTER_KIT_ENABLED;
     private static List<ItemStack> PLAYER_KIT;
+    private static Location SPAWN;
 
     public static void init() {
         MAX_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MaxPlayersPerTeam", 4);
@@ -27,6 +30,7 @@ public class StaticVariables {
         FLAG_BASE_RADIUS = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.FlagBaseRadius", 4);
         RESET_MATCH_AFTER_SCORE = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Game.Match.ResetMatchAfterScore", true);
         STARTER_KIT_ENABLED = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Game.Match.StarterKit.Enabled", true);
+        SPAWN = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.Spawn", Bukkit.getWorlds().getFirst().getSpawnLocation());
         loadPlayerKit();
     }
 
@@ -78,5 +82,10 @@ public class StaticVariables {
 
     public static boolean isStarterKitEnabled() {
         return STARTER_KIT_ENABLED;
+    }
+
+    public static Location getSpawn() {
+        if (SPAWN == null) return Bukkit.getWorlds().getFirst().getSpawnLocation();
+        return SPAWN.clone();
     }
 }

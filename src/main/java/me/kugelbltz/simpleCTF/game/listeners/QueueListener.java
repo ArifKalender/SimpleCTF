@@ -1,11 +1,10 @@
 package me.kugelbltz.simpleCTF.game.listeners;
 
+import me.kugelbltz.simpleCTF.SimpleCTF;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
 public class QueueListener implements Listener {
 
@@ -15,7 +14,7 @@ public class QueueListener implements Listener {
     @EventHandler
     private void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        getQueueHandler().removePlayer(player, false);
+        SimpleCTF.getInstance().getQueueHandler().removePlayer(player, false);
     }
 
 }

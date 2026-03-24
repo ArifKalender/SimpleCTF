@@ -1,14 +1,17 @@
 package me.kugelbltz.simpleCTF.game.managers;
 
+import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.bossbar.BossBarViewer;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageManager {
 
@@ -26,18 +29,19 @@ public class MessageManager {
      */
     public void updateBossBar(int timeLeft) {
         if (this.bossBar == null) return;
-        String title = "Red score: " + match.getScoreManager().getScore(Team.RED) + " | Blue score: " + match.getScoreManager().getScore(Team.BLUE);
-        double timeLeftNormalized = timeLeft / (double) StaticVariables.getMatchTime();
-        this.bossBar.setProgress(timeLeftNormalized);
-        this.bossBar.setTitle(title);
+        String title = "<#e30b00>Red score: <yellow>" + match.getScoreManager().getScore(Team.RED) + " <reset>| <#188adb>Blue score: <yellow>" + match.getScoreManager().getScore(Team.BLUE);
+        float timeLeftNormalized = timeLeft / (float) StaticVariables.getMatchTime();
+        this.bossBar.progress(timeLeftNormalized);
+        this.bossBar.name(SimpleCTF.getInstance().getMM().deserialize(title));
     }
 
     public void createBossBar() {
-        String title = "Red score: " + match.getScoreManager().getScore(Team.RED) + " | Blue score: " + match.getScoreManager().getScore(Team.BLUE);
+        Component title = SimpleCTF.getInstance().getMM().deserialize(
+                "<#e30b00>Red score: <yellow>" + match.getScoreManager().getScore(Team.RED) + " <reset>| <#188adb>Blue score: <yellow>" + match.getScoreManager().getScore(Team.BLUE));
         if (this.bossBar == null) {
-            this.bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SOLID);
-            match.getPlayers(Team.RED).forEach(this.bossBar::addPlayer);
-            match.getPlayers(Team.BLUE).forEach(this.bossBar::addPlayer);
+            this.bossBar = BossBar.bossBar(title, 1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+            match.getPlayers(Team.RED).forEach(this.bossBar::addViewer);
+            match.getPlayers(Team.BLUE).forEach(this.bossBar::addViewer);
         }
     }
 
@@ -61,7 +65,12 @@ public class MessageManager {
      */
     public void unloadBossBar() {
         if (getBossBar() != null) {
-            this.bossBar.removeAll();
+            List<Audience> audience = new ArrayList<>();
+            for (BossBarViewer viewer : this.bossBar.viewers())
+                if (viewer instanceof Audience) audience.add((Audience) viewer);
+            for (Audience viewer : audience) {
+                this.bossBar.removeViewer(viewer);
+            }
             this.bossBar = null;
         }
     }
@@ -71,6 +80,6 @@ public class MessageManager {
      */
     public void removePlayerFromBossBar(Player player) {
         if (getBossBar() == null) return;
-        this.bossBar.removePlayer(player);
+        this.bossBar.removeViewer(player);
     }
 }

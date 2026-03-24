@@ -1,5 +1,6 @@
 package me.kugelbltz.simpleCTF.model;
 
+import me.kugelbltz.simpleCTF.SimpleCTF;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -7,8 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
 public enum Team {
 
@@ -18,6 +17,7 @@ public enum Team {
 
     private final Material bannerItem, particleSource;
     private final Color rgbColor;
+
     Team(Material bannerItem, Material particleSource, Color rgbColor) {
         this.bannerItem = bannerItem;
         this.particleSource = particleSource;
@@ -42,7 +42,16 @@ public enum Team {
      */
     public static ItemStack getTeamFlag(Team team) {
         requirePlayableTeam(team);
-        return getBannerItems().getFlag(team);
+        return SimpleCTF.getInstance().getBannerItems().getFlag(team);
+    }
+
+    public static List<Team> playableTeams() {
+        return Arrays.asList(Team.RED, Team.BLUE);
+    }
+
+    public static void requirePlayableTeam(Team team) {
+        if (!playableTeams().contains(team))
+            throw new IllegalArgumentException("Illegal team: " + team.name().toUpperCase(Locale.ENGLISH));
     }
 
     public Material getBannerItem() {
@@ -51,14 +60,6 @@ public enum Team {
 
     public Material getParticleSource() {
         return particleSource;
-    }
-
-    public static List<Team> playableTeams() {
-        return Arrays.asList(Team.RED, Team.BLUE);
-    }
-
-    public static void requirePlayableTeam(Team team) {
-        if (!playableTeams().contains(team)) throw new IllegalArgumentException("Illegal team: " + team.name().toUpperCase(Locale.ENGLISH));
     }
 
     public Color getTeamRGB() {

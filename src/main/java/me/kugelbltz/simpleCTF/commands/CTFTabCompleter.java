@@ -1,6 +1,5 @@
-package me.kugelbltz.simpleCTF.commands.player;
+package me.kugelbltz.simpleCTF.commands;
 
-import me.kugelbltz.simpleCTF.commands.CaptureTheFlag;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -16,12 +15,12 @@ public class CTFTabCompleter implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String @NotNull [] args) {
         List<String> subCommands = new ArrayList<>(CaptureTheFlag.getSubCommands().keySet());
         if (args.length == 1)
-            return subCommands.stream().filter(cmd -> cmd.startsWith(args[0].toUpperCase(Locale.ENGLISH))).toList();
+            return subCommands.stream().filter(cmd -> cmd.startsWith(args[0].toLowerCase(Locale.ENGLISH))).toList();
         if (!subCommands.contains(args[0])) return List.of();
         if (args.length == 2)
             return CaptureTheFlag.getSubCommands().get(args[0]).getArguments()
                     .stream()
-                    .filter(cmd -> cmd.startsWith(args[1].toUpperCase(Locale.ENGLISH)))
+                    .filter(cmd -> cmd.startsWith(args[1].toLowerCase(Locale.ENGLISH)))
                     .toList();
         return List.of();
     }

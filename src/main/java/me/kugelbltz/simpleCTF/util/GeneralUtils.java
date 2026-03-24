@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static me.kugelbltz.simpleCTF.SimpleCTF.getBannerItems;
 
 public class GeneralUtils {
 
@@ -36,12 +35,12 @@ public class GeneralUtils {
      * @return true if a flag is found, false otherwise
      */
     public static boolean removeFlag(Player player, Team teamColor) {
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return false;
         ItemStack target = null;
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            if (getBannerItems().isFlag(item, teamColor)) {
+            if (SimpleCTF.getInstance().getBannerItems().isFlag(item, teamColor)) {
                 target = item;
                 break;
             }
@@ -58,13 +57,13 @@ public class GeneralUtils {
      * @return true if a flag is found, false otherwise
      */
     public static boolean dropAllFlags(Player player) {
-        Match match = SimpleCTF.getCurrentMatch();
+        Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return false;
         boolean found = false;
         List<ItemStack> toRemove = new ArrayList<>(); // Prevent ConcurrentModificationException
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            else if (getBannerItems().isFlag(item)) {
+            else if (SimpleCTF.getInstance().getBannerItems().isFlag(item)) {
                 toRemove.add(item);
                 Item drop = player.getWorld().dropItem(player.getLocation(), item);
                 Team flagTeam = BannerItems.getTeamFromFlag(item);
