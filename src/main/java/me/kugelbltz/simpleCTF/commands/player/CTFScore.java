@@ -7,6 +7,8 @@ import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class CTFScore implements CTFCommand {
@@ -28,4 +30,8 @@ public class CTFScore implements CTFCommand {
         player.sendMessage(getMM().deserialize(msg));
     }
 
+    @Override
+    public List<String> getArguments() {
+        return List.of();
+    }
 }

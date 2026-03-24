@@ -6,6 +6,7 @@ import me.kugelbltz.simpleCTF.model.Message;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Locale;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
@@ -45,4 +46,11 @@ public class CTFSetFlag implements CTFCommand {
             default -> player.sendMessage(getMM().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
         }
     }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of("RED", "BLUE");
+    }
+
+
 }

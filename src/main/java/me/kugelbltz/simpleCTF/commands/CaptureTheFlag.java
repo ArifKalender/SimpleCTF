@@ -67,4 +67,8 @@ public class CaptureTheFlag implements CommandExecutor {
 
         sender.sendMessage(getMM().deserialize("<gradient:#eb4034:#ff8800>[---- Valid Commands ----]"));
     }
+
+    public static Map<String, CTFCommand> getSubCommands() {
+        return commands;
+    }
 }

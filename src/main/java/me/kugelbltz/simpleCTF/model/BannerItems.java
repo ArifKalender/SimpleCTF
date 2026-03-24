@@ -38,8 +38,7 @@ public class BannerItems {
     /** @return whether the given ItemStack belongs to the given Team */
     public boolean isFlag(ItemStack itemStack, Team team) {
         if (itemStack.getItemMeta() == null) return false;
-        Component displayName = itemStack.getItemMeta().displayName();
-        if (displayName == null) return false;
+        Component displayName = itemStack.displayName();
         if (team == Team.BLUE && displayName.equals(this.blueFlag.displayName())) return true;
         if (team == Team.RED && displayName.equals(this.redFlag.displayName())) return true;
         else return false;

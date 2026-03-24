@@ -6,6 +6,8 @@ import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 
 public class CTFReload implements CTFCommand {
@@ -23,4 +25,11 @@ public class CTFReload implements CTFCommand {
         SimpleCTF.getInstance().reloadConfig();
         StaticVariables.init();
     }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of();
+    }
+
+
 }

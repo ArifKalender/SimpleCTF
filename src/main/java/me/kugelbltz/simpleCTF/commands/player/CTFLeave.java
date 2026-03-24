@@ -6,6 +6,8 @@ import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.game.Match;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
@@ -28,5 +30,10 @@ public class CTFLeave implements CTFCommand {
                 player.sendMessage(getMM().deserialize(Message.NOT_IN_TEAM.get()));
             }
         }
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of();
     }
 }

@@ -7,6 +7,7 @@ import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Locale;
 
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
@@ -55,5 +56,10 @@ public class CTFJoin implements CTFCommand {
         getQueueHandler().addToQueue(player, team);
     }
 
+
+    @Override
+    public List<String> getArguments() {
+        return List.of("RED", "BLUE");
+    }
 
 }

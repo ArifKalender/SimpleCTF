@@ -1,6 +1,7 @@
 package me.kugelbltz.simpleCTF;
 
 import me.kugelbltz.simpleCTF.commands.CaptureTheFlag;
+import me.kugelbltz.simpleCTF.commands.player.CTFTabCompleter;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.game.listeners.QueueListener;
@@ -87,6 +88,7 @@ public final class SimpleCTF extends JavaPlugin {
 
     private void registerCommands() {
         Bukkit.getPluginCommand("capturetheflag").setExecutor(new CaptureTheFlag());
+        Bukkit.getPluginCommand("capturetheflag").setTabCompleter(new CTFTabCompleter());
     }
 
     /**

@@ -7,6 +7,8 @@ import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.Team;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
@@ -32,5 +34,10 @@ public class CTFStart implements CTFCommand {
         }
         new Match().startMatch(getQueueHandler().getPlayerQueue(Team.RED), getQueueHandler().getPlayerQueue(Team.BLUE));
         getQueueHandler().clearQueue();
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of();
     }
 }

@@ -5,6 +5,8 @@ import me.kugelbltz.simpleCTF.commands.CTFCommand;
 import me.kugelbltz.simpleCTF.model.Message;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 import static me.kugelbltz.simpleCTF.SimpleCTF.getMM;
 import static me.kugelbltz.simpleCTF.SimpleCTF.getQueueHandler;
 
@@ -27,5 +29,10 @@ public class CTFStop implements CTFCommand {
         }
         player.sendMessage(getMM().deserialize(Message.PREFIX.get() + "<red>Interrupting current match..."));
         SimpleCTF.getCurrentMatch().unloadMatch(Message.PREFIX.get() + "<red>Match interrupted by an admin!");
+    }
+
+    @Override
+    public List<String> getArguments() {
+        return List.of();
     }
 }
