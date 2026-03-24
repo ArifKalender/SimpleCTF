@@ -23,7 +23,7 @@ public class CTFSetFlag implements CTFCommand {
 
         Team team;
         try {
-            team = Team.valueOf(args[1]);
+            team = Team.valueOf(args[1].toUpperCase(Locale.ENGLISH));
         } catch (IllegalArgumentException ignored){
             player.sendMessage(getMM().deserialize("<red>Invalid color! Valid colors: RED, BLUE"));
             return;

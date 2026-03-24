@@ -1,6 +1,7 @@
 package me.kugelbltz.simpleCTF.game.managers;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
+import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.events.FlagScoreEvent;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.BannerItems;
@@ -129,7 +130,7 @@ public class FlagManager {
         Team.requirePlayableTeam(capturedTeam);
         match.getScoreManager().setScore(scoringTeam, match.getScoreManager().getScore(scoringTeam) + 1);
         GeneralUtils.removeFlag(player, capturedTeam);
-        for(Team team : Team.playableTeams()) match.initPlayers(team, false, false);
+        for(Team team : Team.playableTeams()) match.initPlayers(team, StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore(), match.getPlayers(Team.RED), match.getPlayers(Team.BLUE));
         match.getFlagManager().loadFlags(true);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
                 Message.PLAYER_RETURN_FLAG.get()

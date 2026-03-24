@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.model;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.game.Match;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -69,5 +70,11 @@ public enum Team {
 
     public static void requirePlayableTeam(Team team) {
         if (!playableTeams().contains(team)) throw new IllegalArgumentException("Illegal team: " + team.name().toUpperCase(Locale.ENGLISH));
+    }
+
+    public static Color getTeamRGB(Team team) {
+        if (team == Team.RED) return Color.fromRGB(255, 0, 0);
+        else if (team == Team.BLUE) return Color.fromRGB(0, 0, 255);
+        else return Color.GRAY;
     }
 }

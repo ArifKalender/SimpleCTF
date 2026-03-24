@@ -6,12 +6,12 @@ import me.kugelbltz.simpleCTF.events.MatchWinEvent;
 import me.kugelbltz.simpleCTF.game.managers.FlagManager;
 import me.kugelbltz.simpleCTF.game.managers.MessageManager;
 import me.kugelbltz.simpleCTF.game.managers.ScoreManager;
+import me.kugelbltz.simpleCTF.game.managers.StateManager;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
 
 import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -25,10 +25,10 @@ import static me.kugelbltz.simpleCTF.configuration.StaticVariables.getWinScore;
 public class Match {
     private final Map<Team, Collection<Player>> players = new HashMap<>();
     private BukkitTask task;
-
     private ScoreManager scoreManager;
     private MessageManager messageManager;
     private FlagManager flagManager;
+    private StateManager stateManager;
 
     public void startMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         initManagers();
@@ -38,6 +38,7 @@ public class Match {
 
     private void initManagers() {
         this.scoreManager = new ScoreManager();
+        this.stateManager = new StateManager();
         this.messageManager = new MessageManager(this);
         this.flagManager = new FlagManager(this);
     }
@@ -53,7 +54,7 @@ public class Match {
         getMessageManager().createBossBar();
         for (Team team : Team.playableTeams()) {
             getScoreManager().setScore(team, 0);
-            initPlayers(team, StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore());
+            initPlayers(team, true, true, redPlayers, bluePlayers);
         }
         getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
         SimpleCTF.getInstance().setCurrentMatch(this);
@@ -66,13 +67,17 @@ public class Match {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void initPlayers(Team team, boolean teleport, boolean resetState) {
+    public void initPlayers(Team team, boolean teleport, boolean resetState, Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         Team.requirePlayableTeam(team);
         getFlagManager().setFlagCarrier(null, team);
-        getPlayers(team).forEach(player -> {
-            if(teleport) player.teleport(getFlagManager().getFlagLocation(team));
-            if(resetState)resetPlayerState(player);
-        });
+        for (Player player : redPlayers) {
+            if(teleport) player.teleport(getFlagManager().getFlagLocation(Team.RED));
+            if(resetState) getStateManager().resetPlayerState(player, true, true, Team.RED);
+        }
+        for (Player player : bluePlayers) {
+            if(teleport) player.teleport(getFlagManager().getFlagLocation(Team.BLUE));
+            if(resetState) getStateManager().resetPlayerState(player, true, true, Team.BLUE);
+        }
     }
 
     /**
@@ -120,17 +125,6 @@ public class Match {
         SimpleCTF.getInstance().setCurrentMatch(null);
     }
 
-    /**
-     * Resets the given player's state for the following: Experience, Level, Food level, Health, Inventory, Potions
-     */
-    public void resetPlayerState(Player player) {
-        player.setExp(0);
-        player.setLevel(0);
-        player.setFoodLevel(20);
-        player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
-        player.getInventory().clear();
-        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-    }
 
     /**
      * @throws IllegalArgumentException if team is {@link Team#NONE}
@@ -166,7 +160,7 @@ public class Match {
      */
     public void removePlayerFromMatch(Player player) {
         GeneralUtils.dropAllFlags(player);
-        resetPlayerState(player);
+        getStateManager().resetPlayerState(player, false, true, null);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(Bukkit.getWorlds().getFirst().getSpawnLocation());
         players.get(Team.getTeam(player)).remove(player);
@@ -193,4 +187,10 @@ public class Match {
         return flagManager;
     }
 
+    /**
+     * Manages player inventory, player status effects etc.
+     */
+    public StateManager getStateManager() {
+        return stateManager;
+    }
 }

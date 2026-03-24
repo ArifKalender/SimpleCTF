@@ -8,6 +8,15 @@ SimpleCTF:
       WinScore: 3
       FlagBaseRadius: 4
       ResetMatchAfterScore: true
+      StarterKit:
+        Enabled: true
+        Items:
+          - WOODEN_SWORD:1
+          - LEATHER_HELMET:1
+          - LEATHER_CHESTPLATE:1
+          - LEATHER_LEGGINGS:1
+          - LEATHER_BOOTS:1
+          - COOKED_BEEF:4
   Strings:
     Prefix: "<bold><#eb6434>SimpleCTF <reset><#e8cd33>» "
     Warnings:
