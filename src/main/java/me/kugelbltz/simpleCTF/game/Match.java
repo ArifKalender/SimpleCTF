@@ -11,7 +11,6 @@ import me.kugelbltz.simpleCTF.model.Team;
 
 import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -47,23 +46,14 @@ public class Match {
      * Initialize and reset match state, returns true if successful, false if not
      */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
-        Location configRed = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.RedFlag");
-        Location configBlue = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.BlueFlag");
-        if (configRed == null || configBlue == null) {
-            SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RedFlag\" or \"Match.Locations.BlueFlag was improper or empty. Use /ctf setflag <red|blue> to set locations.");
-            getMessageManager().broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
-            return false;
-        }
-
-        getFlagManager().setFlagLocation(Team.RED, configRed);
-        getFlagManager().setFlagLocation(Team.BLUE, configBlue);
         players.put(Team.RED, redPlayers);
         players.put(Team.BLUE, bluePlayers);
+        if (!getFlagManager().prepareLocations()) return false;
         getFlagManager().loadFlags(true);
         getMessageManager().createBossBar();
         for (Team team : Team.playableTeams()) {
             getScoreManager().setScore(team, 0);
-            initPlayers(team);
+            initPlayers(team, StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore());
         }
         getMessageManager().broadcastMessage(getMM().deserialize(Message.MATCH_START.get()));
         SimpleCTF.getInstance().setCurrentMatch(this);
@@ -76,12 +66,12 @@ public class Match {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void initPlayers(Team team) {
+    public void initPlayers(Team team, boolean teleport, boolean resetState) {
         Team.requirePlayableTeam(team);
         getFlagManager().setFlagCarrier(null, team);
         getPlayers(team).forEach(player -> {
-            player.teleport(getFlagManager().getFlagLocation(team));
-            resetPlayerState(player);
+            if(teleport) player.teleport(getFlagManager().getFlagLocation(team));
+            if(resetState)resetPlayerState(player);
         });
     }
 

@@ -9,6 +9,7 @@ public class StaticVariables {
     private static int MATCH_TIME;
     private static int WIN_SCORE;
     private static int FLAG_BASE_RADIUS;
+    private static boolean RESET_MATCH_AFTER_SCORE;
 
     public static void init() {
         MAX_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MaxPlayersPerTeam", 4);
@@ -16,6 +17,7 @@ public class StaticVariables {
         MATCH_TIME = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.MatchTime", 600);
         WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
         FLAG_BASE_RADIUS = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.FlagBaseRadius", 4);
+        RESET_MATCH_AFTER_SCORE = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Game.Match.ResetMatchAfterScore", true);
     }
 
     public static int getMaxPlayersPerTeam() {
@@ -36,5 +38,9 @@ public class StaticVariables {
 
     public static int getFlagBaseRadius() {
         return FLAG_BASE_RADIUS;
+    }
+
+    public static boolean doesResetMatchAfterScore() {
+        return RESET_MATCH_AFTER_SCORE;
     }
 }

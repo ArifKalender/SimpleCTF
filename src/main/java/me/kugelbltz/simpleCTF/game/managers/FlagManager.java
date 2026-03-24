@@ -6,6 +6,7 @@ import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.BannerItems;
 import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
+import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -127,8 +128,8 @@ public class FlagManager {
         Team.requirePlayableTeam(scoringTeam);
         Team.requirePlayableTeam(capturedTeam);
         match.getScoreManager().setScore(scoringTeam, match.getScoreManager().getScore(scoringTeam) + 1);
-        match.initPlayers(Team.RED);
-        match.initPlayers(Team.BLUE);
+        GeneralUtils.removeFlag(player, capturedTeam);
+        for(Team team : Team.playableTeams()) match.initPlayers(team, false, false);
         match.getFlagManager().loadFlags(true);
         match.getMessageManager().broadcastMessage(getMM().deserialize(
                 Message.PLAYER_RETURN_FLAG.get()
@@ -175,6 +176,21 @@ public class FlagManager {
     public void setFlagLocation(Team team, @NotNull Location newLocation) {
         Team.requirePlayableTeam(team);
         flagLocations.put(team, newLocation);
+    }
+
+    /** @return whether the preparation was successful */
+    public boolean prepareLocations() {
+        for (Team team : Team.playableTeams()) {
+            String config = "Match.Locations." + team.name().toUpperCase(Locale.ENGLISH);
+            Location configLoc = SimpleCTF.getInstance().getConfig().getLocation(config);
+            if (configLoc == null) {
+                SimpleCTF.getInstance().getLogger().severe("\"Match.Locations.RED\" or \"Match.Locations.BLUE\" was improper or left empty. Use /ctf setflag <red | blue> to set locations.");
+                match.getMessageManager().broadcastMessage(getMM().deserialize("<red> Match environment was not set properly, therefore your match couldn't start. Missing flag locations?"));
+                return false;
+            }
+            setFlagLocation(team, configLoc);
+        }
+        return true;
     }
 
     /**

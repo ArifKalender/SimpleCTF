@@ -90,6 +90,7 @@ public class FlagInteractionListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Block clickedBlock = event.getClickedBlock();
+        if (SimpleCTF.getCurrentMatch() == null) return;
         if (clickedBlock == null) return;
         if (clickedBlock.getType() == Team.BLUE.getBannerItem()) {
             handleFlag(event, Team.BLUE);
@@ -131,7 +132,7 @@ public class FlagInteractionListener implements Listener {
 
     private void handleFlag(PlayerInteractEvent event, Team flagColor) {
         Match match = SimpleCTF.getCurrentMatch();
-        if (!Team.playableTeams().contains(flagColor) || flagColor == null) {
+        if (flagColor == null || !Team.playableTeams().contains(flagColor)) {
             event.setCancelled(true);
             return;
         }
