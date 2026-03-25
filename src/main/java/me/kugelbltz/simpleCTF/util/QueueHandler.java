@@ -91,9 +91,8 @@ public class QueueHandler {
     /**
      * @return Whether the given player is in a queue or not.
      */
-    public boolean alreadyInQueue(Player player) {
+    public boolean isInQueue(Player player) {
         for (Collection<UUID> value : teamQueues.values()) if (value.contains(player.getUniqueId())) return true;
-
         return false;
     }
 
@@ -128,7 +127,8 @@ public class QueueHandler {
     public void removePlayer(Player player, boolean sendMessageToPlayer) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match != null) {
-            if (!this.alreadyInQueue(player) && !Team.playableTeams().contains(match.getTeam(player))) {
+            boolean notInTeam = !this.isInQueue(player) && match.getTeam(player) == null;
+            if (notInTeam) {
                 if (sendMessageToPlayer)
                     player.sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.NOT_IN_TEAM.get()));
                 return;

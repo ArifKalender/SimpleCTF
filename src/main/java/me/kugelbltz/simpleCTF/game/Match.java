@@ -171,7 +171,6 @@ public class Match {
         getStateManager().resetPlayerState(player, false, true, this);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(StaticVariables.getSpawn());
-        if (getTeam(player) == null) return;
         players.remove(player);
     }
 
@@ -211,7 +210,7 @@ public class Match {
     }
 
     /**
-     * @return The team of the given player
+     * @return The team of the given player. May return null if player is not in the match.
      */
     public Team getTeam(Player player) {
         return players.get(player);

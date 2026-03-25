@@ -20,7 +20,7 @@ public class CTFLeave implements CTFCommand {
         // Remove player from queue
         MiniMessage mm = SimpleCTF.getInstance().getMM();
         QueueHandler queueHandler = SimpleCTF.getInstance().getQueueHandler();
-        if (queueHandler.alreadyInQueue(player)) {
+        if (queueHandler.isInQueue(player)) {
             queueHandler.removePlayer(player, true);
         } else {
             Match match = SimpleCTF.getInstance().getCurrentMatch();

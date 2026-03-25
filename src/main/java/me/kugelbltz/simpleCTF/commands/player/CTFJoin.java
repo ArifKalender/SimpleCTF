@@ -43,7 +43,7 @@ public class CTFJoin implements CTFCommand {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         boolean matchOccupied = match != null;
 
-        if (SimpleCTF.getInstance().getQueueHandler().alreadyInQueue(player)) {
+        if (SimpleCTF.getInstance().getQueueHandler().isInQueue(player)) {
             player.sendMessage(mm.deserialize(Message.ALREADY_IN_QUEUE.get()));
             return;
         }
