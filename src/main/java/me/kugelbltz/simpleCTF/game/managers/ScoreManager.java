@@ -9,19 +9,13 @@ public class ScoreManager {
 
     private final Map<Team, Integer> teamScores = new HashMap<>();
 
-    /**
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
     public int getScore(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return 0;
         return teamScores.getOrDefault(team, 0);
     }
 
-    /**
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
     public void setScore(Team team, int newScore) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         teamScores.put(team, newScore);
     }
 

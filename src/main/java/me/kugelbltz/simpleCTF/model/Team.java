@@ -7,13 +7,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
+// # TODO: Remove Team#NONE
 public enum Team {
 
     RED(Material.RED_BANNER, Material.RED_CONCRETE, Color.RED),
-    BLUE(Material.BLUE_BANNER, Material.BLUE_CONCRETE, Color.BLUE),
-    NONE(Material.GRAY_BANNER, Material.GRAY_CONCRETE, Color.GRAY);
+    BLUE(Material.BLUE_BANNER, Material.BLUE_CONCRETE, Color.BLUE);
 
     private final Material bannerItem, particleSource;
     private final Color rgbColor;
@@ -27,31 +26,23 @@ public enum Team {
 
     /**
      * @return The enemy team of the given team
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public static Team getOpposite(Team team) {
-        Team.requirePlayableTeam(team);
         if (team == RED) return BLUE;
         else if (team == BLUE) return RED;
-        else return null; // Unreachable in practice, as requirePlayableTeam ensures this.
+        else return null;
     }
 
     /**
      * @return The {@code ItemStack} item of the given team, refer to {@code BannerItems}
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public static ItemStack getTeamFlag(Team team) {
-        requirePlayableTeam(team);
+        if (team == null) return null;
         return SimpleCTF.getInstance().getBannerItems().getFlag(team);
     }
 
     public static List<Team> playableTeams() {
         return Arrays.asList(Team.RED, Team.BLUE);
-    }
-
-    public static void requirePlayableTeam(Team team) {
-        if (!playableTeams().contains(team))
-            throw new IllegalArgumentException("Illegal team: " + team.name().toUpperCase(Locale.ENGLISH));
     }
 
     public Material getBannerItem() {

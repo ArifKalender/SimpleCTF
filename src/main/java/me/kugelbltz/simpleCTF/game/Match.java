@@ -60,11 +60,9 @@ public class Match {
     /**
      * Teleport players to their spawn locations and
      * reset their state if {@code resetState} is true
-     *
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void initPlayer(Player player, boolean teleport, boolean resetState) {
-        Team.requirePlayableTeam(getTeam(player));
+        if (getTeam(player) == null) return;
         Team team = getTeam(player);
         getFlagManager().setFlagCarrier(null, team);
         if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
@@ -123,11 +121,8 @@ public class Match {
     }
 
 
-    /**
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
-     */
     public void winMatch(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         Bukkit.getPluginManager().callEvent(new MatchWinEvent(getPlayers(team), getPlayers(Team.getOpposite(team))));
         unloadMatch(Message.MATCH_WIN.get().replace("%color%", team.name().toUpperCase(Locale.ENGLISH)));
     }
@@ -145,10 +140,9 @@ public class Match {
      * Returns the list of players for the given team.
      *
      * @return An unmodifiable Collection of the players for the given team.
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Collection<Player> getPlayers(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return List.of();
         Collection<Player> toReturn = new HashSet<>();
         players.keySet().forEach(player -> {
             if (players.get(player) == team) toReturn.add(player);
@@ -164,7 +158,7 @@ public class Match {
         getStateManager().resetPlayerState(player, false, true, this);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(StaticVariables.getSpawn());
-        if (getTeam(player) == Team.NONE) return;
+        if (getTeam(player) == null) return;
         players.remove(player);
     }
 

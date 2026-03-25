@@ -36,14 +36,14 @@ public class BannerItems {
     public static Team getTeamFromFlag(ItemStack itemStack) {
         if (SimpleCTF.getInstance().getBannerItems().isFlag(itemStack, Team.BLUE)) return Team.BLUE;
         else if (SimpleCTF.getInstance().getBannerItems().isFlag(itemStack, Team.RED)) return Team.RED;
-        else return Team.NONE;
+        else return null;
     }
 
     /**
      * @return A copy of the flag item of the given team
      */
     public ItemStack getFlag(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return null;
         return teamFlags.get(team).clone();
     }
 

@@ -24,7 +24,7 @@ public class QueueHandler {
      * @return The unmodifiable list of UUID's of players in a team's queue
      */
     private Collection<UUID> getUUIDQueue(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return List.of();
         return Collections.unmodifiableCollection(teamQueues.get(team));
     }
 
@@ -69,11 +69,9 @@ public class QueueHandler {
 
     /**
      * Adds the given player to the given team's queue directly
-     *
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void addPlayerToQueue(Player player, Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         UUID uuid = player.getUniqueId();
         teamQueues.get(team).add(uuid);
     }
@@ -110,7 +108,7 @@ public class QueueHandler {
      */
     public Team getQueueTeam(Player player) {
         for (Team team : teamQueues.keySet()) if (teamQueues.get(team).contains(player.getUniqueId())) return team;
-        return Team.NONE;
+        return null;
     }
 
     public void clearQueue() {

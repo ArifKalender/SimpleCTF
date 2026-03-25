@@ -39,11 +39,9 @@ public class FlagManager {
 
     /**
      * Plays animations of the flags and flag carriers
-     *
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void playFlagAnimation(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         // --- Block particles for flags ---
         Location flagLoc = this.getFlagLocation(team);
         boolean available = flagLoc.getBlock().getType() == team.getBannerItem();
@@ -99,10 +97,9 @@ public class FlagManager {
     /**
      * Saves the flag for the given parameters, placing the block and removing the item from inventory, then broadcasting the message.
      *
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void restoreFlag(Player player, Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         setFlagCarrier(null, team);
         getFlagLocation(team).getBlock().setType(team.getBannerItem());
         if (player != null) {
@@ -119,11 +116,9 @@ public class FlagManager {
      * @param player       The player who returned the flag
      * @param scoringTeam  The team that returned the flag
      * @param capturedTeam The team who had their flag stolen
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     private void captureFlagAndScore(Player player, Team scoringTeam, Team capturedTeam) {
-        Team.requirePlayableTeam(scoringTeam);
-        Team.requirePlayableTeam(capturedTeam);
+        if (scoringTeam == null || capturedTeam == null) return;
         match.getScoreManager().setScore(scoringTeam, match.getScoreManager().getScore(scoringTeam) + 1);
         GeneralUtils.removeFlag(player, capturedTeam);
         match.initAllPlayers(StaticVariables.doesResetMatchAfterScore(), StaticVariables.doesResetMatchAfterScore());
@@ -143,10 +138,9 @@ public class FlagManager {
      * @param team     The team of the flag
      * @param dropper  The one who dropped the flag
      * @param location The location at which the flag was dropped
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void broadcastFlagDropLocation(Team team, Player dropper, Location location) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         String locString = "X: " + (int) location.getX() + " | Y: " + (int) location.getY() + " | Z: " + (int) location.getZ();
         Component component = SimpleCTF.getInstance().getMM().deserialize(Message.FLAG_DROPPED_AT.get()
                 .replace("%player%", dropper.getName())
@@ -158,20 +152,18 @@ public class FlagManager {
 
     /**
      * @return A copy of the flag location for the given team
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public Location getFlagLocation(Team team) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return null;
         return flagLocations.get(team).clone();
     }
 
     /**
      * Sets the flag location for the given team
      *
-     * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
     public void setFlagLocation(Team team, @NotNull Location newLocation) {
-        Team.requirePlayableTeam(team);
+        if (team == null) return;
         flagLocations.put(team, newLocation);
     }
 
