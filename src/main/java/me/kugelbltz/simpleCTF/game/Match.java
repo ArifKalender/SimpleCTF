@@ -66,9 +66,10 @@ public class Match {
      * reset their state if {@code resetState} is true
      */
     public void initPlayer(Player player, boolean teleport, boolean resetState) {
-        if (getTeam(player) == null) return;
         Team team = getTeam(player);
+        if (team == null) return;
         getFlagManager().setFlagCarrier(null, team);
+        getFlagManager().setFlagCarrier(null, Team.getOpposite(team));  // During initialization of a player their flag carrier status must be reset.
         if (player.isDead())
             player.spigot().respawn(); // When teleporting player while dead it ruins the player state, therefore we're respawning the player before.
         if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
@@ -166,7 +167,7 @@ public class Match {
      * Removes the given player from the match.
      */
     public void removePlayerFromMatch(Player player) {
-        if (!GeneralUtils.dropAllFlags(player)) return;
+        GeneralUtils.dropAllFlags(player);
         getStateManager().resetPlayerState(player, false, true, this);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(StaticVariables.getSpawn());

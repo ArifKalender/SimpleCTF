@@ -62,7 +62,7 @@ public class FlagInteractionListener implements Listener {
 
 
     /**
-     * Handle flag item pickups
+     * Handle flag item pickups. Allows same-team pickups, so players can return their flags back to their bases.
      */
     @EventHandler
     public void onPickup(PlayerAttemptPickupItemEvent event) {

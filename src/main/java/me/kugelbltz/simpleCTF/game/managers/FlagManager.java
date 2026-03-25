@@ -99,7 +99,6 @@ public class FlagManager {
 
     /**
      * Saves the flag for the given parameters, placing the block and removing the item from inventory, then broadcasting the message.
-     *
      */
     public void restoreFlag(Player player, Team team) {
         if (team == null) return;
@@ -163,7 +162,6 @@ public class FlagManager {
 
     /**
      * Sets the flag location for the given team
-     *
      */
     public void setFlagLocation(Team team, @NotNull Location newLocation) {
         if (team == null) return;

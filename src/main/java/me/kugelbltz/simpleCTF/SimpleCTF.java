@@ -37,8 +37,6 @@ public final class SimpleCTF extends JavaPlugin {
 
     /**
      * Used only by {@link Match} to set the current match.
-     *
-     * @param match
      */
     public void setCurrentMatch(@Nullable Match match) {
         currentMatch = match;
