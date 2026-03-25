@@ -21,7 +21,8 @@ import java.util.*;
 import static me.kugelbltz.simpleCTF.configuration.StaticVariables.getWinScore;
 
 public class Match {
-    private final Map<Team, Collection<Player>> players = new HashMap<>();
+    //private final Map<Team, Collection<Player>> players = new HashMap<>();
+    private final Map<Player, Team> players = new HashMap<>();
     private BukkitTask task;
     private ScoreManager scoreManager;
     private MessageManager messageManager;
@@ -45,8 +46,8 @@ public class Match {
      * Initialize and reset match state, returns true if successful, false if not
      */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
-        players.put(Team.RED, redPlayers);
-        players.put(Team.BLUE, bluePlayers);
+        redPlayers.forEach(player -> players.put(player, Team.RED));
+        bluePlayers.forEach(player -> players.put(player, Team.BLUE));
         if (!getFlagManager().prepareLocations()) return false;
         getFlagManager().loadFlags(true);
         getMessageManager().createBossBar();
@@ -154,7 +155,11 @@ public class Match {
      */
     public Collection<Player> getPlayers(Team team) {
         Team.requirePlayableTeam(team);
-        return Collections.unmodifiableCollection(players.get(team));
+        Collection<Player> toReturn = new HashSet<>();
+        players.keySet().forEach(player -> {
+            if (players.get(player) == team) toReturn.add(player);
+        });
+        return toReturn;
     }
 
     /**
@@ -166,14 +171,14 @@ public class Match {
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(StaticVariables.getSpawn());
         if (getTeam(player) == Team.NONE) return;
-        players.get(getTeam(player)).remove(player);
+        players.remove(player);
     }
 
     /**
      * Removes all the players from the match
      */
     public void removeAllPlayersFromMatch() {
-        for (Team team : Team.playableTeams()) new ArrayList<>(players.get(team)).forEach(this::removePlayerFromMatch);
+        players.keySet().forEach(this::removePlayerFromMatch);
     }
 
     /**
