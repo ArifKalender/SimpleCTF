@@ -21,7 +21,6 @@ import java.util.*;
 import static me.kugelbltz.simpleCTF.configuration.StaticVariables.getWinScore;
 
 public class Match {
-    //private final Map<Team, Collection<Player>> players = new HashMap<>();
     private final Map<Player, Team> players = new HashMap<>();
     private BukkitTask task;
     private ScoreManager scoreManager;
@@ -64,21 +63,20 @@ public class Match {
      *
      * @throws IllegalArgumentException if team is {@link Team#NONE}
      */
-    public void initPlayers(Team team, boolean teleport, boolean resetState) {
-        Team.requirePlayableTeam(team);
+    public void initPlayer(Player player, boolean teleport, boolean resetState) {
+        Team.requirePlayableTeam(getTeam(player));
+        Team team = getTeam(player);
         getFlagManager().setFlagCarrier(null, team);
-        getPlayers(team).forEach(player -> {
-            if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
-            if (resetState) getStateManager().resetPlayerState(player, true, true, this);
-        });
+        if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
+        if (resetState) getStateManager().resetPlayerState(player, true, true, this);
     }
 
     /**
      * Initializes all players
      */
     public void initAllPlayers(boolean teleport, boolean resetState) {
-        for (Team team : Team.playableTeams()) {
-            initPlayers(team, teleport, resetState);
+        for (Player player : players.keySet()) {
+            initPlayer(player, teleport, resetState);
         }
     }
 
@@ -103,8 +101,7 @@ public class Match {
                 }
 
                 getMessageManager().updateBossBar(timeLeft);
-                int playersInMatch = getPlayers(Team.RED).size() + getPlayers(Team.BLUE).size();
-                if (playersInMatch <= 0) unloadMatch("<red>No players left.");
+                if (players.isEmpty()) unloadMatch("<red>No players left.");
             }
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
     }
@@ -140,10 +137,7 @@ public class Match {
      * @return Whether the given player is in a match or not
      */
     public boolean isPlayerInMatch(Player player) {
-        for (Team team : Team.playableTeams()) {
-            if (getPlayers(team).contains(player)) return true;
-        }
-        return false;
+        return players.containsKey(player);
     }
 
 
@@ -178,7 +172,7 @@ public class Match {
      * Removes all the players from the match
      */
     public void removeAllPlayersFromMatch() {
-        players.keySet().forEach(this::removePlayerFromMatch);
+        new ArrayList<>(players.keySet()).forEach(this::removePlayerFromMatch);
     }
 
     /**
@@ -213,8 +207,6 @@ public class Match {
      * @return The team of the given player
      */
     public Team getTeam(Player player) {
-        if (getPlayers(Team.RED).contains(player)) return Team.RED;
-        if (getPlayers(Team.BLUE).contains(player)) return Team.BLUE;
-        return Team.NONE;
+        return players.get(player);
     }
 }
