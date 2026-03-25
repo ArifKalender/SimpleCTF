@@ -46,9 +46,9 @@ public class CTFSetFlag implements CTFCommand {
     private Location prepareLocation(Location playerLocation) {
         Location toReturn = playerLocation.clone();
         toReturn.setPitch(0);
-        toReturn.setX(Math.floor(toReturn.getX()));
+        toReturn.setX(Math.floor(toReturn.getX())+0.5);
         toReturn.setY(Math.floor(toReturn.getY()));
-        toReturn.setZ(Math.floor(toReturn.getZ()));
+        toReturn.setZ(Math.floor(toReturn.getZ())+0.5);
         return toReturn;
     }
 

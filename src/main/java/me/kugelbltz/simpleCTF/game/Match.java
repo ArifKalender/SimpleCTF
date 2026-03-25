@@ -69,6 +69,8 @@ public class Match {
         if (getTeam(player) == null) return;
         Team team = getTeam(player);
         getFlagManager().setFlagCarrier(null, team);
+        if (player.isDead())
+            player.spigot().respawn(); // When teleporting player while dead it ruins the player state, therefore we're respawning the player before.
         if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
         if (resetState) getStateManager().resetPlayerState(player, true, true, this);
     }
@@ -97,14 +99,19 @@ public class Match {
                     unloadMatch(Message.MATCH_TIME_OUT.get());
                     return;
                 }
+                if (players.isEmpty()) {
+                    unloadMatch("<red>No players left.");
+                    return;
+                }
                 for (Team team : Team.playableTeams()) {
                     getFlagManager().handleFlag(team);
                     getFlagManager().playFlagAnimation(team);
-                    if (getScoreManager().getScore(team) >= getWinScore()) winMatch(team);
+                    if (getScoreManager().getScore(team) >= getWinScore()) {
+                        winMatch(team);
+                        return;
+                    }
                 }
-
                 getMessageManager().updateBossBar(timeLeft);
-                if (players.isEmpty()) unloadMatch("<red>No players left.");
             }
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 20);
     }
@@ -159,7 +166,7 @@ public class Match {
      * Removes the given player from the match.
      */
     public void removePlayerFromMatch(Player player) {
-        GeneralUtils.dropAllFlags(player);
+        if (!GeneralUtils.dropAllFlags(player)) return;
         getStateManager().resetPlayerState(player, false, true, this);
         getMessageManager().removePlayerFromBossBar(player);
         player.teleport(StaticVariables.getSpawn());
