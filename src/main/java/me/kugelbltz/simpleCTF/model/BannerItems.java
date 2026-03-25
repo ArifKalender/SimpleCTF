@@ -13,7 +13,7 @@ import java.util.Map;
  * For managing and defining match flag items
  */
 public class BannerItems {
-    private final static Map<Team, ItemStack> teamFlags = new HashMap<>();
+    private final Map<Team, ItemStack> teamFlags = new HashMap<>();
     private final ItemStack blueFlag = new ItemStack(Team.BLUE.getBannerItem(), 1);
     private final ItemStack redFlag = new ItemStack(Team.RED.getBannerItem(), 1);
     NamespacedKey key = new NamespacedKey(SimpleCTF.getInstance(), "team_flag");
