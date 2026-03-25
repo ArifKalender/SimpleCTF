@@ -3,6 +3,7 @@ package me.kugelbltz.simpleCTF.game.managers;
 import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Message;
 import me.kugelbltz.simpleCTF.model.Team;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
@@ -20,7 +21,6 @@ public class MessageManager {
 
     /**
      * Manages match messages and bossbar
-     * @param match
      */
     public MessageManager(Match match) {
         this.match = match;
@@ -33,17 +33,20 @@ public class MessageManager {
      */
     public void updateBossBar(int timeLeft) {
         if (this.bossBar == null) return;
-        String title = "<#e30b00>Red score: <yellow>" + match.getScoreManager().getScore(Team.RED) + " <reset>| <#188adb>Blue score: <yellow>" + match.getScoreManager().getScore(Team.BLUE);
+        String redScore = String.valueOf(match.getScoreManager().getScore(Team.RED));
+        String blueScore = String.valueOf(match.getScoreManager().getScore(Team.BLUE));
+        String title = Message.BOSS_BAR_TEXT.getNoPrefix().replace("%red_score%", redScore).replace("%blue_score%", blueScore);
         float timeLeftNormalized = timeLeft / (float) StaticVariables.getMatchTime();
         this.bossBar.progress(timeLeftNormalized);
         this.bossBar.name(SimpleCTF.getInstance().getMM().deserialize(title));
     }
 
     public void createBossBar() {
-        Component title = SimpleCTF.getInstance().getMM().deserialize(
-                "<#e30b00>Red score: <yellow>" + match.getScoreManager().getScore(Team.RED) + " <reset>| <#188adb>Blue score: <yellow>" + match.getScoreManager().getScore(Team.BLUE));
+        String redScore = String.valueOf(match.getScoreManager().getScore(Team.RED));
+        String blueScore = String.valueOf(match.getScoreManager().getScore(Team.BLUE));
+        String title = Message.BOSS_BAR_TEXT.getNoPrefix().replace("%red_score%", redScore).replace("%blue_score%", blueScore);
         if (this.bossBar == null) {
-            this.bossBar = BossBar.bossBar(title, 1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
+            this.bossBar = BossBar.bossBar(SimpleCTF.getInstance().getMM().deserialize(title), 1, BossBar.Color.YELLOW, BossBar.Overlay.PROGRESS);
             match.getPlayers(Team.RED).forEach(this.bossBar::addViewer);
             match.getPlayers(Team.BLUE).forEach(this.bossBar::addViewer);
         }

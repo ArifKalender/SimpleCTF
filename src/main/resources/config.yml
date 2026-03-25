@@ -19,6 +19,7 @@ SimpleCTF:
           - COOKED_BEEF:4
   Strings:
     Prefix: "<bold><#eb6434>SimpleCTF <reset><#e8cd33>» "
+    BossBarText: "<red>Red score: <green>%red_score% <reset>| <blue>Blue score: <green>%blue_score%"
     Warnings:
       NoPermission: "<red>You don't have the permission to execute that command!"
       NoFriendlyFire: "You can not attack your teammates!"

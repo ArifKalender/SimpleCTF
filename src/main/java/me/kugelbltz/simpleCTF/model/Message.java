@@ -11,6 +11,7 @@ public enum Message {
     NO_PERMISSION("SimpleCTF.Strings.Warnings.NoPermission", "<red>You don't have the permission to execute that command!"),
     NO_FRIENDLY_FIRE("SimpleCTF.Strings.Warnings.NoFriendlyFire", "You can not attack your teammates!"),
     INCORRECT_SYNTAX("SimpleCTF.Strings.Warnings.IncorrectSyntax", "That's an invalid command, are you sure you typed that correctly?"),
+    BOSS_BAR_TEXT("SimpleCTF.Strings.BossBarText", "<red>Red score: <green>%red_score% <reset>| <blue>Blue score: <green>%blue_score%"),
 
     WRONG_BANNER_TEAM("SimpleCTF.Strings.Warnings.WrongBannerTeam", "You cannot break that flag!"),
     TEAM_JOIN("SimpleCTF.Strings.Queue.TeamJoin", "You joined the %color% team!"),
@@ -60,5 +61,9 @@ public enum Message {
 
         String prefix = SimpleCTF.getInstance().getConfig().getString(PREFIX.configPath, PREFIX.defaultMessage);
         return prefix + message;
+    }
+
+    public String getNoPrefix() {
+        return SimpleCTF.getInstance().getConfig().getString(this.configPath, this.defaultMessage);
     }
 }
