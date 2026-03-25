@@ -96,7 +96,7 @@ public class FlagInteractionListener implements Listener {
         if (clickedBlock == null) return;
         // --- Handle flag capturing ---
         for (Team team : Team.playableTeams()) {
-            boolean isFlagBlock = team.getBannerItem() == clickedBlock.getType() && match.getFlagManager().getFlagLocation(team).distance(clickedBlock.getLocation()) < 1;
+            boolean isFlagBlock = team.getBannerItem() == clickedBlock.getType() && match.getFlagManager().getFlagLocation(team).distanceSquared(clickedBlock.getLocation()) < 1;
             if (isFlagBlock) {
                 handleFlag(event, team);
                 event.setCancelled(true);
@@ -104,9 +104,10 @@ public class FlagInteractionListener implements Listener {
         }
 
         // --- Prevent interacting with blocks near the flag ---
-        double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));
-        double redDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.RED));
-        if (blueDistance < StaticVariables.getFlagBaseRadius() || redDistance < StaticVariables.getFlagBaseRadius()) {
+        double blueDistance = clickedBlock.getLocation().distanceSquared(match.getFlagManager().getFlagLocation(Team.BLUE));
+        double redDistance = clickedBlock.getLocation().distanceSquared(match.getFlagManager().getFlagLocation(Team.RED));
+        double distanceSq = StaticVariables.getFlagBaseRadius() * StaticVariables.getFlagBaseRadius();
+        if (blueDistance < distanceSq || redDistance < distanceSq) {
             event.setCancelled(true);
         }
     }

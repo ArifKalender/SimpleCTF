@@ -2,6 +2,7 @@ package me.kugelbltz.simpleCTF.game.managers;
 
 import me.kugelbltz.simpleCTF.configuration.StaticVariables;
 import me.kugelbltz.simpleCTF.game.Match;
+import me.kugelbltz.simpleCTF.model.Team;
 import me.kugelbltz.simpleCTF.util.GeneralUtils;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -24,6 +25,11 @@ public class StateManager {
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
         if (giveKit && match != null) addKitToInventory(player, match);
         player.setHealth(player.getAttribute(Attribute.MAX_HEALTH).getValue());
+        Team team = match.getTeam(player);
+        if (team == null) return;
+        match.getFlagManager().setFlagCarrier(null, team);
+        match.getFlagManager().setFlagCarrier(null, Team.getOpposite(team));  // During reset of state, the flag carrier status of a player must be reset completely.
+
     }
 
     private void addKitToInventory(Player player, Match match) {

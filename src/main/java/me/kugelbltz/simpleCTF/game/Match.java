@@ -68,8 +68,6 @@ public class Match {
     public void initPlayer(Player player, boolean teleport, boolean resetState) {
         Team team = getTeam(player);
         if (team == null) return;
-        getFlagManager().setFlagCarrier(null, team);
-        getFlagManager().setFlagCarrier(null, Team.getOpposite(team));  // During initialization of a player their flag carrier status must be reset.
         if (player.isDead())
             player.spigot().respawn(); // When teleporting player while dead it ruins the player state, therefore we're respawning the player before.
         if (teleport) player.teleport(getFlagManager().getFlagLocation(team));
