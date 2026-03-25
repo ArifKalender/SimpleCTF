@@ -26,6 +26,9 @@ import java.util.Locale;
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.addItem;
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.playSoundForGroup;
 
+/**
+ * Match listener for general flag interaction logic
+ */
 public class FlagInteractionListener implements Listener {
 
     /**
@@ -39,7 +42,7 @@ public class FlagInteractionListener implements Listener {
     }
 
     /**
-     * Handle flag drops
+     * Handle dropped flag items
      */
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
@@ -59,7 +62,7 @@ public class FlagInteractionListener implements Listener {
 
 
     /**
-     * Handle flag pickups
+     * Handle flag item pickups
      */
     @EventHandler
     public void onPickup(PlayerAttemptPickupItemEvent event) {
@@ -106,6 +109,9 @@ public class FlagInteractionListener implements Listener {
         }
     }
 
+    /**
+     * Prevent flag item destruction
+     */
     @EventHandler
     public void onCombust(EntityCombustEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
@@ -115,6 +121,9 @@ public class FlagInteractionListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Prevent flag item destruction
+     */
     @EventHandler
     public void onItemDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
@@ -124,7 +133,9 @@ public class FlagInteractionListener implements Listener {
         event.setCancelled(true);
     }
 
-
+    /**
+     * Handles the given flag type for interactions
+     */
     private void handleFlag(PlayerInteractEvent event, Team flagColor) {
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (flagColor == null || !Team.playableTeams().contains(flagColor)) {

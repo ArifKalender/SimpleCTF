@@ -9,7 +9,9 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * For managing and defining match flag items
+ */
 public class BannerItems {
     private final static Map<Team, ItemStack> teamFlags = new HashMap<>();
     private final ItemStack blueFlag = new ItemStack(Team.BLUE.getBannerItem(), 1);

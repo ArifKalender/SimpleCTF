@@ -19,7 +19,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-
+/**
+ * Match listener for the given player lifecycle occurrences: death, player leave server, match wins and flag captures
+ */
 public class PlayerLifecycleListener implements Listener {
     Set<UUID> quitDuringMatch = new HashSet<>();
 

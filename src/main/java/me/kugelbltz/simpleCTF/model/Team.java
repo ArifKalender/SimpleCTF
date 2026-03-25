@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.List;
 
-// # TODO: Remove Team#NONE
 public enum Team {
 
     RED(Material.RED_BANNER, Material.RED_CONCRETE, Color.RED),

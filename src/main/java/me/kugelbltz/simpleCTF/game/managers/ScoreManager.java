@@ -5,6 +5,9 @@ import me.kugelbltz.simpleCTF.model.Team;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Manages match team scores
+ */
 public class ScoreManager {
 
     private final Map<Team, Integer> teamScores = new HashMap<>();

@@ -2,6 +2,9 @@ package me.kugelbltz.simpleCTF.model;
 
 import me.kugelbltz.simpleCTF.SimpleCTF;
 
+/**
+ * Messages from config.yml
+ */
 public enum Message {
 
     PREFIX("SimpleCTF.Strings.Prefix", "<#eb6434>SimpleCTF » <#e8cd33>"),

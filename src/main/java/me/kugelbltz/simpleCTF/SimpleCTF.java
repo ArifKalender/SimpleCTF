@@ -16,7 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 // TODO: Implement class-level javadocs.
-// TODO: Write README
 public final class SimpleCTF extends JavaPlugin {
 
     private static SimpleCTF plugin;

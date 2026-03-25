@@ -27,6 +27,9 @@ import java.util.Map;
 
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.removeFlag;
 
+/**
+ * Manages flag animations, flag locations, flag blocks
+ */
 public class FlagManager {
 
     private final Map<Team, Location> flagLocations = new HashMap<>();

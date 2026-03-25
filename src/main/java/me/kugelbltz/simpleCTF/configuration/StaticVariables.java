@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Configured static variables in {@code config.yml}
+ */
 public class StaticVariables {
 
     private static int MAX_PLAYERS_PER_TEAM;

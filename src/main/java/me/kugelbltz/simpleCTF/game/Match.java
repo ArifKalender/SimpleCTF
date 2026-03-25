@@ -20,6 +20,9 @@ import java.util.*;
 
 import static me.kugelbltz.simpleCTF.configuration.StaticVariables.getWinScore;
 
+/**
+ * Manages general match lifecycle. Call {@link Match#startMatch} to start the match. Supports one match per server instance.
+ */
 public class Match {
     private final Map<Player, Team> players = new HashMap<>();
     private BukkitTask task;
@@ -42,7 +45,8 @@ public class Match {
     }
 
     /**
-     * Initialize and reset match state, returns true if successful, false if not
+     * Initialize and reset match state, returns true if successful, false if not.
+     * Populates teams, prepares flag locations and blocks, sets scores and the boss, initializes players.
      */
     private boolean initMatch(Collection<Player> redPlayers, Collection<Player> bluePlayers) {
         redPlayers.forEach(player -> players.put(player, Team.RED));
@@ -70,7 +74,7 @@ public class Match {
     }
 
     /**
-     * Initializes all players
+     * Initializes all players. See {@link Match#initPlayer}
      */
     public void initAllPlayers(boolean teleport, boolean resetState) {
         for (Player player : players.keySet()) {
@@ -80,6 +84,7 @@ public class Match {
 
     /**
      * Handle game loop, 20 tick intervals
+     * Handles flags of teams, animations, tracks scores and updates boss bar.
      */
     private BukkitTask gameLoop() {
         return new BukkitRunnable() {

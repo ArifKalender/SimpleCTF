@@ -18,6 +18,10 @@ public class MessageManager {
     private final Match match;
     private BossBar bossBar;
 
+    /**
+     * Manages match messages and bossbar
+     * @param match
+     */
     public MessageManager(Match match) {
         this.match = match;
     }

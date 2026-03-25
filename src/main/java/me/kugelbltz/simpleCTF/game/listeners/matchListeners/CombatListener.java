@@ -13,6 +13,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+/**
+ * Match listener for general combat logic
+ */
 public class CombatListener implements Listener {
 
 

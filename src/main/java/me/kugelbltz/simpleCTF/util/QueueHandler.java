@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
+/**
+ * Handler of match queues
+ */
 public class QueueHandler {
 
     private final Map<Team, Collection<UUID>> teamQueues = new HashMap<>();

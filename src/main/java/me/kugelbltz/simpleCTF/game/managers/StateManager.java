@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+/**
+ * Manages player state like inventory, exp, food, potion effects and health resets.
+ */
 public class StateManager {
 
     /**
