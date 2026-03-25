@@ -93,6 +93,7 @@ public class FlagInteractionListener implements Listener {
         Block clickedBlock = event.getClickedBlock();
         if (SimpleCTF.getInstance().getCurrentMatch() == null) return;
         if (clickedBlock == null) return;
+        // --- Handle flag capturing ---
         for (Team team : Team.playableTeams()) {
             if (team.getBannerItem() == clickedBlock.getType()) {
                 handleFlag(event, team);
@@ -100,6 +101,7 @@ public class FlagInteractionListener implements Listener {
             }
         }
 
+        // --- Prevent interacting with blocks near the flag ---
         Match match = SimpleCTF.getInstance().getCurrentMatch();
         if (match == null) return;
         double blueDistance = clickedBlock.getLocation().distance(match.getFlagManager().getFlagLocation(Team.BLUE));

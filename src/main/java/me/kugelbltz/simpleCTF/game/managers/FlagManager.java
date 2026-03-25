@@ -79,7 +79,7 @@ public class FlagManager {
      */
     public void handleFlag(Team flag) {
         if (!Team.playableTeams().contains(flag)) return;
-        for (LivingEntity lEntity : this.getFlagLocation(flag).getNearbyLivingEntities(3)) {
+        for (LivingEntity lEntity : this.getFlagLocation(flag).getNearbyLivingEntities(StaticVariables.getFlagBaseRadius())) {
             if (!(lEntity instanceof Player player)) continue;
             Team loopPlayerTeam = match.getTeam(player);
             Team enemyTeam = Team.getOpposite(flag);
