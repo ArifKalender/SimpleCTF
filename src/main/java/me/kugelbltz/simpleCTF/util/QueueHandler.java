@@ -101,7 +101,6 @@ public class QueueHandler {
      */
     public boolean anyoneInQueue() {
         for (Collection<UUID> value : teamQueues.values()) if (!value.isEmpty()) return true;
-
         return false;
     }
 
@@ -135,7 +134,7 @@ public class QueueHandler {
             }
         }
         Team team = this.getQueueTeam(player);
-        if (!Team.playableTeams().contains(team)) return;
+        if (team == null) return;
         this.removePlayerFromQueue(player);
         this.getPlayerQueue(team).forEach(teamPlayer -> teamPlayer
                 .sendMessage(SimpleCTF.getInstance().getMM().deserialize(Message.PLAYER_LEFT_TEAM.get().replace("%player%", player.getName()))));
