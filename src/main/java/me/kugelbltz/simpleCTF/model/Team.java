@@ -5,7 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public enum Team {
@@ -13,6 +13,7 @@ public enum Team {
     RED(Material.RED_BANNER, Material.RED_CONCRETE, Color.RED),
     BLUE(Material.BLUE_BANNER, Material.BLUE_CONCRETE, Color.BLUE);
 
+    private final static List<Team> playableTeams = List.of(Team.RED, Team.BLUE);
     private final Material bannerItem, particleSource;
     private final Color rgbColor;
 
@@ -41,7 +42,7 @@ public enum Team {
     }
 
     public static List<Team> playableTeams() {
-        return Arrays.asList(Team.RED, Team.BLUE);
+        return Collections.unmodifiableList(playableTeams);
     }
 
     public Material getBannerItem() {
