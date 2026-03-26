@@ -212,6 +212,9 @@ public class FlagManager {
         this.flagCarriers.put(flagColor, entity);
     }
 
+    /**
+     * Protects the given item from unsafe situations like falling off the world or burning.
+     */
     public void protectFlagItemEntity(Item item) {
         Team itemTeam = BannerItems.getTeamFromFlag(item.getItemStack());
         if (!Team.playableTeams().contains(itemTeam)) return;
@@ -231,6 +234,9 @@ public class FlagManager {
         }.runTaskTimer(SimpleCTF.getInstance(), 0, 10);
     }
 
+    /**
+     * @return whether the given item is in an unsafe condition or not
+     */
     private boolean isItemUnsafe(Item item) {
         double safeHeight = (item.getWorld().getMinHeight() + 4);
         return item.getTicksLived() > 20 * 30 || item.getLocation().getY() < safeHeight;

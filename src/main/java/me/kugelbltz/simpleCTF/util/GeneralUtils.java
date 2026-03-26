@@ -67,7 +67,7 @@ public class GeneralUtils {
         List<ItemStack> toRemove = new ArrayList<>(); // Prevent ConcurrentModificationException
         for (ItemStack item : player.getInventory()) {
             if (item == null || item.getType() == Material.AIR) continue;
-            else if (SimpleCTF.getInstance().getBannerItems().isFlag(item)) {
+            else if (SimpleCTF.getInstance().getBannerItems().isFlag(item)) { // If the found item is eligible
                 toRemove.add(item);
                 Item drop = player.getWorld().dropItem(player.getLocation(), item);
                 Team flagTeam = BannerItems.getTeamFromFlag(item);

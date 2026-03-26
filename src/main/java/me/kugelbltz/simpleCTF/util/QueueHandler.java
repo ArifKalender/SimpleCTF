@@ -19,7 +19,7 @@ public class QueueHandler {
     private final Map<Team, Collection<UUID>> teamQueues = new HashMap<>();
 
     public QueueHandler() {
-        for (Team team : Team.playableTeams()) teamQueues.put(team, new HashSet<>());
+        for (Team team : Team.playableTeams()) teamQueues.put(team, new HashSet<>()); // Caching to not loop every single time playableTeams() is needed
     }
 
     /**
@@ -79,13 +79,17 @@ public class QueueHandler {
         teamQueues.get(team).add(uuid);
     }
 
+    /**
+     * Removes the given player from the queue
+     */
     public void removePlayerFromQueue(Player player) {
         removePlayerFromQueue(player.getUniqueId());
     }
-
+    /**
+     * Removes the given uuid from the queue
+     */
     public void removePlayerFromQueue(UUID uuid) {
         for (Collection<UUID> value : teamQueues.values()) value.remove(uuid);
-
     }
 
     /**
@@ -105,7 +109,7 @@ public class QueueHandler {
     }
 
     /**
-     * @return The queue {@link Team} of the given player
+     * @return The queue team of the given player
      */
     public Team getQueueTeam(Player player) {
         for (Team team : teamQueues.keySet()) if (teamQueues.get(team).contains(player.getUniqueId())) return team;
@@ -114,7 +118,6 @@ public class QueueHandler {
 
     public void clearQueue() {
         for (Team team : teamQueues.keySet()) teamQueues.get(team).clear();
-
     }
 
     /**

@@ -23,6 +23,19 @@ public final class SimpleCTF extends JavaPlugin {
     private QueueHandler QUEUE_HANDLER;
     private Match currentMatch = null;
 
+    @Override
+    public void onEnable() {
+        plugin = this;
+        initialize();
+    }
+
+
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+        if (getCurrentMatch() != null) getCurrentMatch().unloadMatch("<red>Server restart");
+    }
+
     public static SimpleCTF getInstance() {
         return plugin;
     }
@@ -59,12 +72,6 @@ public final class SimpleCTF extends JavaPlugin {
         return QUEUE_HANDLER;
     }
 
-    @Override
-    public void onEnable() {
-        plugin = this;
-        initialize();
-    }
-
     /**
      * General initialization of the plugin
      */
@@ -74,7 +81,7 @@ public final class SimpleCTF extends JavaPlugin {
         registerCommands();
         MINI_MESSAGE = MiniMessage.miniMessage();
         QUEUE_HANDLER = new QueueHandler();
-        Bukkit.getScheduler().runTask(this, () -> BANNER_ITEMS = new BannerItems()); // Loaded in a task to make sure it loads after the server has fully loaded
+        Bukkit.getScheduler().runTask(this, () -> BANNER_ITEMS = new BannerItems()); // Loaded in a task to make sure it loads after the server has fully loaded, as ItemStack's relies on world state
     }
 
     private void registerListeners() {
@@ -97,9 +104,4 @@ public final class SimpleCTF extends JavaPlugin {
         StaticVariables.init();
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-        if (getCurrentMatch() != null) getCurrentMatch().unloadMatch("<red>Server restart");
-    }
 }
