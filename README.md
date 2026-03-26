@@ -5,7 +5,7 @@
 ### Build steps
 * Clone project
 * Go into the project directory
-* Execute `gradlew clean build`
+* Execute `.\gradlew clean build` on Windows or `./gradlew clean build` on Unix
 * Output jar will be at `projectRoot/build/libs/`
 
 ### Test Environment
