@@ -28,11 +28,11 @@ public class StaticVariables {
     public static void init() {
         MAX_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MaxPlayersPerTeam", 4);
         MIN_PLAYERS_PER_TEAM = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Queue.MinPlayersPerTeam", 1);
-        MATCH_TIME = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.MatchTime", 600);
-        WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.WinScore", 3);
-        FLAG_BASE_RADIUS = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Game.Match.FlagBaseRadius", 4);
-        RESET_MATCH_AFTER_SCORE = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Game.Match.ResetMatchAfterScore", true);
-        STARTER_KIT_ENABLED = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Game.Match.StarterKit.Enabled", true);
+        MATCH_TIME = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Match.MatchTime", 600);
+        WIN_SCORE = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Match.WinScore", 3);
+        FLAG_BASE_RADIUS = SimpleCTF.getInstance().getConfig().getInt("SimpleCTF.Match.FlagBaseRadius", 4);
+        RESET_MATCH_AFTER_SCORE = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Match.ResetMatchAfterScore", true);
+        STARTER_KIT_ENABLED = SimpleCTF.getInstance().getConfig().getBoolean("SimpleCTF.Match.StarterKit.Enabled", true);
         SPAWN = SimpleCTF.getInstance().getConfig().getLocation("Match.Locations.Spawn", Bukkit.getWorlds().getFirst().getSpawnLocation());
         loadPlayerKit();
     }
