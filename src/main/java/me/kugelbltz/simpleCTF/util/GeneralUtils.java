@@ -4,8 +4,10 @@ import me.kugelbltz.simpleCTF.SimpleCTF;
 import me.kugelbltz.simpleCTF.game.Match;
 import me.kugelbltz.simpleCTF.model.BannerItems;
 import me.kugelbltz.simpleCTF.model.Team;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -88,5 +90,18 @@ public class GeneralUtils {
         for (Player player : players) {
             player.playSound(player, sound, volume, pitch);
         }
+    }
+
+    /**
+     * @param yaw Location's yaw
+     * @return A BlockFace depending on the yaw you enter - typically gotten from {@link Location#getYaw()}
+     */
+    public static BlockFace getBlockFaceFromYaw(float yaw) {
+        float normalized = Math.floorMod((int) yaw, 360); // range of (-180 - 180) -> range of (0 - 360)
+
+        if (normalized >= 315 || normalized < 45) return BlockFace.SOUTH;
+        if (normalized < 135) return BlockFace.WEST;
+        if (normalized < 225) return BlockFace.NORTH;
+        return BlockFace.EAST;
     }
 }

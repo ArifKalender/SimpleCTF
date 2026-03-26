@@ -13,6 +13,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Rotatable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static me.kugelbltz.simpleCTF.util.GeneralUtils.getBlockFaceFromYaw;
 import static me.kugelbltz.simpleCTF.util.GeneralUtils.removeFlag;
 
 /**
@@ -68,7 +72,16 @@ public class FlagManager {
      */
     public void loadFlags(boolean place) {
         for (Team team : Team.playableTeams()) {
-            if (place) this.getFlagLocation(team).getBlock().setType(team.getBannerItem());
+            if (place) {
+                Location loc = this.getFlagLocation(team);
+                Block block = loc.getBlock();
+                block.setType(team.getBannerItem());
+                BlockData bData = block.getBlockData();
+                if (bData instanceof Rotatable rotatable) {
+                    rotatable.setRotation(getBlockFaceFromYaw(loc.getYaw()));
+                    block.setBlockData(rotatable);
+                }
+            }
             else this.getFlagLocation(team).getBlock().setType(Material.AIR);
         }
     }
